@@ -42,7 +42,7 @@ void main()
     FLAG_APP_RX = 1;
     FG_Receiver_LED_RX = 0;
     FLAG_testNo91=0;
-	FLAG_testBEEP=0;
+	FLAG_testBEEP=0; 
     ML7345_SetAndGet_State(RX_ON);
     CG2214M6_USE_R;
 

@@ -1,0 +1,5 @@
+git@github.com:Git-Wyb/CRX1831DC-MA82G5B32-_for_ML7345D_24MTCXO_scan_Verx.xx.git
+
+git remote add CRX1831DC_MA82G5B32_ML7345D
+
+窗式无线CRX1831DC，MCU为MA82G5B32AD32，无线芯片ML7345D。
