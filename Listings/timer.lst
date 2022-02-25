@@ -1,0 +1,208 @@
+C51 COMPILER V9.60.0.0   TIMER                                                             02/25/2022 16:47:15 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE TIMER
+OBJECT MODULE PLACED IN .\Objects\timer.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE user\src\timer.c OPTIMIZE(0,SPEED) BROWSE INCDIR(.\include;.\user\inc) D
+                    -EBUG OBJECTEXTEND PRINT(.\Listings\timer.lst) OBJECT(.\Objects\timer.obj)
+
+line level    source
+
+   1          #include "timer.h"
+   2          
+   3          /* PCA定时器为16位,最大计数65536,*/
+   4          #if (MCU_SYSCLK == 16000000)
+   5          #define PCA_RELOAD              (5926)  //f = PCA_CLK/PCA_RELOAD,PWM输出频率2.7K,PCA时钟为SysClk 16MHz
+   6          #define Duty_Cycle      2963       //50%
+   7          #endif
+   8          
+   9          #if (MCU_SYSCLK == 24000000)
+              #define PCA_RELOAD              (8888)  //f = PCA_CLK/PCA_RELOAD,PWM输出频率2.7K,PCA时钟为SysClk 24MHz
+              #define Duty_Cycle      4444       //50%
+              #endif
+  13          
+  14          #define PCA_C           (65536)
+  15          #define PCA_CL(x)               (u8)((PCA_C-(x))%256) 
+  16          #define PCA_CH(x)       (u8)((PCA_C-(x))/256)
+  17          
+  18                
+  19          //xdata u16 time_ms = 0;
+  20          idata u16 Time_Tx_Out = 0;
+  21          
+  22          /***********************************************************************************
+  23          函数名称:   void InitTimer0(void)
+  24          功能描述:Timer0初始化设置
+  25                           定义T0为16位定时器,时钟为Sysclk/12 
+  26          输入参数:   
+  27          返回参数:     
+  28          *************************************************************************************/
+  29          void Init_Timer0(void)
+  30          {
+  31   1              TM_SetT0Mode_1_16BIT_TIMER();                   // 设置T0模式为16位模式
+  32   1          
+  33   1          TM_SetT0Clock_SYSCLKDiv12();            // 设置T0时钟源为 SYSCLK/12.
+  34   1      
+  35   1              TM_SetT0Gate_Disable(); 
+  36   1                      
+  37   1          TM_SetT0LowByte(TIMER_12T_1ms_TL);          // 设置T0低8位
+  38   1              TM_SetT0HighByte(TIMER_12T_1ms_TH);             // 设置T0高8位
+  39   1      
+  40   1              TM_EnableT0();                                                  // 使能T0
+  41   1      }
+  42          
+  43          
+  44          /***********************************************************************************
+  45          函数名称:   void INT_T0(void)
+  46          功能描述:T0 中断服务程序
+  47                           间隔1ms
+  48          输入参数:   
+  49          返回参数:     
+  50          *************************************************************************************/
+  51          void INT_T0(void) interrupt INT_VECTOR_T0
+  52          {
+  53   1              TH0=TIMER_12T_1ms_TH;
+  54   1              TL0=TIMER_12T_1ms_TL;
+C51 COMPILER V9.60.0.0   TIMER                                                             02/25/2022 16:47:15 PAGE 2   
+
+  55   1          
+  56   1          if (TIMER1s)
+  57   1              --TIMER1s;
+  58   1              if(TIME_power_led)
+  59   1                      --TIME_power_led;
+  60   1          if (TIMER300ms)
+  61   1              --TIMER300ms;
+  62   1          if (TIMER18ms)
+  63   1              --TIMER18ms;
+  64   1          if (TIMER250ms_STOP)
+  65   1              --TIMER250ms_STOP;
+  66   1          if (TIME_10ms)
+  67   1              --TIME_10ms;
+  68   1          else
+  69   1          { // 10mS FLAG
+  70   2              TIME_10ms = 10;
+  71   2              FG_10ms = 1;
+  72   2          }
+  73   1          if (U1AckTimer)
+  74   1              U1AckTimer--;
+  75   1          if (Time_APP_RXstart)
+  76   1            --Time_APP_RXstart;
+  77   1          if(Time_APP_blank_TX)
+  78   1             --Time_APP_blank_TX;
+  79   1          if (X_ERRTimer)
+  80   1              X_ERRTimer--;
+  81   1              if (TIME_ID_SCX1801_Login)
+  82   1                      --TIME_ID_SCX1801_Login;
+  83   1      
+  84   1          if(Time_Tx_Out)  --Time_Tx_Out;
+  85   1          if(Time_rf_init) --Time_rf_init;
+  86   1      }
+  87          
+  88          
+  89          //38K/14 = 2.7kHz;
+  90          void Init_PCA_PWM(void)
+  91          {
+  92   1          PCA_SetCLOCK_SYSCLK();          // PCA时钟为SysClk
+  93   1          PCA_CH6_SetMode_PWM();          // PWM模式
+  94   1          PCA_CH6_SetPWM_16Bit();         //
+  95   1          PCA_SetPWM_EdgeAligned();       // 边沿对齐
+  96   1          
+  97   1          // 设置PWM占空比比较值
+  98   1              PCA_CH6_SetValue(PCA_CH(Duty_Cycle),PCA_CL(Duty_Cycle));
+  99   1          
+ 100   1          // 设置定时器计数值 PWM频率
+ 101   1              PCA_SetCounter(PCA_C-PCA_RELOAD);
+ 102   1              PCA_SetCounterReload(PCA_C-PCA_RELOAD);
+ 103   1      }
+ 104          
+ 105          void Init_Beep(void)
+ 106          {
+ 107   1          Init_PCA_PWM();
+ 108   1      }
+ 109          
+ 110          void Beep_On(void)
+ 111          {
+ 112   1          PCA_EnPCACounter();
+ 113   1      }
+ 114          
+ 115          void Beep_Off(void)
+ 116          {
+C51 COMPILER V9.60.0.0   TIMER                                                             02/25/2022 16:47:15 PAGE 3   
+
+ 117   1          PCA_DisPCACounter();
+ 118   1          P20 = 0;
+ 119   1      }
+ 120          
+ 121          
+ 122          /*************************************************
+ 123          函数名称:     void DelayXus(u16 xUs)
+ 124          功能描述:       延时程序，单位为us
+ 125          调用函数:        
+ 126          输入参数:     u8 Us -> *1us  (1~255)
+ 127          输出参数:     
+ 128          *************************************************/
+ 129          void DelayXus(u8 xUs)
+ 130          {
+ 131   1              while(xUs!=0)
+ 132   1              {
+ 133   2      #if (MCU_SYSCLK == 16000000)
+ 134   2                      _nop_();
+ 135   2                      _nop_();
+ 136   2                      _nop_();
+ 137   2                      _nop_();
+ 138   2                      _nop_();
+ 139   2                      _nop_();
+ 140   2      #endif   
+ 141   2      #if (MCU_SYSCLK == 24000000)
+                      _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+              #endif
+ 157   2                      xUs--;
+ 158   2              }
+ 159   1      }
+ 160          
+ 161          
+ 162          /*************************************************
+ 163          函数名称:     void DelayXms(u16 xMs)
+ 164          功能描述:     延时程序，单位为ms
+ 165          输入参数:     u16 xMs -> *1ms  (1~65535)
+ 166          输出参数:     
+ 167          *************************************************/
+ 168          
+ 169          void delay_ms(u8 ms) //1约1.2ms
+ 170          {
+ 171   1          while(ms--)
+ 172   1          {
+ 173   2              DelayXus(200);
+ 174   2              DelayXus(200);
+ 175   2              DelayXus(200);
+ 176   2              DelayXus(200);
+ 177   2          }
+ 178   1      }
+C51 COMPILER V9.60.0.0   TIMER                                                             02/25/2022 16:47:15 PAGE 4   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    495    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =      2    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

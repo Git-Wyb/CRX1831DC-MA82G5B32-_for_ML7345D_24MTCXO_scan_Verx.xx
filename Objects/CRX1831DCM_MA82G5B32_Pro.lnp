@@ -1,0 +1,15 @@
+".\Objects\main.obj",
+".\Objects\sys.obj",
+".\Objects\gpio.obj",
+".\Objects\timer.obj",
+".\Objects\uart.obj",
+".\Objects\IAP_flash.obj",
+".\Objects\spi.obj",
+".\Objects\ram.obj",
+".\Objects\ID_Decode.obj",
+".\Objects\ML7345.obj",
+".\Objects\ML7345_HAL.obj" 
+TO ".\Objects\CRX1831DCM_MA82G5B32_Pro" 
+PRINT(".\Listings\CRX1831DCM_MA82G5B32_Pro.m51") RAMSIZE(256) 
+CODE( 0X0000-0X7FFF )
+XDATA( 0X0000-0X06FF )

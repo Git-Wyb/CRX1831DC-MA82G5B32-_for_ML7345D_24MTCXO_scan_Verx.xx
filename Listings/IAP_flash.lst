@@ -1,0 +1,780 @@
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE IAP_FLASH
+OBJECT MODULE PLACED IN .\Objects\IAP_flash.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE user\src\IAP_flash.c OPTIMIZE(0,SPEED) BROWSE INCDIR(.\include;.\user\in
+                    -c) DEBUG OBJECTEXTEND PRINT(.\Listings\IAP_flash.lst) OBJECT(.\Objects\IAP_flash.obj)
+
+line level    source
+
+   1          #include "IAP_flash.h"
+   2          
+   3          /* 
+   4          
+   5          IAP Flash空间: 1024Byte -> 0x7600 ~ 0x79FF.
+   6          255个ID: 255 * 3 = 765byte -> 0x7600 ~ 0x78FC; 普通ID
+   7          Addr_rf_offset -> 0x79FA; 射频偏移量
+   8          ID_SCX1801_DATA -> 0x79FB ~ 0x79FD; 通信ID
+   9          ID_DATA_PCS -> 0x79FE ~ 0X79FF. ID数量
+  10          
+  11          */
+  12          
+  13          
+  14          
+  15          
+  16          void Init_IAP_flash(void)
+  17          {
+  18   1          /* IAP时基设置 */
+  19   1          CLK_SetIAPTimeBase(12);     //12MHz
+  20   1          
+  21   1          /* 设置IAP其实起始地址 */
+  22   1          IAP_WritePPage(IAPLB_P,IAP_ADDRESS/256);
+  23   1      }
+  24          
+  25          
+  26          
+  27          /***********************************************************************************
+  28          函数名称:void IAP_WritePPage(u8 PsfrAddr,u8 PsfrData)
+  29          功能描述:写P页特殊功能器
+  30          输入参数:   
+  31                           u8 PsfrAddr: P页地址,u8 PsfrData:  P页内容
+  32          返回参数:     
+  33          *************************************************************************************/
+  34          void IAP_WritePPage(u8 PsfrAddr,u8 PsfrData)
+  35          {
+  36   1              bit bEA=EA;
+  37   1              EA = 0;                                         //关中断
+  38   1              IFADRH = 0;                             //IFADRH必须为0
+  39   1              IFADRL= PsfrAddr;                       //送P页地址;
+  40   1              IFD= PsfrData;                          //送P页内容
+  41   1              IFMT = ISP_WRITE_P;
+  42   1              ISPCR = 0x80;                           //设置等待时间, 允许ISP/IAP操作
+  43   1              //CheckTrapFlag();
+  44   1              SCMD = 0x46;
+  45   1              //CheckTrapFlag();
+  46   1              SCMD = 0xB9;
+  47   1              nop();
+  48   1              IFMT=0;
+  49   1              ISPCR = 0;                                      //清ISP/IAP特殊寄存器，防止误操作
+  50   1              EA = bEA;                                       //恢复中断
+  51   1      }
+  52          
+  53          
+  54          /***********************************************************************************
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 2   
+
+  55          函数名称:   u8 IAP_ReadPPage(u8 PsfrAddr)
+  56          功能描述:读取P页特殊功能器内容
+  57          输入参数:   
+  58                           u8 PsfrAddr: P页地址
+  59          返回参数:     
+  60                           u8: P页内容
+  61          *************************************************************************************/
+  62          /*
+  63          u8 IAP_ReadPPage(u8 PsfrAddr)
+  64          {
+  65                  bit bEA=EA;
+  66                  EA = 0;                                         //关中断
+  67                  IFADRH = 0;                             //IFADRH必须为0
+  68                  IFADRL= PsfrAddr;                       //送P页地址;
+  69                  IFMT = ISP_READ_P;
+  70                  ISPCR = 0x80;                           //设置等待时间, 允许ISP/IAP操作
+  71                  //CheckTrapFlag();
+  72                  SCMD = 0x46;
+  73                  //CheckTrapFlag();
+  74                  SCMD = 0xB9;
+  75                  nop();
+  76                  IFMT=0;
+  77                  ISPCR = 0;                                      //清ISP/IAP特殊寄存器，防止误操作
+  78                  EA = bEA;                                       //恢复中断
+  79                  return IFD;
+  80          }*/
+  81          
+  82          
+  83          
+  84          
+  85          /***********************************************************************************
+  86          函数名称:void IAP_ErasePage(u8 ByteAddr)
+  87          功能描述:页面擦除, 擦除指定地址所在的页面。
+  88                          擦除一个页面大约需要30ms
+  89          输入参数:   8
+  90                           u8 ByteAddr: 指定的页面地址高8位 IAP_ErasePage((IAP_ADDRESS)/256);擦除后值为0xFF
+  91          *************************************************************************************/
+  92          void IAP_ErasePage(u8 ByteAddr)
+  93          {
+  94   1                      bit bEA=EA; 
+  95   1                      IFADRH = ByteAddr;              //送地址高字节
+  96   1                      IFADRL= 0x00;                   //送地址低字节;
+  97   1                      EA = 0;                                 //关中断
+  98   1                      IFMT = ISP_ERASE;
+  99   1                      ISPCR = 0x80;                   //允许ISP/IAP操作
+ 100   1                      //CheckTrapFlag();
+ 101   1                      SCMD = 0x46;
+ 102   1                      //CheckTrapFlag();
+ 103   1                      SCMD = 0xB9;
+ 104   1                      nop();
+ 105   1                      IFMT=0;
+ 106   1                      ISPCR = 0;                                      //清ISP/IAP特殊寄存器，防止误操作
+ 107   1                      EA = bEA;                                       //恢复中断
+ 108   1      }
+ 109          
+ 110          
+ 111          
+ 112          
+ 113          /***********************************************************************************
+ 114          函数名称:               u8 IAP_WriteBuf_With_Protect_Verify(u16 ByteAddr,u8 *pBuf,u16 Cnt)
+ 115          功能描述:               写一串数据到IAP指定地址
+ 116                                  会使用到512字节XDATA保存扇区原有数据
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 3   
+
+ 117                                  写入一个字节数据大约需要80us
+ 118          输入参数:   
+ 119                                  u16 ByteAddr: 指定的IAP地址, u8 *pBuf: 待写入数据Buf地址，u16 Cnt: 待写入个数
+ 120          返回参数:     
+ 121                                  u8 0：成功,     other:失败
+ 122          *************************************************************************************/
+ 123          u8 IAP_WriteBuf_With_Protect_Verify(u16 ByteAddr,u8 *pBuf,u16 Cnt)
+ 124          {
+ 125   1                      xdata u8 TempBuf[512]; 
+ 126   1                      xdata u16 i;
+ 127   1                      xdata u8 ErrCnt;
+ 128   1                      xdata WordTypeDef SectorAddr;
+ 129   1                      bit bEA = EA;
+ 130   1                      // 读取待烧录扇区原有数据到临时缓冲
+ 131   1                      EA = 0;
+ 132   1                      ErrCnt = 0;
+ 133   1                      
+ 134   1                      SectorAddr.W=ByteAddr&0xFE00;
+ 135   1                      for(i = 0;i < 512; i++)
+ 136   1                      {
+ 137   2                              IFADRH = SectorAddr.B.BHigh;//送地址高字节
+ 138   2                              IFADRL= SectorAddr.B.BLow;      //送地址低字节;
+ 139   2                              IFMT = ISP_READ;
+ 140   2                              ISPCR = 0x80;                           //允许ISP/IAP操作
+ 141   2                              SCMD = 0x46;
+ 142   2                              SCMD = 0xB9;
+ 143   2                              IFMT = 0;
+ 144   2                              ISPCR = 0;                                      //清ISP/IAP特殊寄存器，防止误操作
+ 145   2                              SectorAddr.W++;
+ 146   2                              TempBuf[i] = IFD;
+ 147   2                  ClearWDT();
+ 148   2                      }
+ 149   1                      // 更改需写入的数据
+ 150   1                      i = ByteAddr & 0x01FF;
+ 151   1                      while(Cnt != 0)
+ 152   1                      {
+ 153   2                              TempBuf[i] = *pBuf;
+ 154   2                              pBuf++;
+ 155   2                              i++;
+ 156   2                              Cnt--;
+ 157   2                      }
+ 158   1              Err_Loop:
+ 159   1                      // 擦除扇区
+ 160   1                      SectorAddr.W = ByteAddr&0xFE00;
+ 161   1                      IFADRH = SectorAddr.B.BHigh;    //送地址高字节
+ 162   1                      IFADRL= 0x00;                                   //送地址低字节;
+ 163   1                      IFMT = ISP_ERASE;
+ 164   1                      ISPCR = 0x80;                                   //允许ISP/IAP操作
+ 165   1                      //CheckTrapFlag();
+ 166   1                      SCMD = 0x46;
+ 167   1                      //CheckTrapFlag();
+ 168   1                      SCMD = 0xB9;
+ 169   1                      nop();
+ 170   1                      IFMT = 0;
+ 171   1                      ISPCR = 0;                                              //清ISP/IAP特殊寄存器，防止误操作
+ 172   1                      // 将更改后的数据写入IAP
+ 173   1                      for(i = 0;i < 512; i++)
+ 174   1                      {
+ 175   2                              IFD = TempBuf[i];                       //送所要写的数据        
+ 176   2                              IFADRH = SectorAddr.B.BHigh;    //送地址高字节
+ 177   2                              IFADRL= SectorAddr.B.BLow;      //送地址低字节;
+ 178   2                              IFMT = ISP_WRITE;
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 4   
+
+ 179   2                              ISPCR = 0x80;               //允许ISP/IAP操作
+ 180   2                              //CheckTrapFlag();
+ 181   2                              SCMD = 0x46;
+ 182   2                              //CheckTrapFlag();
+ 183   2                              SCMD = 0xB9;
+ 184   2                              nop();
+ 185   2                              IFMT = 0;
+ 186   2                              ISPCR = 0;                                      //清ISP/IAP特殊寄存器，防止误操作
+ 187   2                              SectorAddr.W++;
+ 188   2                  ClearWDT();
+ 189   2                      }
+ 190   1                      // 校验数据是否正确
+ 191   1                      SectorAddr.W=ByteAddr&0xFE00;
+ 192   1                      for(i = 0;i < 512; i++)
+ 193   1                      {
+ 194   2                              IFADRH = SectorAddr.B.BHigh;//送地址高字节
+ 195   2                              IFADRL= SectorAddr.B.BLow;      //送地址低字节;
+ 196   2                              IFMT = ISP_READ;
+ 197   2                              ISPCR = 0x80;                           //允许ISP/IAP操作
+ 198   2                              //CheckTrapFlag();
+ 199   2                              SCMD = 0x46;
+ 200   2                              //CheckTrapFlag();
+ 201   2                              SCMD = 0xB9;
+ 202   2                              IFMT = 0;
+ 203   2                              ISPCR = 0;                                      //清ISP/IAP特殊寄存器，防止误操作
+ 204   2                              SectorAddr.W++;
+ 205   2                  ClearWDT();
+ 206   2                              if(TempBuf[i] != IFD)
+ 207   2                              {
+ 208   3                                      ErrCnt++;
+ 209   3                                      if(ErrCnt<ERR_CNT_MAX)
+ 210   3                                      {
+ 211   4                                              goto Err_Loop;
+ 212   4                                      }
+ 213   3                                      else
+ 214   3                                      {
+ 215   4                                              goto Err_Return;
+ 216   4                                      }
+ 217   3                              }
+ 218   2                      }
+ 219   1                      ErrCnt = 0;
+ 220   1              Err_Return:
+ 221   1                      EA = bEA;                                       //恢复中断
+ 222   1                      return ErrCnt;          
+ 223   1      }
+ 224          
+ 225          //
+ 226          void IAP_Write_Byte(u16 Addr, u8 wdata)
+ 227          {
+ 228   1          bit bEA = EA;
+ 229   1          EA = 0;
+ 230   1          IFD = wdata;                            //送所要写的数据    
+ 231   1          IFADRH = (Addr >> 8) & 0xff;        //送地址高字节
+ 232   1          IFADRL = Addr & 0xff;           //送地址低字节;
+ 233   1          IFMT = ISP_WRITE;
+ 234   1          ISPCR = 0x80;               //允许ISP/IAP操作
+ 235   1          SCMD = 0x46;
+ 236   1          SCMD = 0xB9;
+ 237   1          nop();
+ 238   1          IFMT = 0;
+ 239   1          ISPCR = 0;  
+ 240   1          EA = bEA;    
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 5   
+
+ 241   1      }
+ 242          
+ 243          
+ 244          void IAP_Erase_All_ID(void)
+ 245          {
+ 246   1          xdata u8 read_rf = 0;
+ 247   1          xdata u8 scx1801_id[3] = {0};
+ 248   1      
+ 249   1          read_rf = IAP_ReadByteByMOVC(addr_eeprom_sys + Addr_rf_offset);
+ 250   1          scx1801_id[0] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FB);
+ 251   1          scx1801_id[1] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FC);
+ 252   1          scx1801_id[2] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FD);
+ 253   1          
+ 254   1              IAP_ErasePage(IAP_ADDRESS/256);   //擦除片区一
+ 255   1          ClearWDT();
+ 256   1      
+ 257   1          IAP_ErasePage((IAP_ADDRESS + 512)/256);   //擦除片区二
+ 258   1          ClearWDT();
+ 259   1           
+ 260   1          IAP_Write_Byte(addr_eeprom_sys + Addr_rf_offset,read_rf);
+ 261   1          IAP_Write_Byte(addr_eeprom_sys + 0x3FB,scx1801_id[0]);
+ 262   1          IAP_Write_Byte(addr_eeprom_sys + 0x3FC,scx1801_id[1]);
+ 263   1          IAP_Write_Byte(addr_eeprom_sys + 0x3FD,scx1801_id[2]);
+ 264   1      }
+ 265          
+ 266          
+ 267          void eeprom_sys_load(void)
+ 268          {
+ 269   1          idata u8 offset = 0;
+ 270   1          idata u16 i, q, p;
+ 271   1          idata u8 xm[3] = {0};
+ 272   1          idata uni_rom_id xn;
+ 273   1      
+ 274   1              xm[0] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FB);
+ 275   1              xm[1] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FC);
+ 276   1              xm[2] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FD);
+ 277   1              xn.IDB[0] = 0;
+ 278   1              xn.IDB[1] = xm[0];
+ 279   1              xn.IDB[2] = xm[1];
+ 280   1              xn.IDB[3] = xm[2];
+ 281   1              if ((xn.IDC == 0) || (xn.IDC == 0xFFFFFF))ID_SCX1801_DATA=0;
+ 282   1              else ID_SCX1801_DATA= xn.IDC;
+ 283   1      
+ 284   1          xm[0] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FE);
+ 285   1          xm[1] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FF);
+ 286   1          ID_DATA_PCS = xm[0] * 256 + xm[1];
+ 287   1          if (ID_DATA_PCS == 0xFFFF)
+ 288   1              ID_DATA_PCS = 0;
+ 289   1          else if (ID_DATA_PCS > ID_Max_PCS)
+ 290   1              ID_DATA_PCS = ID_Max_PCS;
+ 291   1          q = ID_DATA_PCS;
+ 292   1          p = 0;
+ 293   1          for (i = 0; i < q; i++)
+ 294   1          {
+ 295   2              xm[0] = IAP_ReadByteByMOVC(addr_eeprom_sys + i*3);
+ 296   2              xm[1] = IAP_ReadByteByMOVC(addr_eeprom_sys + i*3+1);
+ 297   2              xm[2] = IAP_ReadByteByMOVC(addr_eeprom_sys + i*3+2);
+ 298   2              xn.IDB[0] = 0;
+ 299   2              xn.IDB[1] = xm[0];
+ 300   2              xn.IDB[2] = xm[1];
+ 301   2              xn.IDB[3] = xm[2];
+ 302   2              if ((xn.IDC == 0) || (xn.IDC == 0xFFFFFF))
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 6   
+
+ 303   2                  q++;
+ 304   2              else
+ 305   2      #if RAM_LARGE == 1
+ 306   2                  ID_Receiver_DATA[p*3] = xn.IDB[1];
+ 307   2                  ID_Receiver_DATA[p*3+1] = xn.IDB[2];
+ 308   2                  ID_Receiver_DATA[p*3+2] = xn.IDB[3];
+ 309   2                  p++;
+ 310   2      #else
+                          ID_Receiver_DATA[p++] = xn.IDC;
+              #endif
+ 313   2              if (q > 260)
+ 314   2                  break;
+ 315   2              ClearWDT(); // Service the WDT
+ 316   2          }
+ 317   1      
+ 318   1          offset = IAP_ReadByteByMOVC(addr_eeprom_sys + Addr_rf_offset);
+ 319   1          if(0 < offset && offset <= 10)
+ 320   1          {
+ 321   2              rf_offset = offset;
+ 322   2              PROFILE_CH_FREQ_32bit_200002EC = 426075000 + 150 * offset;
+ 323   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_426_075);
+ 324   2      
+ 325   2              PROFILE_CH_FREQ_32bit_200002EC = 426750000 + 150 * offset;
+ 326   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_426_750);
+ 327   2      
+ 328   2              PROFILE_CH_FREQ_32bit_200002EC = 429175000 + 150 * offset;
+ 329   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_429_175);
+ 330   2      
+ 331   2              PROFILE_CH_FREQ_32bit_200002EC = 429350000 + 150 * offset;
+ 332   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_429_350);
+ 333   2      
+ 334   2              PROFILE_CH_FREQ_32bit_200002EC = 429550000 + 150 * offset;
+ 335   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_429_550);
+ 336   2          }
+ 337   1          else if(10 < offset && offset <= 20)
+ 338   1          {
+ 339   2              rf_offset = offset;
+ 340   2              offset = offset - 10;
+ 341   2              PROFILE_CH_FREQ_32bit_200002EC = 426075000 - 150 * offset;
+ 342   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_426_075);
+ 343   2      
+ 344   2              PROFILE_CH_FREQ_32bit_200002EC = 426750000 - 150 * offset;
+ 345   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_426_750);
+ 346   2      
+ 347   2              PROFILE_CH_FREQ_32bit_200002EC = 429175000 - 150 * offset;
+ 348   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_429_175);
+ 349   2      
+ 350   2              PROFILE_CH_FREQ_32bit_200002EC = 429350000 - 150 * offset;
+ 351   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_429_350);
+ 352   2      
+ 353   2              PROFILE_CH_FREQ_32bit_200002EC = 429550000 - 150 * offset;
+ 354   2              ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC,Fre_429_550);
+ 355   2          }
+ 356   1          else {}
+ 357   1      }
+ 358          
+ 359          void ID_EEPROM_write(void)
+ 360          {
+ 361   1          idata u8 xm[3] = {0};
+ 362   1          idata u16 i, j, m1;
+ 363   1          idata uni_rom_id xn, xd;
+ 364   1          ID_DATA_PCS++;
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 7   
+
+ 365   1          xm[0] = ID_DATA_PCS / 256;
+ 366   1          xm[1] = ID_DATA_PCS % 256;
+ 367   1      
+ 368   1          IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + 0x3FE, &xm[0],2);
+ 369   1      
+ 370   1      #if RAM_LARGE == 1
+ 371   1          ID_Receiver_DATA[(ID_DATA_PCS - 1)*3] = (u8)((ID_Receiver_Login>>16) & 0xff);
+ 372   1          ID_Receiver_DATA[(ID_DATA_PCS - 1)*3 + 1] = (u8)((ID_Receiver_Login>>8) & 0xff);
+ 373   1          ID_Receiver_DATA[(ID_DATA_PCS - 1)*3 + 2] = (u8)((ID_Receiver_Login) & 0xff);
+ 374   1      #else
+                  ID_Receiver_DATA[ID_DATA_PCS - 1] = ID_Receiver_Login;
+              #endif
+ 377   1          xn.IDC = ID_Receiver_Login;
+ 378   1      
+ 379   1          for (i = 0; i < 256; i++)
+ 380   1          {
+ 381   2              j = 3 * i;
+ 382   2              xm[0] = IAP_ReadByteByMOVC(addr_eeprom_sys + j);
+ 383   2              j++;
+ 384   2              xm[1] = IAP_ReadByteByMOVC(addr_eeprom_sys + j);
+ 385   2              j++;
+ 386   2              xm[2] = IAP_ReadByteByMOVC(addr_eeprom_sys + j);
+ 387   2              xd.IDB[0] = 0;
+ 388   2              xd.IDB[1] = xm[0];
+ 389   2              xd.IDB[2] = xm[1];
+ 390   2              xd.IDB[3] = xm[2];
+ 391   2              if ((xd.IDC == 0) || (xd.IDC == 0xFFFFFF))
+ 392   2                  break;
+ 393   2              ClearWDT(); // Service the WDT
+ 394   2          }
+ 395   1      
+ 396   1          xm[0] = xn.IDB[1];
+ 397   1          xm[1] = xn.IDB[2];
+ 398   1          xm[2] = xn.IDB[3];
+ 399   1          m1 = j - 2;
+ 400   1          
+ 401   1          IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + m1, &xm[0],3);
+ 402   1      
+ 403   1          if (ID_DATA_PCS >= ID_Max_PCS)
+ 404   1          {
+ 405   2              ID_Login_EXIT_Initial();
+ 406   2              DATA_Packet_Control = 0;
+ 407   2              time_Login_exit_256 = 110;
+ 408   2          }
+ 409   1      }
+ 410          
+ 411          void ID_Login_EXIT_Initial(void)
+ 412          {
+ 413   1          // #if defined(__Product_PIC32MX2_Receiver__)
+ 414   1              if(FLAG_ID_Erase_Login == 1)
+ 415   1                      {
+ 416   2                      BEEP_Module(300,900);
+ 417   2                      BEEP_Module(300,900);
+ 418   2                      BEEP_Module(1800,1);
+ 419   2                      }
+ 420   1              else if(FLAG_ID_Login==1)
+ 421   1                      {
+ 422   2                      BEEP_Module(300,900);
+ 423   2                      BEEP_Module(1800,1);
+ 424   2                      }
+ 425   1              //BEEP_CSR2_BEEPEN = 0;
+ 426   1          Beep_Off();
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 8   
+
+ 427   1          FLAG_ID_Login_EXIT = 1;
+ 428   1          FLAG_ID_Login_OK = 0;
+ 429   1          FLAG_ID_Login_OK_bank = 0;
+ 430   1          FLAG_ID_Login = 0;
+ 431   1          FLAG_ID_Erase_Login = 0;
+ 432   1              FLAG_ID_SCX1801_Login=0;
+ 433   1          Receiver_LED_OUT = 0;
+ 434   1          COUNT_Receiver_Login = 0;
+ 435   1          //#endif
+ 436   1          //#if defined(__Product_PIC32MX2_WIFI__)
+ 437   1          //     FLAG_ID_Login_EXIT=1;
+ 438   1          //     FLAG_ID_Login_OK=0;
+ 439   1          //     FLAG_ID_Login_OK_bank=0;
+ 440   1          //     FLAG_ID_Login=0;
+ 441   1          //     FLAG_ID_Erase_Login=0;
+ 442   1          //     WIFI_LED_RX=0;
+ 443   1          //#endif
+ 444   1      }
+ 445          
+ 446          void ID_SCX1801_EEPROM_write(u32 id)
+ 447          {
+ 448   1          idata u8 xm[3] = {0};
+ 449   1          idata uni_rom_id xn;
+ 450   1      
+ 451   1          xn.IDC = id;//ID_Receiver_Login;
+ 452   1              ID_SCX1801_DATA= id;//ID_Receiver_Login;
+ 453   1              xm[0] = xn.IDB[1];
+ 454   1          xm[1] = xn.IDB[2];
+ 455   1          xm[2] = xn.IDB[3];
+ 456   1          IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + 0x3FB, &xm[0],3);
+ 457   1      }
+ 458          
+ 459          void Delete_GeneralID_EEPROM(u32 id)
+ 460          {
+ 461   1          idata u16 i, j, m2, original_pcs = 0;
+ 462   1          idata u8 xm[3] = {0};
+ 463   1          idata uni_rom_id xn;
+ 464   1      
+ 465   1          original_pcs = ID_DATA_PCS;
+ 466   1          for (i = 0; i < ID_DATA_PCS; i++)
+ 467   1          {
+ 468   2      #if RAM_LARGE == 1
+ 469   2                      if ((Return_ID_DATA(i) == id)&&(id!=0xFFFFFE)&&(id!=0))
+ 470   2                      {
+ 471   3                  for (j = i; j < ID_DATA_PCS; j++)
+ 472   3                  {
+ 473   4                      ID_Receiver_DATA[j*3] = ID_Receiver_DATA[j*3+3];
+ 474   4                      ID_Receiver_DATA[j*3+1] = ID_Receiver_DATA[j*3+4];
+ 475   4                      ID_Receiver_DATA[j*3+2] = ID_Receiver_DATA[j*3+5];
+ 476   4                      ClearWDT(); // Service the WDT
+ 477   4                  }
+ 478   3                  ID_DATA_PCS--;
+ 479   3                  if (ID_DATA_PCS==0)
+ 480   3                  {
+ 481   4                      ALL_ID_EEPROM_Erase();
+ 482   4                      return;
+ 483   4                  }
+ 484   3              }
+ 485   2      #else
+                      if ((ID_Receiver_DATA[i] == id)&&(id!=0xFFFFFE)&&(id!=0))
+                              {
+                          for (j = i; j < ID_DATA_PCS; j++)
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 9   
+
+                          {
+                              ID_Receiver_DATA[j] = ID_Receiver_DATA[j+1];
+                              ClearWDT(); // Service the WDT
+                          }
+                          ID_DATA_PCS--;
+                          if (ID_DATA_PCS==0)
+                          {
+                              ALL_ID_EEPROM_Erase();
+                              return;
+                          }
+                      }
+              #endif
+ 501   2              ClearWDT(); // Service the WDT
+ 502   2          }
+ 503   1      
+ 504   1          xm[0] = ID_DATA_PCS / 256;
+ 505   1          xm[1] = ID_DATA_PCS % 256;
+ 506   1          IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + 0x3FE, &xm[0],2);
+ 507   1      
+ 508   1          for (i = 0; i < original_pcs; i++)
+ 509   1          {
+ 510   2      #if RAM_LARGE == 1
+ 511   2              xn.IDC = Return_ID_DATA(i);
+ 512   2      #else
+                      xn.IDC = ID_Receiver_DATA[i];
+              #endif
+ 515   2              xm[0] = xn.IDB[1];
+ 516   2              xm[1] = xn.IDB[2];
+ 517   2              xm[2] = xn.IDB[3];
+ 518   2              m2 = 3 * i;
+ 519   2              IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + m2, &xm[0],3);
+ 520   2              ClearWDT(); // Service the WDT
+ 521   2          }
+ 522   1      }
+ 523          
+ 524          void ALL_ID_EEPROM_Erase(void)
+ 525          {
+ 526   1          idata u16 i;
+ 527   1          
+ 528   1          ID_DATA_PCS = 0;
+ 529   1      
+ 530   1      #if RAM_LARGE == 1
+ 531   1          for (i = 0; i < 768; i++)
+ 532   1      #else
+                  for (i = 0; i < 100; i++)
+              #endif
+ 535   1          {
+ 536   2              ID_Receiver_DATA[i] = 0;
+ 537   2              ClearWDT(); // Service the WDT
+ 538   2          }
+ 539   1          IAP_Erase_All_ID();
+ 540   1      }
+ 541          
+ 542          void ID_learn(void) 
+ 543          {
+ 544   1          //    UINT16 i;
+ 545   1          // #if defined(__Product_PIC32MX2_Receiver__)
+ 546   1          if (FG_10ms)
+ 547   1          { //90==1秿
+ 548   2              FG_10ms = 0;
+ 549   2                      if(TIME_TestNo91)
+ 550   2                              --TIME_TestNo91;
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 10  
+
+ 551   2                      else FLAG_testNo91=0;
+ 552   2                      if(TIME_ERROR_Read_once_again)
+ 553   2                              --TIME_ERROR_Read_once_again;
+ 554   2                      if(Time_error_read_timeout)
+ 555   2                              --Time_error_read_timeout;
+ 556   2                      if(Time_error_read_gap)
+ 557   2                              --Time_error_read_gap;
+ 558   2                      if(TIME_APP_TX_fromOUT)
+ 559   2                              --TIME_APP_TX_fromOUT;
+ 560   2              if (TIME_auto_out)
+ 561   2                  --TIME_auto_out;
+ 562   2              if (TIME_auto_close)
+ 563   2                  --TIME_auto_close;
+ 564   2              if (TIME_OUT_OPEN_CLOSE)
+ 565   2                  --TIME_OUT_OPEN_CLOSE;
+ 566   2              if (TIME_Receiver_LED_OUT)
+ 567   2                  --TIME_Receiver_LED_OUT;
+ 568   2              if (TIME_Login_EXIT_Button)
+ 569   2                  --TIME_Login_EXIT_Button;
+ 570   2              if (Manual_override_TIMER)
+ 571   2                  --Manual_override_TIMER;
+ 572   2              if (time_Login_exit_256)
+ 573   2                  --time_Login_exit_256;
+ 574   2              if (TIME_Receiver_Login_restrict)
+ 575   2                  --TIME_Receiver_Login_restrict;
+ 576   2              else if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login == 1))
+ 577   2                  ;
+ 578   2              else
+ 579   2              {
+ 580   3                  TIME_Receiver_Login = 0;
+ 581   3                  COUNT_Receiver_Login = 0;
+ 582   3              }
+ 583   2      
+ 584   2              if (Receiver_Login == 0)
+ 585   2              {
+ 586   3                  if(FLAG_ID_SCX1801_Login!=1)TIME_Receiver_Login++;
+ 587   3                  TIME_Receiver_Login_restrict = 350;
+ 588   3                  if ((COUNT_Receiver_Login >= 2) && (FLAG_ID_Erase_Login == 0) && (FLAG_ID_Login == 0) && (ID_D
+             -ATA_PCS < ID_Max_PCS))
+ 589   3                  {
+ 590   4                      FLAG_ID_Login = 1;
+ 591   4                                      BEEP_Module(1800,900);
+ 592   4                                      BEEP_Module(300,1);
+ 593   4                                      COUNT_Receiver_Login++; //??????????????BEEP_Module?ìbeep????ì?????д????TIME_Receiver_Login
+ 594   4                      TIME_Login_EXIT_rest = 5380;
+ 595   4                      TIME_Login_EXIT_Button = 500;
+ 596   4                  } //6000
+ 597   3                  else if (((FLAG_ID_Erase_Login == 1) && (COUNT_Receiver_Login >= 1)) ||
+ 598   3                                      (FLAG_ID_SCX1801_Login == 1)||
+ 599   3                      ((FLAG_ID_Login == 1) && (COUNT_Receiver_Login >= 3)))
+ 600   3                  {
+ 601   4                      if (TIME_Login_EXIT_Button == 0)
+ 602   4                          ID_Login_EXIT_Initial();
+ 603   4                  }
+ 604   3              }
+ 605   2              if (Receiver_Login == 1)
+ 606   2              {
+ 607   3                          if (TIME_Receiver_Login > 3)
+ 608   3                          {
+ 609   4                              if (COUNT_Receiver_Login < 10)
+ 610   4                                  COUNT_Receiver_Login++;
+ 611   4                          }
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 11  
+
+ 612   3                          if (FLAG_ID_Login_EXIT == 1)
+ 613   3                          {
+ 614   4                              FLAG_ID_Login_EXIT = 0;
+ 615   4                              COUNT_Receiver_Login = 0;
+ 616   4                          }
+ 617   3                          TIME_Receiver_Login = 0;
+ 618   3              }
+ 619   2              if(TIME_Receiver_Login >= 450)  //590
+ 620   2              {
+ 621   3                  FLAG_ID_SCX1801_Login=1;
+ 622   3                  FLAG_ID_Erase_Login = 0;
+ 623   3                  TIME_Receiver_Login = 0;
+ 624   3                  //BEEP_CSR2_BEEPEN = 0;
+ 625   3                  Beep_Off();
+ 626   3                  FG_ID_SCX1801_Login_BEEP=0;
+ 627   3                  TIME_ID_SCX1801_Login=130;
+ 628   3                  TIME_Login_EXIT_rest = 5380;
+ 629   3                  COUNT_Receiver_Login=0;
+ 630   3                  TIME_Login_EXIT_Button = 500;
+ 631   3              }
+ 632   2                  else if ((TIME_Receiver_Login >= 250)&&(FLAG_ID_Erase_Login==0)&&(FLAG_ID_SCX1801_Login==0))
+ 633   2                    {
+ 634   3                          //TIME_Receiver_Login = 0;
+ 635   3                          FLAG_ID_Erase_Login = 1;
+ 636   3                          FLAG_ID_Erase_Login_PCS = 1; //追加多濿ID登录
+ 637   3                          BEEP_Module(1800,900);
+ 638   3                                      BEEP_Module(300,900);
+ 639   3                                      BEEP_Module(300,1);
+ 640   3                                      COUNT_Receiver_Login++; //??????????????BEEP_Module?ìbeep????ì?????д????TIME_Receiver_Login
+ 641   3                          TIME_Login_EXIT_rest = 5380;
+ 642   3                          TIME_Login_EXIT_Button = 500;
+ 643   3                     }
+ 644   2                      if((FLAG_ID_SCX1801_Login==1)&&(TIME_ID_SCX1801_Login==0))
+ 645   2                      {
+ 646   3                              if(FG_ID_SCX1801_Login_BEEP==0)
+ 647   3                              {
+ 648   4                                  FG_ID_SCX1801_Login_BEEP=1;
+ 649   4                                      TIME_ID_SCX1801_Login=390;
+ 650   4                                      //BEEP_CSR2_BEEPEN = 0;
+ 651   4                      Beep_Off();
+ 652   4                              }
+ 653   3                              else if(FG_ID_SCX1801_Login_BEEP==1)
+ 654   3                              {
+ 655   4                                  FG_ID_SCX1801_Login_BEEP=0;
+ 656   4                                      TIME_ID_SCX1801_Login=130;
+ 657   4                                      //BEEP_CSR2_BEEPEN = 1;
+ 658   4                      Beep_On();
+ 659   4                              }
+ 660   3                      }
+ 661   2              if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login==1))
+ 662   2              {
+ 663   3                  TIME_Receiver_Login_led++;
+ 664   3                  if (TIME_Receiver_Login_led >= 46)
+ 665   3                  {
+ 666   4                      TIME_Receiver_Login_led = 0;
+ 667   4                      if (TIME_Receiver_LED_OUT > 0)
+ 668   4                          Receiver_LED_OUT = 1;
+ 669   4                      else
+ 670   4                          Receiver_LED_OUT = !Receiver_LED_OUT;
+ 671   4                  }
+ 672   3                  if ((FLAG_ID_Login_OK == 1) && (FLAG_ID_Login_OK_bank == 0))
+ 673   3                  {
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 12  
+
+ 674   4                      if ((ID_Receiver_Login == 0xFFFFFE)&&(FLAG_ID_Erase_Login==1))FLAG_ID_Login_OK_bank=1;    
+             -         //追加多濿ID登录
+ 675   4                      FLAG_ID_Login_OK = 0; //追加多濿ID登录
+ 676   4                      if(FLAG_ID_SCX1801_Login==1)
+ 677   4                      {
+ 678   5                          FLAG_ID_SCX1801_Login=0;
+ 679   5                                              FG_ID_SCX1801_Login_BEEP=0;
+ 680   5                                              FLAG_ID_Login=0;
+ 681   5                                              FLAG_ID_Erase_Login=0;
+ 682   5                              BEEP_and_LED();
+ 683   5                                              ID_SCX1801_EEPROM_write(ID_Receiver_Login);
+ 684   5                                              if(FLAG_IDCheck_OK==1)
+ 685   5                          {
+ 686   6                              FLAG_IDCheck_OK = 0;
+ 687   6                              Delete_GeneralID_EEPROM(ID_SCX1801_DATA);
+ 688   6                          }
+ 689   5                                              ID_Login_EXIT_Initial();
+ 690   5                      }
+ 691   4                                      else
+ 692   4                                      {
+ 693   5                                      if (FLAG_IDCheck_OK == 1)
+ 694   5                                          FLAG_IDCheck_OK = 0;
+ 695   5                                      else
+ 696   5                                      {
+ 697   6                                          BEEP_and_LED();
+ 698   6                                          TIME_Login_EXIT_rest = 5380; //追加多濿ID登录
+ 699   6                                          if ((FLAG_ID_Login == 1) && (ID_Receiver_Login != 0xFFFFFE))
+ 700   6                                  {
+ 701   7                                      if (ID_SCX1801_DATA == 0)
+ 702   7                                          ID_SCX1801_EEPROM_write(ID_Receiver_Login);
+ 703   7                                      else ID_EEPROM_write();
+ 704   7                                  }
+ 705   6                                          else if (FLAG_ID_Erase_Login == 1)
+ 706   6                                          {
+ 707   7                                              if (FLAG_ID_Erase_Login_PCS == 1)
+ 708   7                                              {
+ 709   8                                                  FLAG_ID_Erase_Login_PCS = 0;
+ 710   8                                                  ID_DATA_PCS = 0;
+ 711   8                                                  ALL_ID_EEPROM_Erase();
+ 712   8                                          ID_SCX1801_DATA = 0;
+ 713   8                                          ID_SCX1801_EEPROM_write(0x00);
+ 714   8                                          if (ID_Receiver_Login != 0xFFFFFE)
+ 715   8                                              ID_SCX1801_EEPROM_write(ID_Receiver_Login);
+ 716   8                                              } //追加多濿ID登录
+ 717   7                                              else if (ID_Receiver_Login != 0xFFFFFE)
+ 718   7                                                  ID_EEPROM_write();
+ 719   7                                          }
+ 720   6                                      } //end else
+ 721   5                                      }
+ 722   4                  }
+ 723   3                  if (TIME_Login_EXIT_rest)
+ 724   3                      --TIME_Login_EXIT_rest;
+ 725   3                  else
+ 726   3                      ID_Login_EXIT_Initial();
+ 727   3              }
+ 728   2          }
+ 729   1          //#endif
+ 730   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   5820    ----
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 16:47:16 PAGE 13  
+
+   CONSTANT SIZE    =     15    ----
+   XDATA SIZE       =    521    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     21    ----
+   IDATA SIZE       =     55    ----
+   BIT SIZE         =      4    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
