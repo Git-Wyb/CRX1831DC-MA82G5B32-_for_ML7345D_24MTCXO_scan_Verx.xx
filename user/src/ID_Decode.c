@@ -295,7 +295,7 @@ void BEEP_Module(u16 time_beepON, u16 time_beepOFF)
 		{
 			FG_beep_on = 1;
 			FG_beep_off = 0;
-			Beep_On();
+			Beep_On();  //BEEP_CSR2_BEEPEN = 1;
 		}
 		DelayXus(80); //80us
 		DelayXus(80); //80us
@@ -308,7 +308,7 @@ void BEEP_Module(u16 time_beepON, u16 time_beepOFF)
 		{
 			FG_beep_off = 1;
 			FG_beep_on = 0;
-			Beep_Off();
+			Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
 		}
 		DelayXus(80); //80us
 		DelayXus(80); //80us
@@ -323,8 +323,7 @@ void BEEP_and_LED(void)
     Receiver_LED_OUT = 1;
     BEEP_Module(2300,0);
     FG_beep_on = 0;
-//    BEEP_CSR2_BEEPEN = 0;
-    Beep_Off();
+    Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
     TIME_Receiver_LED_OUT = 185;
 }
 
@@ -344,12 +343,12 @@ void TEST_beep(void)
 	if(FLAG_testBEEP==1)
 		BEEP_Module(300,1);
 	else if(FLAG_testBEEP==2)
-		{
-		BEEP_Module(300,900);
-		BEEP_Module(300,1);
-		}
-	else if(FLAG_testBEEP==3) //BEEP_CSR2_BEEPEN = 1;
-	FLAG_testBEEP=0;
+    {
+        BEEP_Module(300,900);
+        BEEP_Module(300,1);
+    }
+	else if(FLAG_testBEEP==3) Beep_On();    //BEEP_CSR2_BEEPEN = 1;      
+    FLAG_testBEEP=0;
 }
 
 void ID_Decode_OUT(void)
@@ -414,7 +413,7 @@ void ID_Decode_OUT(void)
                 Receiver_BEEP();
             }
             break;
-        case 0x40: //鑷姩閫佷俊
+        case 0x40: //自动受信
             if ((FG_auto_out == 0) && (Manual_override_TIMER == 0)&&(Radio_Date_Type_bak==1))
             {
                 Receiver_LED_OUT = 1;
@@ -442,14 +441,14 @@ void ID_Decode_OUT(void)
         case 0x01: //VENT
             Receiver_LED_OUT = 1;
             if (Receiver_vent == 0)
-            { //鍙椾俊鏈烘崲姘旇仈鍔∣FF
+            { //受信机联动OFF
                 Receiver_OUT_STOP = FG_NOT_allow_out;
                 //Receiver_OUT_VENT = FG_NOT_allow_out;
                 Receiver_OUT_OPEN = FG_allow_out;
                 Receiver_OUT_CLOSE = FG_allow_out;
             }
             else
-            { //鍙椾俊鏈烘崲姘旇仈鍔∣N
+            { //受信机联动ON
                 Receiver_OUT_STOP = FG_NOT_allow_out;
                 Receiver_OUT_OPEN = FG_NOT_allow_out;
                 Receiver_OUT_CLOSE = FG_NOT_allow_out;
@@ -530,7 +529,7 @@ void ID_Decode_OUT(void)
             break;
         }
         if(Radio_Date_Type_bak==2)
-		{             //429M   鍗婂紑淇″彿/鍗婇棴
+		{             //429M   半开信号/半闭
                     if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00))
 						{
                                 if((DATA_Packet_Control&0xDF)<0xC0){
@@ -659,7 +658,6 @@ u32 Return_ID_DATA(u8 i)
     xn.IDB[1] = ID_Receiver_DATA[i*3];
     xn.IDB[2] = ID_Receiver_DATA[i*3+1];
     xn.IDB[3] = ID_Receiver_DATA[i*3+2];
-    //ID_dat = (((ID_Receiver_DATA[i*3]<<16) | (ID_Receiver_DATA[i*3+1]<<8) | (ID_Receiver_DATA[i*3+2])) & 0x00FFFFFF);
     ID_dat = xn.IDC;
     return ID_dat;
 }

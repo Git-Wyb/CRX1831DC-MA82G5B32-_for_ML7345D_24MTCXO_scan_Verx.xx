@@ -12,7 +12,7 @@
 #define LED_G_0		P25
 #define LED_R		P26
 #define LED_G_1		P27
-#define NEW_PCB     0
+#define NEW_PCB     1
 
 #if (NEW_PCB==0)
 #define Receiver_LED_TX     P26

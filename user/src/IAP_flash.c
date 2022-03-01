@@ -412,18 +412,17 @@ void ID_Login_EXIT_Initial(void)
 {
     // #if defined(__Product_PIC32MX2_Receiver__)
 	if(FLAG_ID_Erase_Login == 1)
-		{
-		BEEP_Module(300,900);
-		BEEP_Module(300,900);
-		BEEP_Module(1800,1);
-		}
+    {
+        BEEP_Module(300,900);
+        BEEP_Module(300,900);
+        BEEP_Module(1800,1);
+    }
 	else if(FLAG_ID_Login==1)
-		{
-		BEEP_Module(300,900);
-		BEEP_Module(1800,1);
-		}
-	//BEEP_CSR2_BEEPEN = 0;
-    Beep_Off();
+    {
+        BEEP_Module(300,900);
+        BEEP_Module(1800,1);
+    }
+	Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
     FLAG_ID_Login_EXIT = 1;
     FLAG_ID_Login_OK = 0;
     FLAG_ID_Login_OK_bank = 0;
@@ -621,8 +620,7 @@ void ID_learn(void)
             FLAG_ID_SCX1801_Login=1;
             FLAG_ID_Erase_Login = 0;
             TIME_Receiver_Login = 0;
-            //BEEP_CSR2_BEEPEN = 0;
-            Beep_Off();
+            Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
             FG_ID_SCX1801_Login_BEEP=0;
             TIME_ID_SCX1801_Login=130;
             TIME_Login_EXIT_rest = 5380;
@@ -647,15 +645,13 @@ void ID_learn(void)
 			{
 			    FG_ID_SCX1801_Login_BEEP=1;
 				TIME_ID_SCX1801_Login=390;
-				//BEEP_CSR2_BEEPEN = 0;
-                Beep_Off();
+				Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
 			}
 			else if(FG_ID_SCX1801_Login_BEEP==1)
 			{
 			    FG_ID_SCX1801_Login_BEEP=0;
 				TIME_ID_SCX1801_Login=130;
-				//BEEP_CSR2_BEEPEN = 1;
-                Beep_On();
+				Beep_On();  //BEEP_CSR2_BEEPEN = 1;
 			}
 		}
         if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login==1))

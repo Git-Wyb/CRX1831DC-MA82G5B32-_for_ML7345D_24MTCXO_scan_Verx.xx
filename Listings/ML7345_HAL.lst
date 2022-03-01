@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 1   
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE ML7345_HAL
@@ -62,7 +62,7 @@ line level    source
   52   4                  }
   53   3                  status = ML7345_Read_Reg(ADDR_RF_STATUS) >> 4;
   54   3              }
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 2   
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 2   
 
   55   2          }
   56   1          return status;
@@ -126,7 +126,7 @@ line level    source
  114          */
  115          void ML7345_DataRate_Set_4_8k(void)//(DataRate_ENUM rate)
  116          {
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 3   
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 3   
 
  117   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
  118   1          ML7345_Write_Reg(0x06,0x22);
@@ -190,7 +190,7 @@ line level    source
  176          /*
  177          void ML7345_DataRate_Set_2_4k(void)//(DataRate_ENUM rate)
  178          {
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 4   
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 4   
 
  179              ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
  180              ML7345_Write_Reg(0x06,0x11);
@@ -254,7 +254,7 @@ line level    source
  238              ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
  239          }
  240          */
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 5   
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 5   
 
  241          
  242          /*
@@ -318,7 +318,7 @@ line level    source
  300                      //RF_WORKE_MODE = 1;
  301                      break;
  302          
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 6   
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 6   
 
  303                  case Sleep1_Mode:
  304                      ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL); // Bank0 Set
@@ -382,292 +382,301 @@ line level    source
  362   1      }
  363          
  364          
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 7   
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 7   
 
  365          /*
  366          Function: ML7345 TX RX INT CONFIG
  367          Parameter: GpioCtrlAddr:GPIO ADDR; Intnum:Tx Done Interrupt or Rx Done Interrupt; Inten:1 Enable,0 Disable
  368          Return: Null
  369          */
- 370          void ML7345_TRX_Int_Config(u8 GpioCtrlAddr,RF_TRX_ENUM Intnum,u8 Inten)
- 371          {
- 372   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);    /* BANK 0 SEL*/
- 373   1          if(Inten)
- 374   1          {
- 375   2              ML7345_Write_Reg(GpioCtrlAddr,GPIO_INTOUTPUT_ENABLE);    /* GPIO 中断输出(SINTN) */
- 376   2      
- 377   2              if(Intnum == RF_TxDone_Int)  ML7345_Write_Reg(ADDR_INT_EN_GRP3,0x01);    /* 使能中断事件16,�
+ 370          #if 0
+              void ML7345_TRX_Int_Config(u8 GpioCtrlAddr,RF_TRX_ENUM Intnum,u8 Inten)
+              {
+                  ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);    /* BANK 0 SEL*/
+                  if(Inten)
+                  {
+                      ML7345_Write_Reg(GpioCtrlAddr,GPIO_INTOUTPUT_ENABLE);    /* GPIO 中断输出(SINTN) */
+              
+                      if(Intnum == RF_TxDone_Int)  ML7345_Write_Reg(ADDR_INT_EN_GRP3,0x01);    /* 使能中断事件16,�
              -��送完成中断 */
- 378   2              else if(Intnum == RF_RxDone_Int) ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x21);/* 0x21:使能中断事�
+                      else if(Intnum == RF_RxDone_Int) ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x21);/* 0x21:使能中断事�
              -�8/13,接收完成中断/同步字检测中断;0x01:使能中断事件8,接收完成中断 */
- 379   2              //else if(Intnum == RF_RxDone_Int) ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x01); //0x01:使能中断事
+                      //else if(Intnum == RF_RxDone_Int) ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x01); //0x01:使能中断事
              -件8,接收完成中断
- 380   2          }
- 381   1          else
- 382   1          {
- 383   2              ML7345_Write_Reg(GpioCtrlAddr,GPIO_INTOUTPUT_DISABLE);    /* GPIO 禁止中断输出(SINTN) */
- 384   2      
- 385   2              if(Intnum == RF_TxDone_Int)  ML7345_Write_Reg(ADDR_INT_EN_GRP3,0x00);    /* 禁止中断事件16,�
+                  }
+                  else
+                  {
+                      ML7345_Write_Reg(GpioCtrlAddr,GPIO_INTOUTPUT_DISABLE);    /* GPIO 禁止中断输出(SINTN) */
+              
+                      if(Intnum == RF_TxDone_Int)  ML7345_Write_Reg(ADDR_INT_EN_GRP3,0x00);    /* 禁止中断事件16,�
              -��送完成中断 */
- 386   2              else if(Intnum == RF_RxDone_Int) ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x00);/* 禁止中断事件8,�
+                      else if(Intnum == RF_RxDone_Int) ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x00);/* 禁止中断事件8,�
              -�收完成中断 */
- 387   2          }
- 388   1      }
- 389          
- 390          void ML7345_GPIO0TxDoneInt_Enable(void)
- 391          {
- 392   1          ML7345_TRX_Int_Config(ADDR_GPIO0_CTRL,RF_TxDone_Int,1);
- 393   1      }
- 394          void ML7345_GPIO0RxDoneInt_Enable(void)
- 395          {
- 396   1          ML7345_TRX_Int_Config(ADDR_GPIO0_CTRL,RF_RxDone_Int,1);
- 397   1      }
- 398          /*
- 399          void ML7345_GPIO1TxDoneInt_Enable(void)
+                  }
+              }
+              #endif
+ 391          
+ 392          void ML7345_GPIO0TxDoneInt_Enable(void)
+ 393          {
+ 394   1          //ML7345_TRX_Int_Config(ADDR_GPIO0_CTRL,RF_TxDone_Int,1);
+ 395   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
+ 396   1          ML7345_Write_Reg(ADDR_GPIO0_CTRL,GPIO_INTOUTPUT_ENABLE);
+ 397   1          ML7345_Write_Reg(ADDR_INT_EN_GRP3,0x01);    /* 使能中断事件16,发送完成中断 */
+ 398   1      }
+ 399          void ML7345_GPIO0RxDoneInt_Enable(void)
  400          {
- 401              ML7345_TRX_Int_Config(ADDR_GPIO1_CTRL,RF_TxDone_Int,1);
- 402          }
- 403          void ML7345_GPIO1TxDoneInt_Disable(void)
- 404          {
- 405              ML7345_TRX_Int_Config(ADDR_GPIO1_CTRL,RF_TxDone_Int,0);
- 406          }
- 407          
- 408          void ML7345_GPIO1RxDoneInt_Enable(void)
- 409          {
- 410              ML7345_TRX_Int_Config(ADDR_GPIO1_CTRL,RF_RxDone_Int,1);
- 411          }
- 412          void ML7345_GPIO1RxDoneInt_Disable(void)
- 413          {
- 414              ML7345_TRX_Int_Config(ADDR_GPIO1_CTRL,RF_RxDone_Int,0);
- 415          }
- 416          
- 417          void ML7345_GPIO2TxDoneInt_Enable(void)
- 418          {
- 419              ML7345_TRX_Int_Config(ADDR_GPIO2_CTRL,RF_TxDone_Int,1);
- 420          }
- 421          void ML7345_GPIO2TxDoneInt_Disable(void)
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 8   
+ 401   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
+ 402   1          //ML7345_TRX_Int_Config(ADDR_GPIO0_CTRL,RF_RxDone_Int,1);
+ 403   1          ML7345_Write_Reg(ADDR_GPIO0_CTRL,GPIO_INTOUTPUT_ENABLE);
+ 404   1          ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x21);    /* 0x21:使能中断事件8/13,接收完成中断/同步�
+             -�检测中断 */
+ 405   1      }
+ 406          /*
+ 407          void ML7345_GPIO1TxDoneInt_Enable(void)
+ 408          {
+ 409              ML7345_TRX_Int_Config(ADDR_GPIO1_CTRL,RF_TxDone_Int,1);
+ 410          }
+ 411          void ML7345_GPIO1TxDoneInt_Disable(void)
+ 412          {
+ 413              ML7345_TRX_Int_Config(ADDR_GPIO1_CTRL,RF_TxDone_Int,0);
+ 414          }
+ 415          
+ 416          void ML7345_GPIO1RxDoneInt_Enable(void)
+ 417          {
+ 418              ML7345_TRX_Int_Config(ADDR_GPIO1_CTRL,RF_RxDone_Int,1);
+ 419          }
+ 420          void ML7345_GPIO1RxDoneInt_Disable(void)
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 8   
 
- 422          {
- 423              ML7345_TRX_Int_Config(ADDR_GPIO2_CTRL,RF_TxDone_Int,0);
- 424          }
- 425          
- 426          void ML7345_GPIO2RxDoneInt_Enable(void)
- 427          {
- 428              ML7345_TRX_Int_Config(ADDR_GPIO2_CTRL,RF_RxDone_Int,1);
- 429          }
- 430          void ML7345_GPIO2RxDoneInt_Disable(void)
- 431          {
- 432              ML7345_TRX_Int_Config(ADDR_GPIO2_CTRL,RF_RxDone_Int,0);
- 433          }
- 434          */
- 435          
- 436          /*
- 437          Function: Transmit Power Setting
- 438          Parameter: Frequency
- 439          Return: Null
- 440          *//*
- 441          void ML7345_TransmitPower_Set(TransmitPower_ENUM Power)
- 442          {
- 443              if(ML7345_SetAndGet_State(Get_Sta) != TRX_OFF)
- 444                  ML7345_SetAndGet_State(TRX_OFF);
- 445              ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL); // Bank0 Set 
- 446              switch(Power)
- 447              {
- 448                  case Power_0dBm:
- 449                      ML7345_Write_Reg(ADDR_PA_MODE,0x02);
- 450                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 451                      ML7345_Write_Reg(ADDR_PA_ADJ,0x00);
- 452                      break;
- 453                  case Power_1dBm:
- 454                      ML7345_Write_Reg(ADDR_PA_MODE,0x03);
- 455                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 456                      ML7345_Write_Reg(ADDR_PA_ADJ,0x01);
- 457                      break;
- 458                  case Power_1_5dBm:
- 459                      ML7345_Write_Reg(ADDR_PA_MODE,0x06);
- 460                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 461                      ML7345_Write_Reg(ADDR_PA_ADJ,0x01);
- 462                      break;
- 463                  case Power_2dBm:
- 464                      ML7345_Write_Reg(ADDR_PA_MODE,0x07);
- 465                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 466                      ML7345_Write_Reg(ADDR_PA_ADJ,0x01);
- 467                      break;
- 468                  case Power_3dBm:
- 469                      ML7345_Write_Reg(ADDR_PA_MODE,0x06);
- 470                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 471                      ML7345_Write_Reg(ADDR_PA_ADJ,0x03);
- 472                      break;
- 473                  case Power_4dBm:
- 474                      ML7345_Write_Reg(ADDR_PA_MODE,0x07);
- 475                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 476                      ML7345_Write_Reg(ADDR_PA_ADJ,0x04);
- 477                      break;
- 478                  case Power_5dBm:
- 479                      ML7345_Write_Reg(ADDR_PA_MODE,0x07);
- 480                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 481                      ML7345_Write_Reg(ADDR_PA_ADJ,0x06);
- 482                      break;
- 483                  case Power_6dBm:
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 9   
+ 421          {
+ 422              ML7345_TRX_Int_Config(ADDR_GPIO1_CTRL,RF_RxDone_Int,0);
+ 423          }
+ 424          
+ 425          void ML7345_GPIO2TxDoneInt_Enable(void)
+ 426          {
+ 427              ML7345_TRX_Int_Config(ADDR_GPIO2_CTRL,RF_TxDone_Int,1);
+ 428          }
+ 429          void ML7345_GPIO2TxDoneInt_Disable(void)
+ 430          {
+ 431              ML7345_TRX_Int_Config(ADDR_GPIO2_CTRL,RF_TxDone_Int,0);
+ 432          }
+ 433          
+ 434          void ML7345_GPIO2RxDoneInt_Enable(void)
+ 435          {
+ 436              ML7345_TRX_Int_Config(ADDR_GPIO2_CTRL,RF_RxDone_Int,1);
+ 437          }
+ 438          void ML7345_GPIO2RxDoneInt_Disable(void)
+ 439          {
+ 440              ML7345_TRX_Int_Config(ADDR_GPIO2_CTRL,RF_RxDone_Int,0);
+ 441          }
+ 442          */
+ 443          
+ 444          /*
+ 445          Function: Transmit Power Setting
+ 446          Parameter: Frequency
+ 447          Return: Null
+ 448          *//*
+ 449          void ML7345_TransmitPower_Set(TransmitPower_ENUM Power)
+ 450          {
+ 451              if(ML7345_SetAndGet_State(Get_Sta) != TRX_OFF)
+ 452                  ML7345_SetAndGet_State(TRX_OFF);
+ 453              ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL); // Bank0 Set 
+ 454              switch(Power)
+ 455              {
+ 456                  case Power_0dBm:
+ 457                      ML7345_Write_Reg(ADDR_PA_MODE,0x02);
+ 458                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 459                      ML7345_Write_Reg(ADDR_PA_ADJ,0x00);
+ 460                      break;
+ 461                  case Power_1dBm:
+ 462                      ML7345_Write_Reg(ADDR_PA_MODE,0x03);
+ 463                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 464                      ML7345_Write_Reg(ADDR_PA_ADJ,0x01);
+ 465                      break;
+ 466                  case Power_1_5dBm:
+ 467                      ML7345_Write_Reg(ADDR_PA_MODE,0x06);
+ 468                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 469                      ML7345_Write_Reg(ADDR_PA_ADJ,0x01);
+ 470                      break;
+ 471                  case Power_2dBm:
+ 472                      ML7345_Write_Reg(ADDR_PA_MODE,0x07);
+ 473                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 474                      ML7345_Write_Reg(ADDR_PA_ADJ,0x01);
+ 475                      break;
+ 476                  case Power_3dBm:
+ 477                      ML7345_Write_Reg(ADDR_PA_MODE,0x06);
+ 478                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 479                      ML7345_Write_Reg(ADDR_PA_ADJ,0x03);
+ 480                      break;
+ 481                  case Power_4dBm:
+ 482                      ML7345_Write_Reg(ADDR_PA_MODE,0x07);
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 9   
 
- 484                      ML7345_Write_Reg(ADDR_PA_MODE,0x06);
- 485                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 486                      ML7345_Write_Reg(ADDR_PA_ADJ,0x09);
- 487                      break;
- 488                  case Power_7dBm:
- 489                      ML7345_Write_Reg(ADDR_PA_MODE,0x07);
- 490                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 491                      ML7345_Write_Reg(ADDR_PA_ADJ,0x0B);
- 492                      break;
- 493                  case Power_8dBm:
- 494                      ML7345_Write_Reg(ADDR_PA_MODE,0x13);
- 495                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 496                      ML7345_Write_Reg(ADDR_PA_ADJ,0x00);
- 497                      break;
- 498                  case Power_9dBm:
- 499                      ML7345_Write_Reg(ADDR_PA_MODE,0x16);
- 500                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 501                      ML7345_Write_Reg(ADDR_PA_ADJ,0x00);
- 502                      break;
- 503                  case Power_10dBm:
- 504                      ML7345_Write_Reg(ADDR_PA_MODE,0x15);
- 505                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 506                      ML7345_Write_Reg(ADDR_PA_ADJ,0x01);
- 507                      break;
- 508                  case Power_11dBm:
- 509                      ML7345_Write_Reg(ADDR_PA_MODE,0x16);
- 510                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 511                      ML7345_Write_Reg(ADDR_PA_ADJ,0x02);
- 512                      break;
- 513                  case Power_12dBm:
- 514                      ML7345_Write_Reg(ADDR_PA_MODE,0x16);
- 515                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 516                      ML7345_Write_Reg(ADDR_PA_ADJ,0x03);
- 517                      break;
- 518                  case Power_13dBm:
- 519                      ML7345_Write_Reg(ADDR_PA_MODE,0x15);
- 520                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
- 521                      ML7345_Write_Reg(ADDR_PA_ADJ,0x05);
- 522                      break;
- 523                  default:
- 524                      break;
- 525              }
- 526          }*/
- 527          
- 528          /*
- 529          Function: Read receive packet
- 530          Parameter: pbuf: RX buffer; len: Read length,No more than 64 bytes
- 531          Return: Null
- 532          */
- 533          void ML7345_ReadRx_Pack(u8 *pbuf,u8 len)
- 534          {
- 535   1          if(len > 64)    len = 64;
- 536   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
- 537   1          ML7345_Read_Fifo(ADDR_RD_FIFO,pbuf,len);
- 538   1      }
- 539          
- 540          /*
- 541          Function: send data
- 542          Parameter: pbuf: data buffer; len: data length,No more than 64 bytes
- 543          Return: Null
- 544          */
- 545          void ML7345_AutoTx_Data(u8 *pbuf,u8 len)
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 10  
+ 483                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 484                      ML7345_Write_Reg(ADDR_PA_ADJ,0x04);
+ 485                      break;
+ 486                  case Power_5dBm:
+ 487                      ML7345_Write_Reg(ADDR_PA_MODE,0x07);
+ 488                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 489                      ML7345_Write_Reg(ADDR_PA_ADJ,0x06);
+ 490                      break;
+ 491                  case Power_6dBm:
+ 492                      ML7345_Write_Reg(ADDR_PA_MODE,0x06);
+ 493                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 494                      ML7345_Write_Reg(ADDR_PA_ADJ,0x09);
+ 495                      break;
+ 496                  case Power_7dBm:
+ 497                      ML7345_Write_Reg(ADDR_PA_MODE,0x07);
+ 498                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 499                      ML7345_Write_Reg(ADDR_PA_ADJ,0x0B);
+ 500                      break;
+ 501                  case Power_8dBm:
+ 502                      ML7345_Write_Reg(ADDR_PA_MODE,0x13);
+ 503                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 504                      ML7345_Write_Reg(ADDR_PA_ADJ,0x00);
+ 505                      break;
+ 506                  case Power_9dBm:
+ 507                      ML7345_Write_Reg(ADDR_PA_MODE,0x16);
+ 508                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 509                      ML7345_Write_Reg(ADDR_PA_ADJ,0x00);
+ 510                      break;
+ 511                  case Power_10dBm:
+ 512                      ML7345_Write_Reg(ADDR_PA_MODE,0x15);
+ 513                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 514                      ML7345_Write_Reg(ADDR_PA_ADJ,0x01);
+ 515                      break;
+ 516                  case Power_11dBm:
+ 517                      ML7345_Write_Reg(ADDR_PA_MODE,0x16);
+ 518                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 519                      ML7345_Write_Reg(ADDR_PA_ADJ,0x02);
+ 520                      break;
+ 521                  case Power_12dBm:
+ 522                      ML7345_Write_Reg(ADDR_PA_MODE,0x16);
+ 523                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 524                      ML7345_Write_Reg(ADDR_PA_ADJ,0x03);
+ 525                      break;
+ 526                  case Power_13dBm:
+ 527                      ML7345_Write_Reg(ADDR_PA_MODE,0x15);
+ 528                      ML7345_Write_Reg(ADDR_PA_REG_FINE_ADJ,0x10);
+ 529                      ML7345_Write_Reg(ADDR_PA_ADJ,0x05);
+ 530                      break;
+ 531                  default:
+ 532                      break;
+ 533              }
+ 534          }*/
+ 535          
+ 536          /*
+ 537          Function: Read receive packet
+ 538          Parameter: pbuf: RX buffer; len: Read length,No more than 64 bytes
+ 539          Return: Null
+ 540          */
+ 541          void ML7345_ReadRx_Pack(u8 *pbuf,u8 len)
+ 542          {
+ 543   1          if(len > 64)    len = 64;
+ 544   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 10  
 
- 546          {
- 547   1          if(len > 64)    len = 64;
- 548   1          CG2214M6_USE_T;
- 549   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);  //set bank0
- 550   1          ML7345_Write_Reg(ADDR_TX_PKT_LEN_L,len);    //发送包长度低八位
- 551   1          ML7345_AutoStateTransition_Set(AUTO_TX_EN);  //设置为自动发送模式
- 552   1          ML7345_Write_Fifo(ADDR_WR_TX_FIFO,pbuf,len);
- 553   1      }
- 554          
- 555          u8 RF_SyncWord_DONE(void)
- 556          {
- 557   1          idata u8 sync = 0;
- 558   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);  //set bank0
- 559   1          sync = ML7345_Read_Reg(ADDR_INT_SOURCE_GRP2);
- 560   1          return sync;
+ 545   1          ML7345_Read_Fifo(ADDR_RD_FIFO,pbuf,len);
+ 546   1      }
+ 547          
+ 548          /*
+ 549          Function: send data
+ 550          Parameter: pbuf: data buffer; len: data length,No more than 64 bytes
+ 551          Return: Null
+ 552          */
+ 553          void ML7345_AutoTx_Data(u8 *pbuf,u8 len)
+ 554          {
+ 555   1          if(len > 64)    len = 64;
+ 556   1          CG2214M6_USE_T;
+ 557   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);  //set bank0
+ 558   1          ML7345_Write_Reg(ADDR_TX_PKT_LEN_L,len);    //发送包长度低八位
+ 559   1          ML7345_AutoStateTransition_Set(AUTO_TX_EN);  //设置为自动发送模式
+ 560   1          ML7345_Write_Fifo(ADDR_WR_TX_FIFO,pbuf,len);
  561   1      }
  562          
- 563          void ML7345_Frequency_Calcul(u32 Freq,u8 *pbuf)  //将频率计算为ML7345寄存器设定值,存入pbuf�
-             -�
+ 563          u8 RF_SyncWord_DONE(void)
  564          {
- 565   1          xdata u8 integer = 0;
- 566   1          xdata float f_dec = 0.0;
- 567   1          xdata u32 cal_val = 0;
- 568   1          integer = (u8)(Freq / FREQ_PLL);
- 569   1          f_dec = ((float)(Freq / (float)FREQ_PLL) - integer);
- 570   1          cal_val = (u32)(f_dec *  CONST_COEFF);
- 571   1          pbuf[0] = integer;
- 572   1          pbuf[1] = (cal_val >> 16) & 0xff;
- 573   1          pbuf[2] = (cal_val >> 8) & 0xff;
- 574   1          pbuf[3] = cal_val & 0xff;
- 575   1      
- 576   1          Freq = Freq - VCO_LowerLimit_FREQ;
- 577   1          integer = (u8)(Freq / FREQ_PLL);
- 578   1          f_dec = ((float)(Freq / (float)FREQ_PLL) - integer);
- 579   1          cal_val = (u32)(f_dec *  CONST_COEFF);
- 580   1          pbuf[4] = integer;
- 581   1          pbuf[5] = (cal_val >> 16) & 0xff;
- 582   1          pbuf[6] = (cal_val >> 8) & 0xff;
- 583   1          pbuf[7] = cal_val & 0xff;
- 584   1      }
- 585          
- 586          void SetReg_Rssi(void)
- 587          {
- 588   1          ML7345_Write_Reg(0x00,0x22);  //Bank 1
- 589   1          ML7345_Write_Reg(0x07,0x5A);
- 590   1          ML7345_Write_Reg(0x0C,0x8A);
- 591   1          ML7345_Write_Reg(0x0D,0x26);
- 592   1          ML7345_Write_Reg(0x10,0x03);
- 593   1          ML7345_Write_Reg(0x15,0x83);
- 594   1          ML7345_Write_Reg(0x00,0x11);  //Bank 0
- 595   1      }
- 596          
- 597          /*
- 598          void SetReg_RssiTest(void)
- 599          {
- 600              ML7345_Write_Reg(0x00,0x22);  //Bank 1
- 601              ML7345_Write_Reg(0x07,0x5A);
- 602              ML7345_Write_Reg(0x10,0x03);
- 603              ML7345_Write_Reg(0x12,0x77);
- 604              ML7345_Write_Reg(0x15,0x83);
- 605          
- 606              ML7345_Write_Reg(0x00,0x44);  //Bank 2
-C51 COMPILER V9.60.0.0   ML7345_HAL                                                        02/25/2022 17:15:45 PAGE 11  
+ 565   1          idata u8 sync = 0;
+ 566   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);  //set bank0
+ 567   1          sync = ML7345_Read_Reg(ADDR_INT_SOURCE_GRP2);
+ 568   1          return sync;
+ 569   1      }
+ 570          
+ 571          void ML7345_Frequency_Calcul(u32 Freq,u8 *pbuf)  //将频率计算为ML7345寄存器设定值,存入pbuf�
+             -�
+ 572          {
+ 573   1          xdata u8 integer = 0;
+ 574   1          xdata float f_dec = 0.0;
+ 575   1          xdata u32 cal_val = 0;
+ 576   1          integer = (u8)(Freq / FREQ_PLL);
+ 577   1          f_dec = ((float)(Freq / (float)FREQ_PLL) - integer);
+ 578   1          cal_val = (u32)(f_dec *  CONST_COEFF);
+ 579   1          pbuf[0] = integer;
+ 580   1          pbuf[1] = (cal_val >> 16) & 0xff;
+ 581   1          pbuf[2] = (cal_val >> 8) & 0xff;
+ 582   1          pbuf[3] = cal_val & 0xff;
+ 583   1      
+ 584   1          Freq = Freq - VCO_LowerLimit_FREQ;
+ 585   1          integer = (u8)(Freq / FREQ_PLL);
+ 586   1          f_dec = ((float)(Freq / (float)FREQ_PLL) - integer);
+ 587   1          cal_val = (u32)(f_dec *  CONST_COEFF);
+ 588   1          pbuf[4] = integer;
+ 589   1          pbuf[5] = (cal_val >> 16) & 0xff;
+ 590   1          pbuf[6] = (cal_val >> 8) & 0xff;
+ 591   1          pbuf[7] = cal_val & 0xff;
+ 592   1      }
+ 593          
+ 594          void SetReg_Rssi(void)
+ 595          {
+ 596   1          ML7345_Write_Reg(0x00,0x22);  //Bank 1
+ 597   1          ML7345_Write_Reg(0x07,0x5A);
+ 598   1          ML7345_Write_Reg(0x0C,0x8A);
+ 599   1          ML7345_Write_Reg(0x0D,0x26);
+ 600   1          ML7345_Write_Reg(0x10,0x03);
+ 601   1          ML7345_Write_Reg(0x15,0x83);
+ 602   1          ML7345_Write_Reg(0x00,0x11);  //Bank 0
+ 603   1      }
+ 604          
+ 605          /*
+C51 COMPILER V9.60.0.0   ML7345_HAL                                                        03/01/2022 16:31:56 PAGE 11  
 
- 607              ML7345_Write_Reg(0x09,0x09);
- 608              ML7345_Write_Reg(0x0C,0x7D);
- 609              ML7345_Write_Reg(0x0E,0x00);
- 610              ML7345_Write_Reg(0x16,0x23);
- 611              ML7345_Write_Reg(0x1C,0x23);
- 612              ML7345_Write_Reg(0x2A,0x0F);
- 613              ML7345_Write_Reg(0x4E,0x70);
- 614          
- 615              ML7345_Write_Reg(0x00,0x88);  //Bank 3
- 616              ML7345_Write_Reg(0x31,0x00);
- 617              ML7345_Write_Reg(0x32,0x00);
- 618              ML7345_Write_Reg(0x33,0x00);
- 619              ML7345_Write_Reg(0x34,0x00);
- 620              ML7345_Write_Reg(0x35,0x00);
- 621              ML7345_Write_Reg(0x36,0x00);
- 622              ML7345_Write_Reg(0x37,0x00);
- 623              ML7345_Write_Reg(0x38,0x00);
- 624          
- 625              ML7345_Write_Reg(0x00,0x11);  //Bank 0
- 626          }*/
+ 606          void SetReg_RssiTest(void)
+ 607          {
+ 608              ML7345_Write_Reg(0x00,0x22);  //Bank 1
+ 609              ML7345_Write_Reg(0x07,0x5A);
+ 610              ML7345_Write_Reg(0x10,0x03);
+ 611              ML7345_Write_Reg(0x12,0x77);
+ 612              ML7345_Write_Reg(0x15,0x83);
+ 613          
+ 614              ML7345_Write_Reg(0x00,0x44);  //Bank 2
+ 615              ML7345_Write_Reg(0x09,0x09);
+ 616              ML7345_Write_Reg(0x0C,0x7D);
+ 617              ML7345_Write_Reg(0x0E,0x00);
+ 618              ML7345_Write_Reg(0x16,0x23);
+ 619              ML7345_Write_Reg(0x1C,0x23);
+ 620              ML7345_Write_Reg(0x2A,0x0F);
+ 621              ML7345_Write_Reg(0x4E,0x70);
+ 622          
+ 623              ML7345_Write_Reg(0x00,0x88);  //Bank 3
+ 624              ML7345_Write_Reg(0x31,0x00);
+ 625              ML7345_Write_Reg(0x32,0x00);
+ 626              ML7345_Write_Reg(0x33,0x00);
+ 627              ML7345_Write_Reg(0x34,0x00);
+ 628              ML7345_Write_Reg(0x35,0x00);
+ 629              ML7345_Write_Reg(0x36,0x00);
+ 630              ML7345_Write_Reg(0x37,0x00);
+ 631              ML7345_Write_Reg(0x38,0x00);
+ 632          
+ 633              ML7345_Write_Reg(0x00,0x11);  //Bank 0
+ 634          }*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   2151    ----
+   CODE SIZE        =   2076    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =     12    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     25    ----
+   DATA SIZE        =     22    ----
    IDATA SIZE       =      1    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

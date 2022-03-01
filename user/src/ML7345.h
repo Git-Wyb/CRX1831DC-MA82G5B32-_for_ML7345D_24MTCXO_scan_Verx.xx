@@ -43,7 +43,6 @@ extern xdata u8 SPI_RECEIVE_BUFF[40];
 
 extern xdata u8 tx_pack_cnt;
 
-extern xdata u8 ADF7030_REST_Cache;
 extern xdata u8 Receiver_vent_Cache;
 extern xdata u32 SPI_Receive_DataForC[7];
 

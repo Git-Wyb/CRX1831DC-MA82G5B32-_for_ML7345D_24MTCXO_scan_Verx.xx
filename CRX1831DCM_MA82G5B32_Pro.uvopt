@@ -133,7 +133,7 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FLAG_APP_RXstart</ItemText>
+          <ItemText>read</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
@@ -163,9 +163,17 @@
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>TIMER18ms</ItemText>
+          <ItemText>FLAG_testBEEP</ItemText>
         </Ww>
       </WatchWindow1>
+      <MemoryWindow1>
+        <Mm>
+          <WinNumber>1</WinNumber>
+          <SubType>0</SubType>
+          <ItemText>Cache</ItemText>
+          <AccSizeX>0</AccSizeX>
+        </Mm>
+      </MemoryWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>

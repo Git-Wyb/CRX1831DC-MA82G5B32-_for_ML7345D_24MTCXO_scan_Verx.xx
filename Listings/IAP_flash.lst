@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 1   
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE IAP_FLASH
@@ -62,7 +62,7 @@ line level    source
   52          
   53          
   54          /***********************************************************************************
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 2   
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 2   
 
   55          函数名称:   u8 IAP_ReadPPage(u8 PsfrAddr)
   56          功能描述:读取P页特殊功能器内容
@@ -126,7 +126,7 @@ line level    source
  114          函数名称:               u8 IAP_WriteBuf_With_Protect_Verify(u16 ByteAddr,u8 *pBuf,u16 Cnt)
  115          功能描述:               写一串数据到IAP指定地址
  116                                  会使用到512字节XDATA保存扇区原有数据
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 3   
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 3   
 
  117                                  写入一个字节数据大约需要80us
  118          输入参数:   
@@ -190,7 +190,7 @@ line level    source
  176   2                              IFADRH = SectorAddr.B.BHigh;    //送地址高字节
  177   2                              IFADRL= SectorAddr.B.BLow;      //送地址低字节;
  178   2                              IFMT = ISP_WRITE;
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 4   
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 4   
 
  179   2                              ISPCR = 0x80;               //允许ISP/IAP操作
  180   2                              //CheckTrapFlag();
@@ -254,7 +254,7 @@ line level    source
  238   1          IFMT = 0;
  239   1          ISPCR = 0;  
  240   1          EA = bEA;    
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 5   
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 5   
 
  241   1      }
  242          
@@ -318,7 +318,7 @@ line level    source
  300   2              xn.IDB[2] = xm[1];
  301   2              xn.IDB[3] = xm[2];
  302   2              if ((xn.IDC == 0) || (xn.IDC == 0xFFFFFF))
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 6   
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 6   
 
  303   2                  q++;
  304   2              else
@@ -382,7 +382,7 @@ line level    source
  362   1          idata u16 i, j, m1;
  363   1          idata uni_rom_id xn, xd;
  364   1          ID_DATA_PCS++;
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 7   
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 7   
 
  365   1          xm[0] = ID_DATA_PCS / 256;
  366   1          xm[1] = ID_DATA_PCS % 256;
@@ -434,85 +434,84 @@ line level    source
  412          {
  413   1          // #if defined(__Product_PIC32MX2_Receiver__)
  414   1              if(FLAG_ID_Erase_Login == 1)
- 415   1                      {
- 416   2                      BEEP_Module(300,900);
- 417   2                      BEEP_Module(300,900);
- 418   2                      BEEP_Module(1800,1);
- 419   2                      }
+ 415   1          {
+ 416   2              BEEP_Module(300,900);
+ 417   2              BEEP_Module(300,900);
+ 418   2              BEEP_Module(1800,1);
+ 419   2          }
  420   1              else if(FLAG_ID_Login==1)
- 421   1                      {
- 422   2                      BEEP_Module(300,900);
- 423   2                      BEEP_Module(1800,1);
- 424   2                      }
- 425   1              //BEEP_CSR2_BEEPEN = 0;
- 426   1          Beep_Off();
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 8   
+ 421   1          {
+ 422   2              BEEP_Module(300,900);
+ 423   2              BEEP_Module(1800,1);
+ 424   2          }
+ 425   1              Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
+ 426   1          FLAG_ID_Login_EXIT = 1;
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 8   
 
- 427   1          FLAG_ID_Login_EXIT = 1;
- 428   1          FLAG_ID_Login_OK = 0;
- 429   1          FLAG_ID_Login_OK_bank = 0;
- 430   1          FLAG_ID_Login = 0;
- 431   1          FLAG_ID_Erase_Login = 0;
- 432   1              FLAG_ID_SCX1801_Login=0;
- 433   1          Receiver_LED_OUT = 0;
- 434   1          COUNT_Receiver_Login = 0;
- 435   1          //#endif
- 436   1          //#if defined(__Product_PIC32MX2_WIFI__)
- 437   1          //     FLAG_ID_Login_EXIT=1;
- 438   1          //     FLAG_ID_Login_OK=0;
- 439   1          //     FLAG_ID_Login_OK_bank=0;
- 440   1          //     FLAG_ID_Login=0;
- 441   1          //     FLAG_ID_Erase_Login=0;
- 442   1          //     WIFI_LED_RX=0;
- 443   1          //#endif
- 444   1      }
- 445          
- 446          void ID_SCX1801_EEPROM_write(u32 id)
- 447          {
- 448   1          idata u8 xm[3] = {0};
- 449   1          idata uni_rom_id xn;
- 450   1      
- 451   1          xn.IDC = id;//ID_Receiver_Login;
- 452   1              ID_SCX1801_DATA= id;//ID_Receiver_Login;
- 453   1              xm[0] = xn.IDB[1];
- 454   1          xm[1] = xn.IDB[2];
- 455   1          xm[2] = xn.IDB[3];
- 456   1          IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + 0x3FB, &xm[0],3);
- 457   1      }
- 458          
- 459          void Delete_GeneralID_EEPROM(u32 id)
- 460          {
- 461   1          idata u16 i, j, m2, original_pcs = 0;
- 462   1          idata u8 xm[3] = {0};
- 463   1          idata uni_rom_id xn;
- 464   1      
- 465   1          original_pcs = ID_DATA_PCS;
- 466   1          for (i = 0; i < ID_DATA_PCS; i++)
- 467   1          {
- 468   2      #if RAM_LARGE == 1
- 469   2                      if ((Return_ID_DATA(i) == id)&&(id!=0xFFFFFE)&&(id!=0))
- 470   2                      {
- 471   3                  for (j = i; j < ID_DATA_PCS; j++)
- 472   3                  {
- 473   4                      ID_Receiver_DATA[j*3] = ID_Receiver_DATA[j*3+3];
- 474   4                      ID_Receiver_DATA[j*3+1] = ID_Receiver_DATA[j*3+4];
- 475   4                      ID_Receiver_DATA[j*3+2] = ID_Receiver_DATA[j*3+5];
- 476   4                      ClearWDT(); // Service the WDT
- 477   4                  }
- 478   3                  ID_DATA_PCS--;
- 479   3                  if (ID_DATA_PCS==0)
- 480   3                  {
- 481   4                      ALL_ID_EEPROM_Erase();
- 482   4                      return;
- 483   4                  }
- 484   3              }
- 485   2      #else
+ 427   1          FLAG_ID_Login_OK = 0;
+ 428   1          FLAG_ID_Login_OK_bank = 0;
+ 429   1          FLAG_ID_Login = 0;
+ 430   1          FLAG_ID_Erase_Login = 0;
+ 431   1              FLAG_ID_SCX1801_Login=0;
+ 432   1          Receiver_LED_OUT = 0;
+ 433   1          COUNT_Receiver_Login = 0;
+ 434   1          //#endif
+ 435   1          //#if defined(__Product_PIC32MX2_WIFI__)
+ 436   1          //     FLAG_ID_Login_EXIT=1;
+ 437   1          //     FLAG_ID_Login_OK=0;
+ 438   1          //     FLAG_ID_Login_OK_bank=0;
+ 439   1          //     FLAG_ID_Login=0;
+ 440   1          //     FLAG_ID_Erase_Login=0;
+ 441   1          //     WIFI_LED_RX=0;
+ 442   1          //#endif
+ 443   1      }
+ 444          
+ 445          void ID_SCX1801_EEPROM_write(u32 id)
+ 446          {
+ 447   1          idata u8 xm[3] = {0};
+ 448   1          idata uni_rom_id xn;
+ 449   1      
+ 450   1          xn.IDC = id;//ID_Receiver_Login;
+ 451   1              ID_SCX1801_DATA= id;//ID_Receiver_Login;
+ 452   1              xm[0] = xn.IDB[1];
+ 453   1          xm[1] = xn.IDB[2];
+ 454   1          xm[2] = xn.IDB[3];
+ 455   1          IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + 0x3FB, &xm[0],3);
+ 456   1      }
+ 457          
+ 458          void Delete_GeneralID_EEPROM(u32 id)
+ 459          {
+ 460   1          idata u16 i, j, m2, original_pcs = 0;
+ 461   1          idata u8 xm[3] = {0};
+ 462   1          idata uni_rom_id xn;
+ 463   1      
+ 464   1          original_pcs = ID_DATA_PCS;
+ 465   1          for (i = 0; i < ID_DATA_PCS; i++)
+ 466   1          {
+ 467   2      #if RAM_LARGE == 1
+ 468   2                      if ((Return_ID_DATA(i) == id)&&(id!=0xFFFFFE)&&(id!=0))
+ 469   2                      {
+ 470   3                  for (j = i; j < ID_DATA_PCS; j++)
+ 471   3                  {
+ 472   4                      ID_Receiver_DATA[j*3] = ID_Receiver_DATA[j*3+3];
+ 473   4                      ID_Receiver_DATA[j*3+1] = ID_Receiver_DATA[j*3+4];
+ 474   4                      ID_Receiver_DATA[j*3+2] = ID_Receiver_DATA[j*3+5];
+ 475   4                      ClearWDT(); // Service the WDT
+ 476   4                  }
+ 477   3                  ID_DATA_PCS--;
+ 478   3                  if (ID_DATA_PCS==0)
+ 479   3                  {
+ 480   4                      ALL_ID_EEPROM_Erase();
+ 481   4                      return;
+ 482   4                  }
+ 483   3              }
+ 484   2      #else
                       if ((ID_Receiver_DATA[i] == id)&&(id!=0xFFFFFE)&&(id!=0))
                               {
                           for (j = i; j < ID_DATA_PCS; j++)
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 9   
-
                           {
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 9   
+
                               ID_Receiver_DATA[j] = ID_Receiver_DATA[j+1];
                               ClearWDT(); // Service the WDT
                           }
@@ -524,254 +523,251 @@ line level    source
                           }
                       }
               #endif
- 501   2              ClearWDT(); // Service the WDT
- 502   2          }
- 503   1      
- 504   1          xm[0] = ID_DATA_PCS / 256;
- 505   1          xm[1] = ID_DATA_PCS % 256;
- 506   1          IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + 0x3FE, &xm[0],2);
- 507   1      
- 508   1          for (i = 0; i < original_pcs; i++)
- 509   1          {
- 510   2      #if RAM_LARGE == 1
- 511   2              xn.IDC = Return_ID_DATA(i);
- 512   2      #else
+ 500   2              ClearWDT(); // Service the WDT
+ 501   2          }
+ 502   1      
+ 503   1          xm[0] = ID_DATA_PCS / 256;
+ 504   1          xm[1] = ID_DATA_PCS % 256;
+ 505   1          IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + 0x3FE, &xm[0],2);
+ 506   1      
+ 507   1          for (i = 0; i < original_pcs; i++)
+ 508   1          {
+ 509   2      #if RAM_LARGE == 1
+ 510   2              xn.IDC = Return_ID_DATA(i);
+ 511   2      #else
                       xn.IDC = ID_Receiver_DATA[i];
               #endif
- 515   2              xm[0] = xn.IDB[1];
- 516   2              xm[1] = xn.IDB[2];
- 517   2              xm[2] = xn.IDB[3];
- 518   2              m2 = 3 * i;
- 519   2              IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + m2, &xm[0],3);
- 520   2              ClearWDT(); // Service the WDT
- 521   2          }
- 522   1      }
- 523          
- 524          void ALL_ID_EEPROM_Erase(void)
- 525          {
- 526   1          idata u16 i;
- 527   1          
- 528   1          ID_DATA_PCS = 0;
- 529   1      
- 530   1      #if RAM_LARGE == 1
- 531   1          for (i = 0; i < 768; i++)
- 532   1      #else
+ 514   2              xm[0] = xn.IDB[1];
+ 515   2              xm[1] = xn.IDB[2];
+ 516   2              xm[2] = xn.IDB[3];
+ 517   2              m2 = 3 * i;
+ 518   2              IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys + m2, &xm[0],3);
+ 519   2              ClearWDT(); // Service the WDT
+ 520   2          }
+ 521   1      }
+ 522          
+ 523          void ALL_ID_EEPROM_Erase(void)
+ 524          {
+ 525   1          idata u16 i;
+ 526   1          
+ 527   1          ID_DATA_PCS = 0;
+ 528   1      
+ 529   1      #if RAM_LARGE == 1
+ 530   1          for (i = 0; i < 768; i++)
+ 531   1      #else
                   for (i = 0; i < 100; i++)
               #endif
- 535   1          {
- 536   2              ID_Receiver_DATA[i] = 0;
- 537   2              ClearWDT(); // Service the WDT
- 538   2          }
- 539   1          IAP_Erase_All_ID();
- 540   1      }
- 541          
- 542          void ID_learn(void) 
- 543          {
- 544   1          //    UINT16 i;
- 545   1          // #if defined(__Product_PIC32MX2_Receiver__)
- 546   1          if (FG_10ms)
- 547   1          { //90==1秿
- 548   2              FG_10ms = 0;
- 549   2                      if(TIME_TestNo91)
- 550   2                              --TIME_TestNo91;
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 10  
+ 534   1          {
+ 535   2              ID_Receiver_DATA[i] = 0;
+ 536   2              ClearWDT(); // Service the WDT
+ 537   2          }
+ 538   1          IAP_Erase_All_ID();
+ 539   1      }
+ 540          
+ 541          void ID_learn(void) 
+ 542          {
+ 543   1          //    UINT16 i;
+ 544   1          // #if defined(__Product_PIC32MX2_Receiver__)
+ 545   1          if (FG_10ms)
+ 546   1          { //90==1秿
+ 547   2              FG_10ms = 0;
+ 548   2                      if(TIME_TestNo91)
+ 549   2                              --TIME_TestNo91;
+ 550   2                      else FLAG_testNo91=0;
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 10  
 
- 551   2                      else FLAG_testNo91=0;
- 552   2                      if(TIME_ERROR_Read_once_again)
- 553   2                              --TIME_ERROR_Read_once_again;
- 554   2                      if(Time_error_read_timeout)
- 555   2                              --Time_error_read_timeout;
- 556   2                      if(Time_error_read_gap)
- 557   2                              --Time_error_read_gap;
- 558   2                      if(TIME_APP_TX_fromOUT)
- 559   2                              --TIME_APP_TX_fromOUT;
- 560   2              if (TIME_auto_out)
- 561   2                  --TIME_auto_out;
- 562   2              if (TIME_auto_close)
- 563   2                  --TIME_auto_close;
- 564   2              if (TIME_OUT_OPEN_CLOSE)
- 565   2                  --TIME_OUT_OPEN_CLOSE;
- 566   2              if (TIME_Receiver_LED_OUT)
- 567   2                  --TIME_Receiver_LED_OUT;
- 568   2              if (TIME_Login_EXIT_Button)
- 569   2                  --TIME_Login_EXIT_Button;
- 570   2              if (Manual_override_TIMER)
- 571   2                  --Manual_override_TIMER;
- 572   2              if (time_Login_exit_256)
- 573   2                  --time_Login_exit_256;
- 574   2              if (TIME_Receiver_Login_restrict)
- 575   2                  --TIME_Receiver_Login_restrict;
- 576   2              else if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login == 1))
- 577   2                  ;
- 578   2              else
- 579   2              {
- 580   3                  TIME_Receiver_Login = 0;
- 581   3                  COUNT_Receiver_Login = 0;
- 582   3              }
- 583   2      
- 584   2              if (Receiver_Login == 0)
- 585   2              {
- 586   3                  if(FLAG_ID_SCX1801_Login!=1)TIME_Receiver_Login++;
- 587   3                  TIME_Receiver_Login_restrict = 350;
- 588   3                  if ((COUNT_Receiver_Login >= 2) && (FLAG_ID_Erase_Login == 0) && (FLAG_ID_Login == 0) && (ID_D
+ 551   2                      if(TIME_ERROR_Read_once_again)
+ 552   2                              --TIME_ERROR_Read_once_again;
+ 553   2                      if(Time_error_read_timeout)
+ 554   2                              --Time_error_read_timeout;
+ 555   2                      if(Time_error_read_gap)
+ 556   2                              --Time_error_read_gap;
+ 557   2                      if(TIME_APP_TX_fromOUT)
+ 558   2                              --TIME_APP_TX_fromOUT;
+ 559   2              if (TIME_auto_out)
+ 560   2                  --TIME_auto_out;
+ 561   2              if (TIME_auto_close)
+ 562   2                  --TIME_auto_close;
+ 563   2              if (TIME_OUT_OPEN_CLOSE)
+ 564   2                  --TIME_OUT_OPEN_CLOSE;
+ 565   2              if (TIME_Receiver_LED_OUT)
+ 566   2                  --TIME_Receiver_LED_OUT;
+ 567   2              if (TIME_Login_EXIT_Button)
+ 568   2                  --TIME_Login_EXIT_Button;
+ 569   2              if (Manual_override_TIMER)
+ 570   2                  --Manual_override_TIMER;
+ 571   2              if (time_Login_exit_256)
+ 572   2                  --time_Login_exit_256;
+ 573   2              if (TIME_Receiver_Login_restrict)
+ 574   2                  --TIME_Receiver_Login_restrict;
+ 575   2              else if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login == 1))
+ 576   2                  ;
+ 577   2              else
+ 578   2              {
+ 579   3                  TIME_Receiver_Login = 0;
+ 580   3                  COUNT_Receiver_Login = 0;
+ 581   3              }
+ 582   2      
+ 583   2              if (Receiver_Login == 0)
+ 584   2              {
+ 585   3                  if(FLAG_ID_SCX1801_Login!=1)TIME_Receiver_Login++;
+ 586   3                  TIME_Receiver_Login_restrict = 350;
+ 587   3                  if ((COUNT_Receiver_Login >= 2) && (FLAG_ID_Erase_Login == 0) && (FLAG_ID_Login == 0) && (ID_D
              -ATA_PCS < ID_Max_PCS))
- 589   3                  {
- 590   4                      FLAG_ID_Login = 1;
- 591   4                                      BEEP_Module(1800,900);
- 592   4                                      BEEP_Module(300,1);
- 593   4                                      COUNT_Receiver_Login++; //??????????????BEEP_Module?ìbeep????ì?????д????TIME_Receiver_Login
- 594   4                      TIME_Login_EXIT_rest = 5380;
- 595   4                      TIME_Login_EXIT_Button = 500;
- 596   4                  } //6000
- 597   3                  else if (((FLAG_ID_Erase_Login == 1) && (COUNT_Receiver_Login >= 1)) ||
- 598   3                                      (FLAG_ID_SCX1801_Login == 1)||
- 599   3                      ((FLAG_ID_Login == 1) && (COUNT_Receiver_Login >= 3)))
- 600   3                  {
- 601   4                      if (TIME_Login_EXIT_Button == 0)
- 602   4                          ID_Login_EXIT_Initial();
- 603   4                  }
- 604   3              }
- 605   2              if (Receiver_Login == 1)
- 606   2              {
- 607   3                          if (TIME_Receiver_Login > 3)
- 608   3                          {
- 609   4                              if (COUNT_Receiver_Login < 10)
- 610   4                                  COUNT_Receiver_Login++;
- 611   4                          }
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 11  
+ 588   3                  {
+ 589   4                      FLAG_ID_Login = 1;
+ 590   4                                      BEEP_Module(1800,900);
+ 591   4                                      BEEP_Module(300,1);
+ 592   4                                      COUNT_Receiver_Login++; //??????????????BEEP_Module?ìbeep????ì?????д????TIME_Receiver_Login
+ 593   4                      TIME_Login_EXIT_rest = 5380;
+ 594   4                      TIME_Login_EXIT_Button = 500;
+ 595   4                  } //6000
+ 596   3                  else if (((FLAG_ID_Erase_Login == 1) && (COUNT_Receiver_Login >= 1)) ||
+ 597   3                                      (FLAG_ID_SCX1801_Login == 1)||
+ 598   3                      ((FLAG_ID_Login == 1) && (COUNT_Receiver_Login >= 3)))
+ 599   3                  {
+ 600   4                      if (TIME_Login_EXIT_Button == 0)
+ 601   4                          ID_Login_EXIT_Initial();
+ 602   4                  }
+ 603   3              }
+ 604   2              if (Receiver_Login == 1)
+ 605   2              {
+ 606   3                          if (TIME_Receiver_Login > 3)
+ 607   3                          {
+ 608   4                              if (COUNT_Receiver_Login < 10)
+ 609   4                                  COUNT_Receiver_Login++;
+ 610   4                          }
+ 611   3                          if (FLAG_ID_Login_EXIT == 1)
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 11  
 
- 612   3                          if (FLAG_ID_Login_EXIT == 1)
- 613   3                          {
- 614   4                              FLAG_ID_Login_EXIT = 0;
- 615   4                              COUNT_Receiver_Login = 0;
- 616   4                          }
- 617   3                          TIME_Receiver_Login = 0;
- 618   3              }
- 619   2              if(TIME_Receiver_Login >= 450)  //590
- 620   2              {
- 621   3                  FLAG_ID_SCX1801_Login=1;
- 622   3                  FLAG_ID_Erase_Login = 0;
- 623   3                  TIME_Receiver_Login = 0;
- 624   3                  //BEEP_CSR2_BEEPEN = 0;
- 625   3                  Beep_Off();
- 626   3                  FG_ID_SCX1801_Login_BEEP=0;
- 627   3                  TIME_ID_SCX1801_Login=130;
- 628   3                  TIME_Login_EXIT_rest = 5380;
- 629   3                  COUNT_Receiver_Login=0;
- 630   3                  TIME_Login_EXIT_Button = 500;
- 631   3              }
- 632   2                  else if ((TIME_Receiver_Login >= 250)&&(FLAG_ID_Erase_Login==0)&&(FLAG_ID_SCX1801_Login==0))
- 633   2                    {
- 634   3                          //TIME_Receiver_Login = 0;
- 635   3                          FLAG_ID_Erase_Login = 1;
- 636   3                          FLAG_ID_Erase_Login_PCS = 1; //追加多濿ID登录
- 637   3                          BEEP_Module(1800,900);
- 638   3                                      BEEP_Module(300,900);
- 639   3                                      BEEP_Module(300,1);
- 640   3                                      COUNT_Receiver_Login++; //??????????????BEEP_Module?ìbeep????ì?????д????TIME_Receiver_Login
- 641   3                          TIME_Login_EXIT_rest = 5380;
- 642   3                          TIME_Login_EXIT_Button = 500;
- 643   3                     }
- 644   2                      if((FLAG_ID_SCX1801_Login==1)&&(TIME_ID_SCX1801_Login==0))
- 645   2                      {
- 646   3                              if(FG_ID_SCX1801_Login_BEEP==0)
- 647   3                              {
- 648   4                                  FG_ID_SCX1801_Login_BEEP=1;
- 649   4                                      TIME_ID_SCX1801_Login=390;
- 650   4                                      //BEEP_CSR2_BEEPEN = 0;
- 651   4                      Beep_Off();
- 652   4                              }
- 653   3                              else if(FG_ID_SCX1801_Login_BEEP==1)
- 654   3                              {
- 655   4                                  FG_ID_SCX1801_Login_BEEP=0;
- 656   4                                      TIME_ID_SCX1801_Login=130;
- 657   4                                      //BEEP_CSR2_BEEPEN = 1;
- 658   4                      Beep_On();
- 659   4                              }
- 660   3                      }
- 661   2              if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login==1))
- 662   2              {
- 663   3                  TIME_Receiver_Login_led++;
- 664   3                  if (TIME_Receiver_Login_led >= 46)
- 665   3                  {
- 666   4                      TIME_Receiver_Login_led = 0;
- 667   4                      if (TIME_Receiver_LED_OUT > 0)
- 668   4                          Receiver_LED_OUT = 1;
- 669   4                      else
- 670   4                          Receiver_LED_OUT = !Receiver_LED_OUT;
- 671   4                  }
- 672   3                  if ((FLAG_ID_Login_OK == 1) && (FLAG_ID_Login_OK_bank == 0))
- 673   3                  {
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 12  
-
- 674   4                      if ((ID_Receiver_Login == 0xFFFFFE)&&(FLAG_ID_Erase_Login==1))FLAG_ID_Login_OK_bank=1;    
+ 612   3                          {
+ 613   4                              FLAG_ID_Login_EXIT = 0;
+ 614   4                              COUNT_Receiver_Login = 0;
+ 615   4                          }
+ 616   3                          TIME_Receiver_Login = 0;
+ 617   3              }
+ 618   2              if(TIME_Receiver_Login >= 450)  //590
+ 619   2              {
+ 620   3                  FLAG_ID_SCX1801_Login=1;
+ 621   3                  FLAG_ID_Erase_Login = 0;
+ 622   3                  TIME_Receiver_Login = 0;
+ 623   3                  Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
+ 624   3                  FG_ID_SCX1801_Login_BEEP=0;
+ 625   3                  TIME_ID_SCX1801_Login=130;
+ 626   3                  TIME_Login_EXIT_rest = 5380;
+ 627   3                  COUNT_Receiver_Login=0;
+ 628   3                  TIME_Login_EXIT_Button = 500;
+ 629   3              }
+ 630   2                  else if ((TIME_Receiver_Login >= 250)&&(FLAG_ID_Erase_Login==0)&&(FLAG_ID_SCX1801_Login==0))
+ 631   2                    {
+ 632   3                          //TIME_Receiver_Login = 0;
+ 633   3                          FLAG_ID_Erase_Login = 1;
+ 634   3                          FLAG_ID_Erase_Login_PCS = 1; //追加多濿ID登录
+ 635   3                          BEEP_Module(1800,900);
+ 636   3                                      BEEP_Module(300,900);
+ 637   3                                      BEEP_Module(300,1);
+ 638   3                                      COUNT_Receiver_Login++; //??????????????BEEP_Module?ìbeep????ì?????д????TIME_Receiver_Login
+ 639   3                          TIME_Login_EXIT_rest = 5380;
+ 640   3                          TIME_Login_EXIT_Button = 500;
+ 641   3                     }
+ 642   2                      if((FLAG_ID_SCX1801_Login==1)&&(TIME_ID_SCX1801_Login==0))
+ 643   2                      {
+ 644   3                              if(FG_ID_SCX1801_Login_BEEP==0)
+ 645   3                              {
+ 646   4                                  FG_ID_SCX1801_Login_BEEP=1;
+ 647   4                                      TIME_ID_SCX1801_Login=390;
+ 648   4                                      Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
+ 649   4                              }
+ 650   3                              else if(FG_ID_SCX1801_Login_BEEP==1)
+ 651   3                              {
+ 652   4                                  FG_ID_SCX1801_Login_BEEP=0;
+ 653   4                                      TIME_ID_SCX1801_Login=130;
+ 654   4                                      Beep_On();  //BEEP_CSR2_BEEPEN = 1;
+ 655   4                              }
+ 656   3                      }
+ 657   2              if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login==1))
+ 658   2              {
+ 659   3                  TIME_Receiver_Login_led++;
+ 660   3                  if (TIME_Receiver_Login_led >= 46)
+ 661   3                  {
+ 662   4                      TIME_Receiver_Login_led = 0;
+ 663   4                      if (TIME_Receiver_LED_OUT > 0)
+ 664   4                          Receiver_LED_OUT = 1;
+ 665   4                      else
+ 666   4                          Receiver_LED_OUT = !Receiver_LED_OUT;
+ 667   4                  }
+ 668   3                  if ((FLAG_ID_Login_OK == 1) && (FLAG_ID_Login_OK_bank == 0))
+ 669   3                  {
+ 670   4                      if ((ID_Receiver_Login == 0xFFFFFE)&&(FLAG_ID_Erase_Login==1))FLAG_ID_Login_OK_bank=1;    
              -         //追加多濿ID登录
- 675   4                      FLAG_ID_Login_OK = 0; //追加多濿ID登录
- 676   4                      if(FLAG_ID_SCX1801_Login==1)
- 677   4                      {
- 678   5                          FLAG_ID_SCX1801_Login=0;
- 679   5                                              FG_ID_SCX1801_Login_BEEP=0;
- 680   5                                              FLAG_ID_Login=0;
- 681   5                                              FLAG_ID_Erase_Login=0;
- 682   5                              BEEP_and_LED();
- 683   5                                              ID_SCX1801_EEPROM_write(ID_Receiver_Login);
- 684   5                                              if(FLAG_IDCheck_OK==1)
- 685   5                          {
- 686   6                              FLAG_IDCheck_OK = 0;
- 687   6                              Delete_GeneralID_EEPROM(ID_SCX1801_DATA);
- 688   6                          }
- 689   5                                              ID_Login_EXIT_Initial();
- 690   5                      }
- 691   4                                      else
- 692   4                                      {
- 693   5                                      if (FLAG_IDCheck_OK == 1)
- 694   5                                          FLAG_IDCheck_OK = 0;
- 695   5                                      else
- 696   5                                      {
- 697   6                                          BEEP_and_LED();
- 698   6                                          TIME_Login_EXIT_rest = 5380; //追加多濿ID登录
- 699   6                                          if ((FLAG_ID_Login == 1) && (ID_Receiver_Login != 0xFFFFFE))
- 700   6                                  {
- 701   7                                      if (ID_SCX1801_DATA == 0)
- 702   7                                          ID_SCX1801_EEPROM_write(ID_Receiver_Login);
- 703   7                                      else ID_EEPROM_write();
- 704   7                                  }
- 705   6                                          else if (FLAG_ID_Erase_Login == 1)
- 706   6                                          {
- 707   7                                              if (FLAG_ID_Erase_Login_PCS == 1)
- 708   7                                              {
- 709   8                                                  FLAG_ID_Erase_Login_PCS = 0;
- 710   8                                                  ID_DATA_PCS = 0;
- 711   8                                                  ALL_ID_EEPROM_Erase();
- 712   8                                          ID_SCX1801_DATA = 0;
- 713   8                                          ID_SCX1801_EEPROM_write(0x00);
- 714   8                                          if (ID_Receiver_Login != 0xFFFFFE)
- 715   8                                              ID_SCX1801_EEPROM_write(ID_Receiver_Login);
- 716   8                                              } //追加多濿ID登录
- 717   7                                              else if (ID_Receiver_Login != 0xFFFFFE)
- 718   7                                                  ID_EEPROM_write();
- 719   7                                          }
- 720   6                                      } //end else
- 721   5                                      }
- 722   4                  }
- 723   3                  if (TIME_Login_EXIT_rest)
- 724   3                      --TIME_Login_EXIT_rest;
- 725   3                  else
- 726   3                      ID_Login_EXIT_Initial();
- 727   3              }
- 728   2          }
- 729   1          //#endif
- 730   1      }
+ 671   4                      FLAG_ID_Login_OK = 0; //追加多濿ID登录
+ 672   4                      if(FLAG_ID_SCX1801_Login==1)
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 12  
+
+ 673   4                      {
+ 674   5                          FLAG_ID_SCX1801_Login=0;
+ 675   5                                              FG_ID_SCX1801_Login_BEEP=0;
+ 676   5                                              FLAG_ID_Login=0;
+ 677   5                                              FLAG_ID_Erase_Login=0;
+ 678   5                              BEEP_and_LED();
+ 679   5                                              ID_SCX1801_EEPROM_write(ID_Receiver_Login);
+ 680   5                                              if(FLAG_IDCheck_OK==1)
+ 681   5                          {
+ 682   6                              FLAG_IDCheck_OK = 0;
+ 683   6                              Delete_GeneralID_EEPROM(ID_SCX1801_DATA);
+ 684   6                          }
+ 685   5                                              ID_Login_EXIT_Initial();
+ 686   5                      }
+ 687   4                                      else
+ 688   4                                      {
+ 689   5                                      if (FLAG_IDCheck_OK == 1)
+ 690   5                                          FLAG_IDCheck_OK = 0;
+ 691   5                                      else
+ 692   5                                      {
+ 693   6                                          BEEP_and_LED();
+ 694   6                                          TIME_Login_EXIT_rest = 5380; //追加多濿ID登录
+ 695   6                                          if ((FLAG_ID_Login == 1) && (ID_Receiver_Login != 0xFFFFFE))
+ 696   6                                  {
+ 697   7                                      if (ID_SCX1801_DATA == 0)
+ 698   7                                          ID_SCX1801_EEPROM_write(ID_Receiver_Login);
+ 699   7                                      else ID_EEPROM_write();
+ 700   7                                  }
+ 701   6                                          else if (FLAG_ID_Erase_Login == 1)
+ 702   6                                          {
+ 703   7                                              if (FLAG_ID_Erase_Login_PCS == 1)
+ 704   7                                              {
+ 705   8                                                  FLAG_ID_Erase_Login_PCS = 0;
+ 706   8                                                  ID_DATA_PCS = 0;
+ 707   8                                                  ALL_ID_EEPROM_Erase();
+ 708   8                                          ID_SCX1801_DATA = 0;
+ 709   8                                          ID_SCX1801_EEPROM_write(0x00);
+ 710   8                                          if (ID_Receiver_Login != 0xFFFFFE)
+ 711   8                                              ID_SCX1801_EEPROM_write(ID_Receiver_Login);
+ 712   8                                              } //追加多濿ID登录
+ 713   7                                              else if (ID_Receiver_Login != 0xFFFFFE)
+ 714   7                                                  ID_EEPROM_write();
+ 715   7                                          }
+ 716   6                                      } //end else
+ 717   5                                      }
+ 718   4                  }
+ 719   3                  if (TIME_Login_EXIT_rest)
+ 720   3                      --TIME_Login_EXIT_rest;
+ 721   3                  else
+ 722   3                      ID_Login_EXIT_Initial();
+ 723   3              }
+ 724   2          }
+ 725   1          //#endif
+ 726   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   5820    ----
-C51 COMPILER V9.60.0.0   IAP_FLASH                                                         02/25/2022 17:15:42 PAGE 13  
-
    CONSTANT SIZE    =     15    ----
    XDATA SIZE       =    521    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =     21    ----
+C51 COMPILER V9.60.0.0   IAP_FLASH                                                         03/01/2022 16:31:53 PAGE 13  
+
    IDATA SIZE       =     55    ----
    BIT SIZE         =      4    ----
 END OF MODULE INFORMATION.

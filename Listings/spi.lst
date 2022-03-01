@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   SPI                                                               02/25/2022 17:15:43 PAGE 1   
+C51 COMPILER V9.60.0.0   SPI                                                               03/01/2022 16:31:53 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE SPI
@@ -17,7 +17,7 @@ line level    source
    7   1          SPI_Enable();
    8   1              // 设置MASTER
    9   1              SPI_SelectMASTERByMSTRbit();
-  10   1              // 设置SPI时钟 SYSCLK/16
+  10   1              // 设置SPI时钟 SYSCLK/8
   11   1              SPI_SetClock(SPI_CLK_SYSCLK_8);
   12   1              // 设置SPICLK初始电平 CPOL=0 低电平
   13   1              SPI_SetCPOL_0();        
@@ -44,94 +44,93 @@ line level    source
   34   1              SPI_SendData(SPI_DATA);                                                 // SPI 发送数据
   35   1              while(SPI_ChkCompleteFlag()==0);                                // 等待SPI传送完成
   36   1              SPI_ClearCompleteFlag();                                                // SPI 清完成标志
-  37   1          while(SPSTAT & SPIBSY);
-  38   1              return SPI_GetData();                                                   // 返回接收到的数据
-  39   1      }
+  37   1              return SPI_GetData();                                                   // 返回接收到的数据
+  38   1      }
+  39          
   40          
-  41          
-  42          void ML7345_Write_Reg(u8 addr,u8 dat)
-  43          {
-  44   1          DelayXus(1);
-  45   1          SPI1_CS_L;
-  46   1          DelayXus(1);
-  47   1      
-  48   1          addr = (addr << 1) | 0x01;
-  49   1          SPI1_SendRecv_Data(addr);
-  50   1          SPI1_SendRecv_Data(dat);
-  51   1      
-  52   1          DelayXus(1);
-  53   1          SPI1_CS_H;
-  54   1          DelayXus(1);
-C51 COMPILER V9.60.0.0   SPI                                                               02/25/2022 17:15:43 PAGE 2   
+  41          void ML7345_Write_Reg(u8 addr,u8 dat)
+  42          {
+  43   1          DelayXus(1);
+  44   1          SPI1_CS_L;
+  45   1          DelayXus(1);
+  46   1      
+  47   1          addr = (addr << 1) | 0x01;
+  48   1          SPI1_SendRecv_Data(addr);
+  49   1          SPI1_SendRecv_Data(dat);
+  50   1      
+  51   1          DelayXus(1);
+  52   1          SPI1_CS_H;
+  53   1          DelayXus(1);
+  54   1      }
+C51 COMPILER V9.60.0.0   SPI                                                               03/01/2022 16:31:53 PAGE 2   
 
-  55   1      }
-  56          
-  57          u8 ML7345_Read_Reg(u8 addr)
-  58          {
-  59   1          xdata u8 read = 0;
-  60   1          DelayXus(1);
-  61   1          SPI1_CS_L;
-  62   1          DelayXus(1);
-  63   1      
-  64   1          addr = addr << 1;
-  65   1          SPI1_SendRecv_Data(addr);       /* 写地址 */
-  66   1          read = SPI1_SendRecv_Data(0xFF);/* 读数据 */
-  67   1      
-  68   1          DelayXus(1);
-  69   1          SPI1_CS_H;
-  70   1          DelayXus(1);
-  71   1      
-  72   1          return read;
-  73   1      }
-  74          
-  75          void ML7345_Write_Fifo(u8 addr,u8 *pbuf,u8 len)
-  76          {
-  77   1          xdata u8 i = 0;
-  78   1          DelayXus(1);
-  79   1          SPI1_CS_L;
-  80   1          DelayXus(1);
-  81   1      
-  82   1          addr = (addr << 1) | 0x01;
-  83   1          SPI1_SendRecv_Data(addr);
-  84   1          SPI1_SendRecv_Data(pbuf[0]);
-  85   1          for(i=1; i<len; i++)
-  86   1          {
-  87   2              DelayXus(2);
-  88   2              SPI1_SendRecv_Data(pbuf[i]);
-  89   2          }
-  90   1      
-  91   1          DelayXus(1);
-  92   1          SPI1_CS_H;
-  93   1          DelayXus(1);
-  94   1      }
-  95          
-  96          void ML7345_Read_Fifo(u8 addr,u8 *pbuf,u8 len)
-  97          {
-  98   1          xdata u8 i = 0;
-  99   1          DelayXus(1);
- 100   1          SPI1_CS_L;
- 101   1          DelayXus(1);
- 102   1      
- 103   1          addr = addr << 1;
- 104   1          SPI1_SendRecv_Data(addr);
- 105   1      
- 106   1          for(i=0; i<len; i++)
- 107   1          {
- 108   2              pbuf[i] = SPI1_SendRecv_Data(0xFF);
- 109   2          }
- 110   1      
- 111   1          DelayXus(1);
- 112   1          SPI1_CS_H;
- 113   1          DelayXus(1);
- 114   1      }
- 115          //////////////////////////////////////////////////////////////////////////////////////////////
- 116          
-C51 COMPILER V9.60.0.0   SPI                                                               02/25/2022 17:15:43 PAGE 3   
+  55          
+  56          u8 ML7345_Read_Reg(u8 addr)
+  57          {
+  58   1          xdata u8 read = 0;
+  59   1          DelayXus(1);
+  60   1          SPI1_CS_L;
+  61   1          DelayXus(1);
+  62   1      
+  63   1          addr = addr << 1;
+  64   1          SPI1_SendRecv_Data(addr);       /* 写地址 */
+  65   1          read = SPI1_SendRecv_Data(0xFF);/* 读数据 */
+  66   1      
+  67   1          DelayXus(1);
+  68   1          SPI1_CS_H;
+  69   1          DelayXus(1);
+  70   1      
+  71   1          return read;
+  72   1      }
+  73          
+  74          void ML7345_Write_Fifo(u8 addr,u8 *pbuf,u8 len)
+  75          {
+  76   1          xdata u8 i = 0;
+  77   1          DelayXus(1);
+  78   1          SPI1_CS_L;
+  79   1          DelayXus(1);
+  80   1      
+  81   1          addr = (addr << 1) | 0x01;
+  82   1          SPI1_SendRecv_Data(addr);
+  83   1          SPI1_SendRecv_Data(pbuf[0]);
+  84   1          for(i=1; i<len; i++)
+  85   1          {
+  86   2              DelayXus(2);
+  87   2              SPI1_SendRecv_Data(pbuf[i]);
+  88   2          }
+  89   1      
+  90   1          DelayXus(1);
+  91   1          SPI1_CS_H;
+  92   1          DelayXus(1);
+  93   1      }
+  94          
+  95          void ML7345_Read_Fifo(u8 addr,u8 *pbuf,u8 len)
+  96          {
+  97   1          xdata u8 i = 0;
+  98   1          DelayXus(1);
+  99   1          SPI1_CS_L;
+ 100   1          DelayXus(1);
+ 101   1      
+ 102   1          addr = addr << 1;
+ 103   1          SPI1_SendRecv_Data(addr);
+ 104   1      
+ 105   1          for(i=0; i<len; i++)
+ 106   1          {
+ 107   2              pbuf[i] = SPI1_SendRecv_Data(0xFF);
+ 108   2          }
+ 109   1      
+ 110   1          DelayXus(1);
+ 111   1          SPI1_CS_H;
+ 112   1          DelayXus(1);
+ 113   1      }
+ 114          //////////////////////////////////////////////////////////////////////////////////////////////
+ 115          
 
+C51 COMPILER V9.60.0.0   SPI                                                               03/01/2022 16:31:53 PAGE 3   
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    390    ----
+   CODE SIZE        =    385    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =      3    ----
    PDATA SIZE       =   ----    ----

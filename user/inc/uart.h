@@ -22,7 +22,7 @@
 #define FrameEndStatus 0x02  //桢结板
 #define FrameHead 0x02       //数据弿姿
 #define FrameSingnalID 0x11  //信号ID
-#define UartBuff_MaxLength  40
+#define UartBuff_MaxLength  41
 
 #define U1AckDelayTime 2
 

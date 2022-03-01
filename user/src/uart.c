@@ -12,8 +12,8 @@ xdata u8 UartCount = 0;
 xdata u8 UART_DATA_buffer[UartBuff_MaxLength] = {0};
 xdata u8 UART_DATA_ID98[41] = {0};
 
-xdata __Databits_t Databits_t;
-xdata __U1Statues U1Statues;
+xdata __Databits_t Databits_t = {0};
+xdata __U1Statues U1Statues = {0};
 idata u8 ACKBack[3] = {0x02, 0x03, 0x00};
 xdata u8 U1AckTimer = 0;
 

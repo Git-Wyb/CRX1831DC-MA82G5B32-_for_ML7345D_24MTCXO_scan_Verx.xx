@@ -18,7 +18,6 @@ xdata u8 Fre_429_550[8] = {0x23,0x0C,0xBB,0xBC,0x23,0x0C,0x33,0x33}; //429.550MH
 xdata u8 Fre_426_750[8] = {0x23,0x09,0x00,0x00,0x23,0x08,0x77,0x77}; //426.750MHz频率设置
 xdata u8 Fre_429_175[8] = {0x23,0x0c,0x3b,0xbc,0x23,0x0b,0xb3,0x33}; //429.175MHz频率设置
 
-/**ADF7030_REST**/ xdata u8 ADF7030_REST_Cache = 0;
 /**Receiver_vent**/ xdata u8 Receiver_vent_Cache = 0;
 xdata u32 SPI_Receive_DataForC[7]; //C郿
 xdata u8 SPI_RECEIVE_BUFF[40] = {0};
@@ -445,6 +444,7 @@ void APP_TX_PACKET(void)
             retx_cnt = 0;
             Flag_tx_en = 0;
             FLAG_APP_RX = 1;
+            Receiver_LED_TX = 0;
         }
     }
 }
@@ -565,8 +565,8 @@ void ML7345D_RF_test_mode(void)
 
     Flag_test_mode = 0;
     Flag_test_pc = 0;
-    ML7345_GPIO0RxDoneInt_Enable(); /* 开启接收完成中断,ML7345D GPIO1中断输出 */
-    ML7345_GPIO0TxDoneInt_Enable(); /* 开启发送完成中断,ML7345D GPIO1中断输出 */
+    ML7345_GPIO0RxDoneInt_Enable(); /* 开启接收完成中断,ML7345D GPIO0中断输出 */
+    ML7345_GPIO0TxDoneInt_Enable(); /* 开启发送完成中断,ML7345D GPIO0中断输出 */
     FG_test_rx = 0;
     TIMER1s = 0;
     Receiver_LED_TX = 0;

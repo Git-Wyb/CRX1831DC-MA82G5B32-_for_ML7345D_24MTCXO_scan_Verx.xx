@@ -7,7 +7,7 @@ void Init_Spi(void)
     SPI_Enable();
 	// 设置MASTER
 	SPI_SelectMASTERByMSTRbit();
-	// 设置SPI时钟 SYSCLK/16
+	// 设置SPI时钟 SYSCLK/8
 	SPI_SetClock(SPI_CLK_SYSCLK_8);
 	// 设置SPICLK初始电平 CPOL=0 低电平
 	SPI_SetCPOL_0();	
@@ -34,7 +34,6 @@ u8 SPI1_SendRecv_Data(u8 SPI_DATA)
 	SPI_SendData(SPI_DATA);							// SPI 发送数据
 	while(SPI_ChkCompleteFlag()==0);				// 等待SPI传送完成
 	SPI_ClearCompleteFlag();						// SPI 清完成标志
-    while(SPSTAT & SPIBSY);
 	return SPI_GetData();							// 返回接收到的数据
 }
 

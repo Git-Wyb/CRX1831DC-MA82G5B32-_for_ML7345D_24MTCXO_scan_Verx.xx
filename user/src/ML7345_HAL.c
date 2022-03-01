@@ -367,6 +367,7 @@ Function: ML7345 TX RX INT CONFIG
 Parameter: GpioCtrlAddr:GPIO ADDR; Intnum:Tx Done Interrupt or Rx Done Interrupt; Inten:1 Enable,0 Disable
 Return: Null
 */
+#if 0
 void ML7345_TRX_Int_Config(u8 GpioCtrlAddr,RF_TRX_ENUM Intnum,u8 Inten)
 {
     ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);    /* BANK 0 SEL*/
@@ -386,14 +387,21 @@ void ML7345_TRX_Int_Config(u8 GpioCtrlAddr,RF_TRX_ENUM Intnum,u8 Inten)
         else if(Intnum == RF_RxDone_Int) ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x00);/* 禁止中断事件8,接收完成中断 */
     }
 }
+#endif
 
 void ML7345_GPIO0TxDoneInt_Enable(void)
 {
-    ML7345_TRX_Int_Config(ADDR_GPIO0_CTRL,RF_TxDone_Int,1);
+    //ML7345_TRX_Int_Config(ADDR_GPIO0_CTRL,RF_TxDone_Int,1);
+    ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
+    ML7345_Write_Reg(ADDR_GPIO0_CTRL,GPIO_INTOUTPUT_ENABLE);
+    ML7345_Write_Reg(ADDR_INT_EN_GRP3,0x01);    /* 使能中断事件16,发送完成中断 */
 }
 void ML7345_GPIO0RxDoneInt_Enable(void)
 {
-    ML7345_TRX_Int_Config(ADDR_GPIO0_CTRL,RF_RxDone_Int,1);
+    ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
+    //ML7345_TRX_Int_Config(ADDR_GPIO0_CTRL,RF_RxDone_Int,1);
+    ML7345_Write_Reg(ADDR_GPIO0_CTRL,GPIO_INTOUTPUT_ENABLE);
+    ML7345_Write_Reg(ADDR_INT_EN_GRP2,0x21);    /* 0x21:使能中断事件8/13,接收完成中断/同步字检测中断 */
 }
 /*
 void ML7345_GPIO1TxDoneInt_Enable(void)

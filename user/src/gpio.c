@@ -98,8 +98,7 @@ void Init_INT1(void)
 	INT_SetINT1P33();						//设置INT1引脚P33
 	//INT_SetINT1_DetectRisingEdge();		
     INT_SetINT1_DetectFallingEdge();        //设置INT1外部中断检测方式为下降沿检测
-	//INT_SetINT1Filter_Sysclk_x3();			//设置INT1滤波为（sysclk）*3
-    INT_SetINT1Filter_Disable();
+	INT_SetINT1Filter_Sysclk_x3();			//设置INT1滤波为（sysclk）*3
 }
 #endif
 
@@ -147,8 +146,8 @@ void Init_Interrupt(void)
     Init_INT0();
     INT_EnINT0();			//	使能INT0中断
 #else
-    Init_INT0();
-	INT_EnINT0();			//	使能INT1中断
+    Init_INT1();
+	INT_EnINT1();			//	使能INT1中断
 #endif
     INT_EnTIMER0();			//	使能T0中断
 	INT_EnUART0();			//	使能串口中断

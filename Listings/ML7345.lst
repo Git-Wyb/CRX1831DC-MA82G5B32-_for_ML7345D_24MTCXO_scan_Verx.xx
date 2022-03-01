@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 1   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE ML7345
@@ -28,470 +28,470 @@ line level    source
   18          xdata u8 Fre_426_750[8] = {0x23,0x09,0x00,0x00,0x23,0x08,0x77,0x77}; //426.750MHz频率设置
   19          xdata u8 Fre_429_175[8] = {0x23,0x0c,0x3b,0xbc,0x23,0x0b,0xb3,0x33}; //429.175MHz频率设置
   20          
-  21          /**ADF7030_REST**/ xdata u8 ADF7030_REST_Cache = 0;
-  22          /**Receiver_vent**/ xdata u8 Receiver_vent_Cache = 0;
-  23          xdata u32 SPI_Receive_DataForC[7]; //C郿
-  24          xdata u8 SPI_RECEIVE_BUFF[40] = {0};
-  25          
-  26          /************Address: 0x20000500, Name: GENERIC_PKT_FRAME_CFG1***************************************/
-  27          
-  28          xdata u8 Radio_Date_Type = 1;
-  29          xdata u8 tx_pack_cnt = 0;
-  30          xdata u8 Radio_Date_Type_bak=1;
-  31          xdata u8 APP_TX_freq=0;
-  32          
-  33          xdata u8 TX_Scan_step=0;
-  34          xdata u8 First_TX_Scan=0;
-  35          xdata u8 rf_offset = 0;
-  36          
-  37          xdata u8 Freq_SetBuff[8] = {0};
-  38          /*
-  39          Function: RF Init
-  40          Parameter: Null
-  41          Return: Null
-  42          */
-  43          /* Initialize: 426MHz General Packet(TCXO_ChStep=12.5kHz_DR=1.2kbps_Dev=0.6kHz_GFSK)
-  44             发射功率0dBm */
-  45          void RF_ML7345_Init(u8* freq,u8 sync,u8 rx_len)
-  46          {
-  47   1          ML7345_RESETN_SET();    /* Hardware Reset */
-  48   1          while(1){
-  49   2              if(ML7345_Read_Reg(0x0Du)&0x01u){   /* Wait Clock stabilization completion */
-  50   3                  break;
-  51   3              }
-  52   2          }
-  53   1          ML7345_Write_Reg(0x00,0x11);    /* Bank0 Set */
-  54   1          ML7345_Write_Reg(0x01,0xff);    /* Software Reset */
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 2   
+  21          /**Receiver_vent**/ xdata u8 Receiver_vent_Cache = 0;
+  22          xdata u32 SPI_Receive_DataForC[7]; //C郿
+  23          xdata u8 SPI_RECEIVE_BUFF[40] = {0};
+  24          
+  25          /************Address: 0x20000500, Name: GENERIC_PKT_FRAME_CFG1***************************************/
+  26          
+  27          xdata u8 Radio_Date_Type = 1;
+  28          xdata u8 tx_pack_cnt = 0;
+  29          xdata u8 Radio_Date_Type_bak=1;
+  30          xdata u8 APP_TX_freq=0;
+  31          
+  32          xdata u8 TX_Scan_step=0;
+  33          xdata u8 First_TX_Scan=0;
+  34          xdata u8 rf_offset = 0;
+  35          
+  36          xdata u8 Freq_SetBuff[8] = {0};
+  37          /*
+  38          Function: RF Init
+  39          Parameter: Null
+  40          Return: Null
+  41          */
+  42          /* Initialize: 426MHz General Packet(TCXO_ChStep=12.5kHz_DR=1.2kbps_Dev=0.6kHz_GFSK)
+  43             发射功率0dBm */
+  44          void RF_ML7345_Init(u8* freq,u8 sync,u8 rx_len)
+  45          {
+  46   1          ML7345_RESETN_SET();    /* Hardware Reset */
+  47   1          while(1){
+  48   2              if(ML7345_Read_Reg(0x0Du)&0x01u){   /* Wait Clock stabilization completion */
+  49   3                  break;
+  50   3              }
+  51   2          }
+  52   1          ML7345_Write_Reg(0x00,0x11);    /* Bank0 Set */
+  53   1          ML7345_Write_Reg(0x01,0xff);    /* Software Reset */
+  54   1          ML7345_Write_Reg(0x02,0x9f);    /* Clk Enable */
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 2   
 
-  55   1          ML7345_Write_Reg(0x02,0x9f);    /* Clk Enable */
-  56   1          ML7345_Write_Reg(0x03,0xc3);    /* TCXO_EN */
-  57   1          ML7345_Write_Reg(0x04,0x03);    /* MSB first,Format D (non Wireless M-Bus, general purpose format) */
-  58   1          ML7345_Write_Reg(0x05,0x10);    /* CRC Disable,Length field 1-byte mode */
-  59   1          ML7345_Write_Reg(0x06,0x00);    /* Data Rate: 0x00 1.2kbps; 0x22 4.8kbps */
-  60   1          ML7345_Write_Reg(0x07,0x15);    /* GFSK,NRZ */
-  61   1          ML7345_Write_Reg(0x08,0x00);    /* Sync word pattern 1,Manchester Do not inverse polarity */
-  62   1          ML7345_Write_Reg(0x09,0x00);    /* CH 0 */
-  63   1          ML7345_Write_Reg(0x0a,0x18);    /* AUTO_TX_EN */
-  64   1          ML7345_Write_Reg(0x0b,0x88);    /* TRX_OFF */
-  65   1          ML7345_Write_Reg(0x0c,0x00);    /* FIFO mode */
-  66   1          ML7345_Write_Reg(0x0d,0x08);    /* [INT_SOURCE_GRP1],Interrupt status for INT0 to INT7 */
-  67   1          ML7345_Write_Reg(0x0e,0x00);    /* [INT_SOURCE_GRP2],Interrupt status for INT8 to INT15 (RX) */
-  68   1          ML7345_Write_Reg(0x0f,0x00);    /* [INT_SOURCE_GRP3],Interrupt status for INT16 to INT23 (TX) */
-  69   1          ML7345_Write_Reg(0x10,0x00);    /* masking interrupt,[INT_EN_GRP1]Interupt mask for INT0 to INT7 */
-  70   1          ML7345_Write_Reg(0x11,0x00);    /* masking interrupt,[INT_EN_GRP2]Interupt mask for INT8 to INT15 */
-  71   1          ML7345_Write_Reg(0x12,0x00);    /* masking interrupt,[INT_EN_GRP3]Interupt mask for INT16 to INT23 */
-  72   1          ML7345_Write_Reg(0x13,0x00);    /* [CRC_ERR_H]CRC error status (high byte) */
-  73   1          ML7345_Write_Reg(0x14,0x00);    /* [CRC_ERR_M]CRC error status (middle byte)*/
-  74   1          ML7345_Write_Reg(0x15,0x00);    /* [CRC_ERR_L]CRC error status (low byte)*/
-  75   1          ML7345_Write_Reg(0x16,0x00);    /* State clear control */
-  76   1          ML7345_Write_Reg(0x17,0x00);    /* TX FIFO-Full level setting */
-  77   1          ML7345_Write_Reg(0x18,0x00);    /* TX FIFO-Empty level setting and TX trigger level setting in FAST_TX
+  55   1          ML7345_Write_Reg(0x03,0xc3);    /* TCXO_EN */
+  56   1          ML7345_Write_Reg(0x04,0x03);    /* MSB first,Format D (non Wireless M-Bus, general purpose format) */
+  57   1          ML7345_Write_Reg(0x05,0x10);    /* CRC Disable,Length field 1-byte mode */
+  58   1          ML7345_Write_Reg(0x06,0x00);    /* Data Rate: 0x00 1.2kbps; 0x22 4.8kbps */
+  59   1          ML7345_Write_Reg(0x07,0x15);    /* GFSK,NRZ */
+  60   1          ML7345_Write_Reg(0x08,0x00);    /* Sync word pattern 1,Manchester Do not inverse polarity */
+  61   1          ML7345_Write_Reg(0x09,0x00);    /* CH 0 */
+  62   1          ML7345_Write_Reg(0x0a,0x18);    /* AUTO_TX_EN */
+  63   1          ML7345_Write_Reg(0x0b,0x88);    /* TRX_OFF */
+  64   1          ML7345_Write_Reg(0x0c,0x00);    /* FIFO mode */
+  65   1          ML7345_Write_Reg(0x0d,0x08);    /* [INT_SOURCE_GRP1],Interrupt status for INT0 to INT7 */
+  66   1          ML7345_Write_Reg(0x0e,0x00);    /* [INT_SOURCE_GRP2],Interrupt status for INT8 to INT15 (RX) */
+  67   1          ML7345_Write_Reg(0x0f,0x00);    /* [INT_SOURCE_GRP3],Interrupt status for INT16 to INT23 (TX) */
+  68   1          ML7345_Write_Reg(0x10,0x00);    /* masking interrupt,[INT_EN_GRP1]Interupt mask for INT0 to INT7 */
+  69   1          ML7345_Write_Reg(0x11,0x00);    /* masking interrupt,[INT_EN_GRP2]Interupt mask for INT8 to INT15 */
+  70   1          ML7345_Write_Reg(0x12,0x00);    /* masking interrupt,[INT_EN_GRP3]Interupt mask for INT16 to INT23 */
+  71   1          ML7345_Write_Reg(0x13,0x00);    /* [CRC_ERR_H]CRC error status (high byte) */
+  72   1          ML7345_Write_Reg(0x14,0x00);    /* [CRC_ERR_M]CRC error status (middle byte)*/
+  73   1          ML7345_Write_Reg(0x15,0x00);    /* [CRC_ERR_L]CRC error status (low byte)*/
+  74   1          ML7345_Write_Reg(0x16,0x00);    /* State clear control */
+  75   1          ML7345_Write_Reg(0x17,0x00);    /* TX FIFO-Full level setting */
+  76   1          ML7345_Write_Reg(0x18,0x00);    /* TX FIFO-Empty level setting and TX trigger level setting in FAST_TX
              - mode */
-  78   1          ML7345_Write_Reg(0x19,0x00);    /* RX FIFO-Full level disable and level setting */
-  79   1          ML7345_Write_Reg(0x1a,0x00);    /* RX FIFO-Empty level disable and level setting (high byte) */
-  80   1      
-  81   1          ML7345_Write_Reg(0x2d,0x06);    /* SLEEP execution and Wake-up operation setting */
-  82   1          /* Preamble */
-  83   1          ML7345_Write_Reg(0x3f,0x05);    /* Preamble pattern setting,p198*/
-  84   1      
-  85   1          ML7345_Write_Reg(0x41,0x8B);    /* Enable ED value calculation,bit3=0 ED value constantly updated,bit3
+  77   1          ML7345_Write_Reg(0x19,0x00);    /* RX FIFO-Full level disable and level setting */
+  78   1          ML7345_Write_Reg(0x1a,0x00);    /* RX FIFO-Empty level disable and level setting (high byte) */
+  79   1      
+  80   1          ML7345_Write_Reg(0x2d,0x06);    /* SLEEP execution and Wake-up operation setting */
+  81   1          /* Preamble */
+  82   1          ML7345_Write_Reg(0x3f,0x05);    /* Preamble pattern setting,p198*/
+  83   1      
+  84   1          ML7345_Write_Reg(0x41,0x8B);    /* Enable ED value calculation,bit3=0 ED value constantly updated,bit3
              -=1 ED value acquired at SyncWord detection timing*/
-  86   1      
-  87   1          ML7345_Write_Reg(0x42,0x00);    //TX前导码长度高八位
-  88   1          ML7345_Write_Reg(0x43,0x34);    //TX前导码长度低八位,不等少于16个位,TX preamble length =
+  85   1      
+  86   1          ML7345_Write_Reg(0x42,0x00);    //TX前导码长度高八位
+  87   1          ML7345_Write_Reg(0x43,0x34);    //TX前导码长度低八位,不等少于16个位,TX preamble length =
              - (specified value x2) bits
-  89   1          //----------------------------------------------------------------------------------------------------
+  88   1          //----------------------------------------------------------------------------------------------------
              --
-  90   1          ML7345_Write_Reg(0x45,0x08);    //接收前导码长度(bit) RX preamble setting and ED threshold chec
+  89   1          ML7345_Write_Reg(0x45,0x08);    //接收前导码长度(bit) RX preamble setting and ED threshold chec
              -k setting
-  91   1          //----------------------------------------------------------------------------------------------------
+  90   1          //----------------------------------------------------------------------------------------------------
              --
-  92   1          ML7345_Write_Reg(0x4e,0x00);    /* GPIO0 [output] “L” level */
-  93   1          ML7345_Write_Reg(0x4f,0x00);    /* GPIO1 [output] “L” level,Upon reset,disable GPIO1 pin is CLK_OU
+  91   1          ML7345_Write_Reg(0x4e,0x00);    /* GPIO0 [output] “L” level */
+  92   1          ML7345_Write_Reg(0x4f,0x00);    /* GPIO1 [output] “L” level,Upon reset,disable GPIO1 pin is CLK_OU
              -T function */
-  94   1          ML7345_Write_Reg(0x50,0x00);    /* GPIO2 [output] “L” level */
-  95   1          ML7345_Write_Reg(0x51,0x00);    /* GPIO3 [output] “L” level */
-  96   1      
-  97   1          ML7345_Write_Reg(0x54,0x14);    /* Channel filter bandwidth setting */
-  98   1      
-  99   1          ML7345_Write_Reg(0x60,0x06); /* Decimation gain setting 提高灵敏度 */
- 100   1      
- 101   1          ML7345_Write_Reg(0x63,0x88);    /* Fine adjustment of load capacitance for oscillation circuits */
- 102   1      
- 103   1          ML7345_Write_Reg(0x67,0x16);    /* 功率设置12dbm */
- 104   1          ML7345_Write_Reg(0x68,0x10);    /* PA regulator fine adjustment */
- 105   1          ML7345_Write_Reg(0x69,0x03);    /* PA gain adjustment */
- 106   1      
- 107   1          ML7345_Write_Reg(0x6e,0x5b);    /*5b VCO calibration setting or status indication */
- 108   1      
- 109   1          ML7345_Write_Reg(0x7a,0x00);    //发送包长度高八位
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 3   
+  93   1          ML7345_Write_Reg(0x50,0x00);    /* GPIO2 [output] “L” level */
+  94   1          ML7345_Write_Reg(0x51,0x00);    /* GPIO3 [output] “L” level */
+  95   1      
+  96   1          ML7345_Write_Reg(0x54,0x14);    /* Channel filter bandwidth setting */
+  97   1      
+  98   1          ML7345_Write_Reg(0x60,0x06); /* Decimation gain setting 提高灵敏度 */
+  99   1      
+ 100   1          ML7345_Write_Reg(0x63,0x88);    /* Fine adjustment of load capacitance for oscillation circuits */
+ 101   1      
+ 102   1          ML7345_Write_Reg(0x67,0x16);    /* 功率设置12dbm */
+ 103   1          ML7345_Write_Reg(0x68,0x10);    /* PA regulator fine adjustment */
+ 104   1          ML7345_Write_Reg(0x69,0x03);    /* PA gain adjustment */
+ 105   1      
+ 106   1          ML7345_Write_Reg(0x6e,0x5b);    /*5b VCO calibration setting or status indication */
+ 107   1      
+ 108   1          ML7345_Write_Reg(0x7a,0x00);    //发送包长度高八位
+ 109   1          ML7345_Write_Reg(0x7b,0x0c);    //发送包长度低八位
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 3   
 
- 110   1          ML7345_Write_Reg(0x7b,0x0c);    //发送包长度低八位
- 111   1      
- 112   1          ML7345_Write_Reg(0x7d,0x00);    //接收包长度高八位
- 113   1          ML7345_Write_Reg(0x7e,rx_len);    //接收包长度低八位
- 114   1      
- 115   1          /***************************************************************************************************/
- 116   1      
- 117   1          ML7345_Write_Reg(0x00,0x22);    /* Bank1 Set */
- 118   1          ML7345_Write_Reg(0x02,0x07);    /* TX data rate conversion setting (high 4bits) */
- 119   1          ML7345_Write_Reg(0x03,0xd0);    /* TX data rate conversion setting (low byte) */
- 120   1          ML7345_Write_Reg(0x04,0x00);    /* RX data rate concversion setting 1 (high 4bits) */
- 121   1          ML7345_Write_Reg(0x05,0x50);    /* RX data rate cnvesrion setting 1 (low byte) */
- 122   1      
- 123   1          ML7345_Write_Reg(0x11,0x27);    /* RSSI offset value setting during low gain operation */
- 124   1      
- 125   1          ML7345_Write_Reg(0x13,0x0c);    /* Scale factor setting for ED value conversion */
- 126   1      
- 127   1          ML7345_Write_Reg(0x1a,0x02);    /* Divide 2,PLL frequency division setting */
- 128   1          /* 426.075MHz */
- 129   1          ML7345_Write_Reg(0x1b,freq[0]);    /* TX frequency setting (I counter),p67-69 */
- 130   1          ML7345_Write_Reg(0x1c,freq[1]);    /* TX frequency setting (F counter high 4bit) */
- 131   1          ML7345_Write_Reg(0x1d,freq[2]);    /* TX frequency setting (F counter middle byte) */
- 132   1          ML7345_Write_Reg(0x1e,freq[3]);    /* TX frequency setting (F counter low byte) */
- 133   1          ML7345_Write_Reg(0x1f,freq[0]);    /* RX frequency setting (I counter) */
- 134   1          ML7345_Write_Reg(0x20,freq[1]);    /* RX frequency setting (F counter high 4bit)  */
- 135   1          ML7345_Write_Reg(0x21,freq[2]);    /* RX frequency setting (F counter middle byte) */
- 136   1          ML7345_Write_Reg(0x22,freq[3]);    /* RX frequency setting (F counter low byte) */
- 137   1      
- 138   1          ML7345_Write_Reg(0x23,0x08);    /* 25KHz,Channel space setting (high byte) */
- 139   1          ML7345_Write_Reg(0x24,0x88);    /* Channel space setting (low byte) */
- 140   1          /* SyncWord 0x00005515 */
- 141   1          ML7345_Write_Reg(0x25,0x08);    /* SyncWord length setting */
- 142   1          ML7345_Write_Reg(0x26,0x0f);    /* SyncWord enable setting */
- 143   1          ML7345_Write_Reg(0x27,0x00);    /* SyncWord #1 setting (bit24 to 31) */
- 144   1          ML7345_Write_Reg(0x28,0x00);    /* SyncWord #1 setting (bit16 to 23) */
- 145   1          ML7345_Write_Reg(0x29,0x00);    /* SyncWord #1 setting (bit8 to 15) */
- 146   1          ML7345_Write_Reg(0x2a,sync);    /* SyncWord #1 setting (bit0 to 7) */
- 147   1      
- 148   1          ML7345_Write_Reg(0x2f,0x08);    /* GFSK clock setting x8 clock,GFSK/FSK modulation timing resolution s
+ 110   1      
+ 111   1          ML7345_Write_Reg(0x7d,0x00);    //接收包长度高八位
+ 112   1          ML7345_Write_Reg(0x7e,rx_len);    //接收包长度低八位
+ 113   1      
+ 114   1          /***************************************************************************************************/
+ 115   1      
+ 116   1          ML7345_Write_Reg(0x00,0x22);    /* Bank1 Set */
+ 117   1          ML7345_Write_Reg(0x02,0x07);    /* TX data rate conversion setting (high 4bits) */
+ 118   1          ML7345_Write_Reg(0x03,0xd0);    /* TX data rate conversion setting (low byte) */
+ 119   1          ML7345_Write_Reg(0x04,0x00);    /* RX data rate concversion setting 1 (high 4bits) */
+ 120   1          ML7345_Write_Reg(0x05,0x50);    /* RX data rate cnvesrion setting 1 (low byte) */
+ 121   1      
+ 122   1          ML7345_Write_Reg(0x11,0x27);    /* RSSI offset value setting during low gain operation */
+ 123   1      
+ 124   1          ML7345_Write_Reg(0x13,0x0c);    /* Scale factor setting for ED value conversion */
+ 125   1      
+ 126   1          ML7345_Write_Reg(0x1a,0x02);    /* Divide 2,PLL frequency division setting */
+ 127   1          /* 426.075MHz */
+ 128   1          ML7345_Write_Reg(0x1b,freq[0]);    /* TX frequency setting (I counter),p67-69 */
+ 129   1          ML7345_Write_Reg(0x1c,freq[1]);    /* TX frequency setting (F counter high 4bit) */
+ 130   1          ML7345_Write_Reg(0x1d,freq[2]);    /* TX frequency setting (F counter middle byte) */
+ 131   1          ML7345_Write_Reg(0x1e,freq[3]);    /* TX frequency setting (F counter low byte) */
+ 132   1          ML7345_Write_Reg(0x1f,freq[0]);    /* RX frequency setting (I counter) */
+ 133   1          ML7345_Write_Reg(0x20,freq[1]);    /* RX frequency setting (F counter high 4bit)  */
+ 134   1          ML7345_Write_Reg(0x21,freq[2]);    /* RX frequency setting (F counter middle byte) */
+ 135   1          ML7345_Write_Reg(0x22,freq[3]);    /* RX frequency setting (F counter low byte) */
+ 136   1      
+ 137   1          ML7345_Write_Reg(0x23,0x08);    /* 25KHz,Channel space setting (high byte) */
+ 138   1          ML7345_Write_Reg(0x24,0x88);    /* Channel space setting (low byte) */
+ 139   1          /* SyncWord 0x00005515 */
+ 140   1          ML7345_Write_Reg(0x25,0x08);    /* SyncWord length setting */
+ 141   1          ML7345_Write_Reg(0x26,0x0f);    /* SyncWord enable setting */
+ 142   1          ML7345_Write_Reg(0x27,0x00);    /* SyncWord #1 setting (bit24 to 31) */
+ 143   1          ML7345_Write_Reg(0x28,0x00);    /* SyncWord #1 setting (bit16 to 23) */
+ 144   1          ML7345_Write_Reg(0x29,0x00);    /* SyncWord #1 setting (bit8 to 15) */
+ 145   1          ML7345_Write_Reg(0x2a,sync);    /* SyncWord #1 setting (bit0 to 7) */
+ 146   1      
+ 147   1          ML7345_Write_Reg(0x2f,0x08);    /* GFSK clock setting x8 clock,GFSK/FSK modulation timing resolution s
              -etting */
- 149   1          ML7345_Write_Reg(0x30,0x00);    /* GFSK frequency deviation setting (high 6bits) */
- 150   1          ML7345_Write_Reg(0x31,0xAE);    /* P71  GFSK frequency deviation:2.0KHz,GFSK frequency deviation setti
+ 148   1          ML7345_Write_Reg(0x30,0x00);    /* GFSK frequency deviation setting (high 6bits) */
+ 149   1          ML7345_Write_Reg(0x31,0xAE);    /* P71  GFSK frequency deviation:2.0KHz,GFSK frequency deviation setti
              -ng (low byte) */
- 151   1      
- 152   1          /*(Channel#0 frequency-400khz)426.075:0x23 0x07 0x91 0x11;
- 153   1          426.25:0x23 0x07 0xcc 0xcc */
- 154   1          ML7345_Write_Reg(0x4d,freq[4]);    /* VCO calibration low limit frequency setting (I counter),p254 */
- 155   1          ML7345_Write_Reg(0x4e,freq[5]);    /* VCO calibration low limit frequency setting (F counter high 4bit
+ 150   1      
+ 151   1          /*(Channel#0 frequency-400khz)426.075:0x23 0x07 0x91 0x11;
+ 152   1          426.25:0x23 0x07 0xcc 0xcc */
+ 153   1          ML7345_Write_Reg(0x4d,freq[4]);    /* VCO calibration low limit frequency setting (I counter),p254 */
+ 154   1          ML7345_Write_Reg(0x4e,freq[5]);    /* VCO calibration low limit frequency setting (F counter high 4bit
              -s) */
- 156   1          ML7345_Write_Reg(0x4f,freq[6]);    /* VCO calibration low limit frequency setting (F counter middle by
+ 155   1          ML7345_Write_Reg(0x4f,freq[6]);    /* VCO calibration low limit frequency setting (F counter middle by
              -te) */
- 157   1          ML7345_Write_Reg(0x50,freq[7]);    /* VCO calibration low limit frequency setting (F counter low byte)
+ 156   1          ML7345_Write_Reg(0x50,freq[7]);    /* VCO calibration low limit frequency setting (F counter low byte)
              - */
- 158   1          ML7345_Write_Reg(0x51,0x04);    /* 6 MHz,VCO calibration upper limit frequency setting */
- 159   1          ML7345_Write_Reg(0x52,0x5a);    /* VCO calibration low limit value indication and setting */
- 160   1          ML7345_Write_Reg(0x53,0x66);    /* VCO calibration upper limit value indication and setting */
- 161   1      
- 162   1          ML7345_Write_Reg(0x5c,0x15);    /* 0x10 Demodulator configulation 6 */
- 163   1          ML7345_Write_Reg(0x5d,0x1b);    /* 0x1b Demodulator configulation 7 */
- 164   1          ML7345_Write_Reg(0x5e,0x05);    /* 0x05 Demodulator configuration 8 */
- 165   1          ML7345_Write_Reg(0x5f,0x67);    /* 0x67 Demodulator configulation 9 */
- 166   1          ML7345_Write_Reg(0x60,0x0c);    /* Demodulator configulation 10 */
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 4   
+ 157   1          ML7345_Write_Reg(0x51,0x04);    /* 6 MHz,VCO calibration upper limit frequency setting */
+ 158   1          ML7345_Write_Reg(0x52,0x5a);    /* VCO calibration low limit value indication and setting */
+ 159   1          ML7345_Write_Reg(0x53,0x66);    /* VCO calibration upper limit value indication and setting */
+ 160   1      
+ 161   1          ML7345_Write_Reg(0x5c,0x15);    /* 0x10 Demodulator configulation 6 */
+ 162   1          ML7345_Write_Reg(0x5d,0x1b);    /* 0x1b Demodulator configulation 7 */
+ 163   1          ML7345_Write_Reg(0x5e,0x05);    /* 0x05 Demodulator configuration 8 */
+ 164   1          ML7345_Write_Reg(0x5f,0x67);    /* 0x67 Demodulator configulation 9 */
+ 165   1          ML7345_Write_Reg(0x60,0x0c);    /* Demodulator configulation 10 */
+ 166   1      
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 4   
 
- 167   1      
- 168   1          SetReg_Rssi();  //2021.11.17 ROHM提出必要设置,否则读取RSSI偏差大。
- 169   1      
- 170   1          ML7345_Write_Reg(0x00,0x44); //bank2
- 171   1          ML7345_Write_Reg(0x2a,0x0f); //2019.11.25 ROHM提出设置,设置之后灵敏度提升了2dBm
- 172   1      
- 173   1          /* 以下寄存器值为发送功率必要设置，不然发送功率偏差大 */
- 174   1          ML7345_Write_Reg(0x00,0x44); //bank2
- 175   1          ML7345_Write_Reg(0x4f,0x00);
- 176   1      
- 177   1          ML7345_Write_Reg(0x00,0x88); //bank3
- 178   1          ML7345_Write_Reg(0x2f,0x3f);
- 179   1          ML7345_Write_Reg(0x0c,0x41);
- 180   1          ML7345_Write_Reg(0x0d,0x33);
- 181   1          ML7345_Write_Reg(0x0e,0x54);
- 182   1          ML7345_Write_Reg(0x14,0x10);
- 183   1          ML7345_Write_Reg(0x24,0x03);
- 184   1          ML7345_Write_Reg(0x7e,0x00);
- 185   1      
- 186   1          if((PROFILE_CH_FREQ_32bit_200002EC == 429350000) || (PROFILE_CH_FREQ_32bit_200002EC == 429550000)) ML7
+ 167   1          SetReg_Rssi();  //2021.11.17 ROHM提出必要设置,否则读取RSSI偏差大。
+ 168   1      
+ 169   1          ML7345_Write_Reg(0x00,0x44); //bank2
+ 170   1          ML7345_Write_Reg(0x2a,0x0f); //2019.11.25 ROHM提出设置,设置之后灵敏度提升了2dBm
+ 171   1      
+ 172   1          /* 以下寄存器值为发送功率必要设置，不然发送功率偏差大 */
+ 173   1          ML7345_Write_Reg(0x00,0x44); //bank2
+ 174   1          ML7345_Write_Reg(0x4f,0x00);
+ 175   1      
+ 176   1          ML7345_Write_Reg(0x00,0x88); //bank3
+ 177   1          ML7345_Write_Reg(0x2f,0x3f);
+ 178   1          ML7345_Write_Reg(0x0c,0x41);
+ 179   1          ML7345_Write_Reg(0x0d,0x33);
+ 180   1          ML7345_Write_Reg(0x0e,0x54);
+ 181   1          ML7345_Write_Reg(0x14,0x10);
+ 182   1          ML7345_Write_Reg(0x24,0x03);
+ 183   1          ML7345_Write_Reg(0x7e,0x00);
+ 184   1      
+ 185   1          if((PROFILE_CH_FREQ_32bit_200002EC == 429350000) || (PROFILE_CH_FREQ_32bit_200002EC == 429550000)) ML7
              -345_DataRate_Set_4_8k();
- 187   1          else    ML7345_DataRate_Set_1_2k();
- 188   1          /*****************************************************/
- 189   1      
- 190   1          ML7345_Write_Reg(0x00, 0x11);     /* BANK_SEL(BANK0) */
- 191   1          ML7345_Write_Reg(0x6f, 0x01);     /* VCO_CAL_START(CAL start) */
- 192   1          while(1){
- 193   2              if(ML7345_Read_Reg(0x0Du)&0x02u){   /* Wait VCO calibration completion */
- 194   3                  break;
- 195   3              }
- 196   2          }
- 197   1          ML7345_AllStateFlag_Clear(); //清除所有标志
- 198   1      }
- 199          
- 200          void ML7345_MeasurBER_Init(void)
- 201          {
- 202   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK1_SEL);
- 203   1          ML7345_Write_Reg(0x0e,0x00);
- 204   1      
- 205   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK3_SEL);
- 206   1          ML7345_Write_Reg(0x0d,0x33);
- 207   1      
- 208   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
- 209   1          ML7345_Write_Reg(0x0c,0x40); //50   /* DIO_SET, continuous output mode,DCLK is constantly output,no OU
+ 186   1          else    ML7345_DataRate_Set_1_2k();
+ 187   1          /*****************************************************/
+ 188   1      
+ 189   1          ML7345_Write_Reg(0x00, 0x11);     /* BANK_SEL(BANK0) */
+ 190   1          ML7345_Write_Reg(0x6f, 0x01);     /* VCO_CAL_START(CAL start) */
+ 191   1          while(1){
+ 192   2              if(ML7345_Read_Reg(0x0Du)&0x02u){   /* Wait VCO calibration completion */
+ 193   3                  break;
+ 194   3              }
+ 195   2          }
+ 196   1          ML7345_AllStateFlag_Clear(); //清除所有标志
+ 197   1      }
+ 198          
+ 199          void ML7345_MeasurBER_Init(void)
+ 200          {
+ 201   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK1_SEL);
+ 202   1          ML7345_Write_Reg(0x0e,0x00);
+ 203   1      
+ 204   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK3_SEL);
+ 205   1          ML7345_Write_Reg(0x0d,0x33);
+ 206   1      
+ 207   1          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
+ 208   1          ML7345_Write_Reg(0x0c,0x40); //50   /* DIO_SET, continuous output mode,DCLK is constantly output,no OU
              -TPUT (NOT stop output)*/
- 210   1          ML7345_Write_Reg(0x4d,0x80); //80
- 211   1      
- 212   1          ML7345_Write_Reg(0x4E,0x05);    //ML7345D GPIO0 DCLK
- 213   1          ML7345_Write_Reg(0x51,0x04);    //ML7345D GPIO3 DIO
- 214   1      }
+ 209   1          ML7345_Write_Reg(0x4d,0x80); //80
+ 210   1      
+ 211   1          ML7345_Write_Reg(0x4E,0x05);    //ML7345D GPIO0 DCLK
+ 212   1          ML7345_Write_Reg(0x51,0x04);    //ML7345D GPIO3 DIO
+ 213   1      }
+ 214          
  215          
- 216          
- 217          void DataReceive(void)
- 218          {
- 219   1          static u8 StateCache = 0;
- 220   1          static u8 Cache = 0;
- 221   1          static u8 X_HISbyte = 0;
- 222   1          switch (StateCache)
- 223   1          {
- 224   2              case 0:
- 225   2              {
- 226   3                  Cache <<= 1;
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 5   
+ 216          void DataReceive(void)
+ 217          {
+ 218   1          static u8 StateCache = 0;
+ 219   1          static u8 Cache = 0;
+ 220   1          static u8 X_HISbyte = 0;
+ 221   1          switch (StateCache)
+ 222   1          {
+ 223   2              case 0:
+ 224   2              {
+ 225   3                  Cache <<= 1;
+ 226   3                  if (ML7345_DATA)
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 5   
 
- 227   3                  if (ML7345_DATA)
- 228   3                      Cache++;
- 229   3                  if (Cache == 0x55)
- 230   3                  {
- 231   4                      StateCache = 1;
- 232   4                      X_HISbyte = 0;
- 233   4                      Cache = 0;
- 234   4                  }
- 235   3              }
- 236   2              break;
- 237   2              case 1:
- 238   2              {
- 239   3                  if (ML7345_DATA != X_HISbyte)
- 240   3                      X_ERR++;
- 241   3                  X_COUNT++;
- 242   3                  X_HISbyte ^= 1;
- 243   3                  if (X_COUNT >= 1000)
- 244   3                      StateCache = 2;
- 245   3              }
- 246   2              break;
- 247   2              case 2:
- 248   2                  if (X_COUNT == 0)
- 249   2                      StateCache = 0;
- 250   2                  break;
- 251   2              default:
- 252   2                  break;
- 253   2          }
- 254   1      }
+ 227   3                      Cache++;
+ 228   3                  if (Cache == 0x55)
+ 229   3                  {
+ 230   4                      StateCache = 1;
+ 231   4                      X_HISbyte = 0;
+ 232   4                      Cache = 0;
+ 233   4                  }
+ 234   3              }
+ 235   2              break;
+ 236   2              case 1:
+ 237   2              {
+ 238   3                  if (ML7345_DATA != X_HISbyte)
+ 239   3                      X_ERR++;
+ 240   3                  X_COUNT++;
+ 241   3                  X_HISbyte ^= 1;
+ 242   3                  if (X_COUNT >= 1000)
+ 243   3                      StateCache = 2;
+ 244   3              }
+ 245   2              break;
+ 246   2              case 2:
+ 247   2                  if (X_COUNT == 0)
+ 248   2                      StateCache = 0;
+ 249   2                  break;
+ 250   2              default:
+ 251   2                  break;
+ 252   2          }
+ 253   1      }
+ 254          
  255          
  256          
- 257          
- 258          void Tx_Data_Test(u8 mode)
- 259          {
- 260   1          ML7345_Write_Reg(0x00, 0x11);     /* BANK_SEL(BANK0) */
- 261   1          switch(mode)
- 262   1          {
- 263   2              /* 发送：载波 */
- 264   2              case 0: ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x21);break;
- 265   2      
- 266   2              /* 发送：0101 */
- 267   2              case 1:ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x11);break;
- 268   2      
- 269   2              /* 发送：0 */
- 270   2              case 2:ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x09);break;
- 271   2      
- 272   2              /* 发送：1 */
- 273   2              case 3: ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x05);break;
- 274   2      
- 275   2               /* 发送：随机 */
- 276   2              default:
- 277   2                  ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x03);
- 278   2               break;
- 279   2          }
- 280   1          ML7345_SetAndGet_State(TX_ON);
- 281   1      }
+ 257          void Tx_Data_Test(u8 mode)
+ 258          {
+ 259   1          ML7345_Write_Reg(0x00, 0x11);     /* BANK_SEL(BANK0) */
+ 260   1          switch(mode)
+ 261   1          {
+ 262   2              /* 发送：载波 */
+ 263   2              case 0: ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x21);break;
+ 264   2      
+ 265   2              /* 发送：0101 */
+ 266   2              case 1:ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x11);break;
+ 267   2      
+ 268   2              /* 发送：0 */
+ 269   2              case 2:ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x09);break;
+ 270   2      
+ 271   2              /* 发送：1 */
+ 272   2              case 3: ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x05);break;
+ 273   2      
+ 274   2               /* 发送：随机 */
+ 275   2              default:
+ 276   2                  ML7345_Write_Reg(ADDR_RF_TEST_MODE,0x03);
+ 277   2               break;
+ 278   2          }
+ 279   1          ML7345_SetAndGet_State(TX_ON);
+ 280   1      }
+ 281          
  282          
- 283          
- 284          void RF_Ber_Test(void)
- 285          {
- 286   1          if (X_COUNT >= 1000)
- 287   1          {
- 288   2              if (X_ERR >= 50) Receiver_LED_RX = 0;
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 6   
+ 283          void RF_Ber_Test(void)
+ 284          {
+ 285   1          if (X_COUNT >= 1000)
+ 286   1          {
+ 287   2              if (X_ERR >= 50) Receiver_LED_RX = 0;
+ 288   2              else             Receiver_LED_RX = 1;
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 6   
 
- 289   2              else             Receiver_LED_RX = 1;
- 290   2              X_ERR = 0;
- 291   2              X_COUNT = 0;
- 292   2              X_ERRTimer = 1250;
- 293   2          }
- 294   1          if (X_ERRTimer == 0)
- 295   1              Receiver_LED_RX = 0;
- 296   1      }
- 297          
- 298          void Uart_RF_Ber_Test(void)
- 299          {
- 300   1          if (X_COUNT >= 1000)
- 301   1          {
- 302   2              if(X_ERR > 255)  X_ERR_CNT = 255;
- 303   2              else X_ERR_CNT = X_ERR;
- 304   2      
- 305   2              if (X_ERR >= 50) Receiver_LED_RX = 0;
- 306   2              else             Receiver_LED_RX = 1;
- 307   2      
- 308   2              X_ERR = 0;
- 309   2              X_COUNT = 0;
- 310   2              X_ERRTimer = 1250;
- 311   2          }
- 312   1          if (X_ERRTimer == 0)
- 313   1              Receiver_LED_RX = 0;
- 314   1      }
- 315          
- 316          void APP_TX_PACKET(void)
- 317          {
- 318   1           xdata char rssi;
- 319   1               xdata u8 i=2,j=0;
- 320   1      
- 321   1               if((TP3==0)&&(FLAG_Key_TP3==0))FLAG_Key_TP3=1;
- 322   1      
- 323   1            if((Time_error_read_timeout==0)&&(Flag_ERROR_Read==1))
- 324   1            {
- 325   2                      Flag_ERROR_Read=0;
- 326   2                      FLAG_APP_TX_fromUART_err_read=0;
- 327   2            }
- 328   1            if( (Flag_FREQ_Scan==0) && ((PROFILE_CH_FREQ_32bit_200002EC == 429350000)||(PROFILE_CH_FREQ_32bit_20
+ 289   2              X_ERR = 0;
+ 290   2              X_COUNT = 0;
+ 291   2              X_ERRTimer = 1250;
+ 292   2          }
+ 293   1          if (X_ERRTimer == 0)
+ 294   1              Receiver_LED_RX = 0;
+ 295   1      }
+ 296          
+ 297          void Uart_RF_Ber_Test(void)
+ 298          {
+ 299   1          if (X_COUNT >= 1000)
+ 300   1          {
+ 301   2              if(X_ERR > 255)  X_ERR_CNT = 255;
+ 302   2              else X_ERR_CNT = X_ERR;
+ 303   2      
+ 304   2              if (X_ERR >= 50) Receiver_LED_RX = 0;
+ 305   2              else             Receiver_LED_RX = 1;
+ 306   2      
+ 307   2              X_ERR = 0;
+ 308   2              X_COUNT = 0;
+ 309   2              X_ERRTimer = 1250;
+ 310   2          }
+ 311   1          if (X_ERRTimer == 0)
+ 312   1              Receiver_LED_RX = 0;
+ 313   1      }
+ 314          
+ 315          void APP_TX_PACKET(void)
+ 316          {
+ 317   1           xdata char rssi;
+ 318   1               xdata u8 i=2,j=0;
+ 319   1      
+ 320   1               if((TP3==0)&&(FLAG_Key_TP3==0))FLAG_Key_TP3=1;
+ 321   1      
+ 322   1            if((Time_error_read_timeout==0)&&(Flag_ERROR_Read==1))
+ 323   1            {
+ 324   2                      Flag_ERROR_Read=0;
+ 325   2                      FLAG_APP_TX_fromUART_err_read=0;
+ 326   2            }
+ 327   1            if( (Flag_FREQ_Scan==0) && ((PROFILE_CH_FREQ_32bit_200002EC == 429350000)||(PROFILE_CH_FREQ_32bit_20
              -0002EC == 429550000)) &&
- 329   1                        ((FLAG_APP_TX_fromUART_err_read==1) && (Flag_ERROR_Read==1) && (Time_error_read_gap==0) && ((FLAG_AP
+ 328   1                        ((FLAG_APP_TX_fromUART_err_read==1) && (Flag_ERROR_Read==1) && (Time_error_read_gap==0) && ((FLAG_AP
              -P_RX==1)||(FLAG_APP_RXstart==1)) && (Radio_Date_Type_bak==2))
- 330   1                         )
- 331   1            {
- 332   2               for(j=0;j<8;j++)Last_Uart_Struct_DATA_Packet_Contro.Data[j/2].uc[j%2]=0x00;
- 333   2      
- 334   2               Last_Uart_Struct_DATA_Packet_Contro.Fno_Type.UN.type=0x1f;
- 335   2                       Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[0]=0x98;
- 336   2                       ERROR_Read_sendTX_packet++;
- 337   2                       Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[1]=ERROR_Read_sendTX_packet;
- 338   2                       while(ERROR_Read_sendTX_count<UART_DATA_ID98[1]-4)
- 339   2                       {
- 340   3                           Last_Uart_Struct_DATA_Packet_Contro.Data[i/2].uc[i%2]=UART_DATA_ID98[ERROR_Read_sendTX_count+4];
- 341   3                               ERROR_Read_sendTX_count++;
- 342   3                               i++;
- 343   3                               if(i==8)break;
- 344   3                       }
- 345   2                       if(ERROR_Read_sendTX_count==UART_DATA_ID98[1]-4)
- 346   2                       {
- 347   3                              Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[1]= Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[1] |
+ 329   1                         )
+ 330   1            {
+ 331   2               for(j=0;j<8;j++)Last_Uart_Struct_DATA_Packet_Contro.Data[j/2].uc[j%2]=0x00;
+ 332   2      
+ 333   2               Last_Uart_Struct_DATA_Packet_Contro.Fno_Type.UN.type=0x1f;
+ 334   2                       Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[0]=0x98;
+ 335   2                       ERROR_Read_sendTX_packet++;
+ 336   2                       Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[1]=ERROR_Read_sendTX_packet;
+ 337   2                       while(ERROR_Read_sendTX_count<UART_DATA_ID98[1]-4)
+ 338   2                       {
+ 339   3                           Last_Uart_Struct_DATA_Packet_Contro.Data[i/2].uc[i%2]=UART_DATA_ID98[ERROR_Read_sendTX_count+4];
+ 340   3                               ERROR_Read_sendTX_count++;
+ 341   3                               i++;
+ 342   3                               if(i==8)break;
+ 343   3                       }
+ 344   2                       if(ERROR_Read_sendTX_count==UART_DATA_ID98[1]-4)
+ 345   2                       {
+ 346   3                              Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[1]= Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[1] |
              -0x80;
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 7   
+ 347   3                              FLAG_APP_TX_fromUART_err_read=0;
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 7   
 
- 348   3                              FLAG_APP_TX_fromUART_err_read=0;
- 349   3                              Flag_ERROR_Read=0;
- 350   3                       }
- 351   2      
- 352   2                       DEF_APP_TX_freq=3;
- 353   2                       FLAG_APP_TX=1;
- 354   2                       FLAG_APP_RX=0;
- 355   2                       //FLAG_APP_RXstart=0;
- 356   2                       APP_TX_freq=0;
- 357   2                       TX_Scan_step=1;
- 358   2                       First_TX_Scan=0;
- 359   2      
- 360   2                }
- 361   1            else if((Flag_FREQ_Scan==0)&&((PROFILE_CH_FREQ_32bit_200002EC == 429350000)||(PROFILE_CH_FREQ_32bit_
+ 348   3                              Flag_ERROR_Read=0;
+ 349   3                       }
+ 350   2      
+ 351   2                       DEF_APP_TX_freq=3;
+ 352   2                       FLAG_APP_TX=1;
+ 353   2                       FLAG_APP_RX=0;
+ 354   2                       //FLAG_APP_RXstart=0;
+ 355   2                       APP_TX_freq=0;
+ 356   2                       TX_Scan_step=1;
+ 357   2                       First_TX_Scan=0;
+ 358   2      
+ 359   2                }
+ 360   1            else if((Flag_FREQ_Scan==0)&&((PROFILE_CH_FREQ_32bit_200002EC == 429350000)||(PROFILE_CH_FREQ_32bit_
              -200002EC == 429550000))&&
- 362   1                        (((FLAG_APP_TX_fromOUT==1)&&(TIME_APP_TX_fromOUT==0))||(FLAG_Key_TP3==1)||
- 363   1                         //((FLAG_APP_TX_fromUART==1)&&(((TIME_APP_TX_fromOUT==0)&&(Radio_Date_Type_bak==2))||((TIMER300ms==
+ 361   1                        (((FLAG_APP_TX_fromOUT==1)&&(TIME_APP_TX_fromOUT==0))||(FLAG_Key_TP3==1)||
+ 362   1                         //((FLAG_APP_TX_fromUART==1)&&(((TIME_APP_TX_fromOUT==0)&&(Radio_Date_Type_bak==2))||((TIMER300ms==
              -0)&&(Radio_Date_Type_bak==1)))&&(Uart_Struct_DATA_Packet_Contro.data[0].ui!=Last_Uart_Struct_DATA_Packet_Contro.data[0].
              -ui))
- 364   1                         ((FLAG_APP_TX_fromUART==1)&&(((TIME_APP_TX_fromOUT==0)&&(Radio_Date_Type_bak==2))||((TIMER300ms==0)
+ 363   1                         ((FLAG_APP_TX_fromUART==1)&&(((TIME_APP_TX_fromOUT==0)&&(Radio_Date_Type_bak==2))||((TIMER300ms==0)
              -&&(Radio_Date_Type_bak==1))))
- 365   1                        )
- 366   1                      )
- 367   1                {
- 368   2                                                FLAG_APP_TX_fromUART=0;
- 369   2                                                FLAG_Key_TP3=0;
- 370   2                                                Last_Uart_Struct_DATA_Packet_Contro=Uart_Struct_DATA_Packet_Contro;
- 371   2                                                Last_Uart_Struct_DATA_Packet_Contro.Fno_Type.UN.type=1;
- 372   2                                                rssi=(RAM_RSSI_AVG - 255)/3 - 51;
- 373   2                            rssi = -rssi;
- 374   2                                                if(Radio_Date_Type_bak==2)rssi= rssi | 0x80;
- 375   2                                                Last_Uart_Struct_DATA_Packet_Contro.Data[1].uc[0]= rssi;
- 376   2                                                if(FLAG_APP_TX_fromOUT==1) Last_Uart_Struct_DATA_Packet_Contro.Fno_Type.UN.fno= Struct_DATA_Packet_
+ 364   1                        )
+ 365   1                      )
+ 366   1                {
+ 367   2                                                FLAG_APP_TX_fromUART=0;
+ 368   2                                                FLAG_Key_TP3=0;
+ 369   2                                                Last_Uart_Struct_DATA_Packet_Contro=Uart_Struct_DATA_Packet_Contro;
+ 370   2                                                Last_Uart_Struct_DATA_Packet_Contro.Fno_Type.UN.type=1;
+ 371   2                                                rssi=(RAM_RSSI_AVG - 255)/3 - 51;
+ 372   2                            rssi = -rssi;
+ 373   2                                                if(Radio_Date_Type_bak==2)rssi= rssi | 0x80;
+ 374   2                                                Last_Uart_Struct_DATA_Packet_Contro.Data[1].uc[0]= rssi;
+ 375   2                                                if(FLAG_APP_TX_fromOUT==1) Last_Uart_Struct_DATA_Packet_Contro.Fno_Type.UN.fno= Struct_DATA_Packet_
              -Contro_fno;
- 377   2                                                FLAG_APP_TX_fromOUT=0;
- 378   2                                                TIME_APP_TX_fromOUT=0;
- 379   2      
- 380   2                                                DEF_APP_TX_freq=3;
- 381   2                                                FLAG_APP_TX=1;
- 382   2                                                FLAG_APP_RX=0;
- 383   2                                                APP_TX_freq=0;
- 384   2                                                TX_Scan_step=1;
- 385   2                                                First_TX_Scan=0;
- 386   2      
- 387   2                            RSSI_Read_Counter = 0;
- 388   2                            RAM_RSSI_SUM = 0;
- 389   2                }
- 390   1          if(FLAG_APP_TX == 1)
- 391   1          {
- 392   2              if(TX_Scan_step==1)TX_Scan_step=2;
- 393   2                         if(TX_Scan_step==2)
- 394   2                         {
- 395   3                                      if(APP_TX_freq==0)
- 396   3                                      {
- 397   4                          Flag_tx_en = 1;
- 398   4                          TIMER18ms = 300;
- 399   4                                          Receiver_LED_TX = 1;
- 400   4                                              TX_DataLoad_HighSpeed(ID_SCX1801_DATA,Last_Uart_Struct_DATA_Packet_Contro, &CONST_TXPACKET_DATA_20000
+ 376   2                                                FLAG_APP_TX_fromOUT=0;
+ 377   2                                                TIME_APP_TX_fromOUT=0;
+ 378   2      
+ 379   2                                                DEF_APP_TX_freq=3;
+ 380   2                                                FLAG_APP_TX=1;
+ 381   2                                                FLAG_APP_RX=0;
+ 382   2                                                APP_TX_freq=0;
+ 383   2                                                TX_Scan_step=1;
+ 384   2                                                First_TX_Scan=0;
+ 385   2      
+ 386   2                            RSSI_Read_Counter = 0;
+ 387   2                            RAM_RSSI_SUM = 0;
+ 388   2                }
+ 389   1          if(FLAG_APP_TX == 1)
+ 390   1          {
+ 391   2              if(TX_Scan_step==1)TX_Scan_step=2;
+ 392   2                         if(TX_Scan_step==2)
+ 393   2                         {
+ 394   3                                      if(APP_TX_freq==0)
+ 395   3                                      {
+ 396   4                          Flag_tx_en = 1;
+ 397   4                          TIMER18ms = 300;
+ 398   4                                          Receiver_LED_TX = 1;
+ 399   4                                              TX_DataLoad_HighSpeed(ID_SCX1801_DATA,Last_Uart_Struct_DATA_Packet_Contro, &CONST_TXPACKET_DATA_20000
              -AF0[0]);
- 401   4                          ML7345_SetAndGet_State(Force_TRX_OFF);
- 402   4                          ML7345_Write_Reg(0x00,0x22);    // Bank1 Set
- 403   4                          ML7345_Write_Reg(0x2a,0x15);    //sync
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 8   
+ 400   4                          ML7345_SetAndGet_State(Force_TRX_OFF);
+ 401   4                          ML7345_Write_Reg(0x00,0x22);    // Bank1 Set
+ 402   4                          ML7345_Write_Reg(0x2a,0x15);    //sync
+ 403   4                          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 8   
 
- 404   4                          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
- 405   4                          ML7345_GPIO0TxDoneInt_Enable();
- 406   4                          ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
- 407   4                          Time_Tx_Out = 100;
- 408   4                                              APP_TX_freq=1; //1
- 409   4                                      }
- 410   3                                      else if((APP_TX_freq < DEF_APP_TX_freq) && (Flag_TxDone == 1) && (Time_APP_blank_TX == 0))
- 411   3                                      {
- 412   4                          Flag_TxDone = 0;
- 413   4                          ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
- 414   4                          Time_Tx_Out = 100;
- 415   4                                              APP_TX_freq++;
- 416   4                                      }
- 417   3                                      else if((APP_TX_freq == DEF_APP_TX_freq) && (Flag_TxDone == 1) && (Time_APP_blank_TX == 0))
- 418   3                                      {
- 419   4                          Flag_TxDone = 0;
- 420   4                          APP_TX_freq++;
- 421   4                          FLAG_APP_RXstart=1;
- 422   4                          FLAG_APP_TX=0;
- 423   4                          Time_APP_RXstart=1;
- 424   4                          Receiver_LED_TX = 0;
- 425   4                          FLAG_APP_TX_once=0;
- 426   4                          Flag_tx_en = 0;
- 427   4                                      }
- 428   3                         }
- 429   2          }
- 430   1          if((FLAG_APP_RXstart==1)&&(Time_APP_RXstart==0)&&(FLAG_APP_TX_fromUART_err_read==0))
- 431   1          {
- 432   2              FLAG_APP_RXstart = 0;
- 433   2              FLAG_APP_RX = 1;
- 434   2          }
- 435   1          else if(Flag_tx_en == 1 && Time_Tx_Out == 0 && Flag_TxDone == 0 && FLAG_APP_RXstart == 0)
- 436   1          {
- 437   2              if(PROFILE_CH_FREQ_32bit_200002EC == 429350000) RF_ML7345_Init(Fre_429_350,0x15,28);
- 438   2              else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000) RF_ML7345_Init(Fre_429_550,0x15,28);
- 439   2              ML7345_GPIO0TxDoneInt_Enable();
- 440   2              ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
- 441   2              Time_Tx_Out = 100;
- 442   2              retx_cnt++;
- 443   2              if(retx_cnt >= 3)
- 444   2              {
- 445   3                  retx_cnt = 0;
- 446   3                  Flag_tx_en = 0;
- 447   3                  FLAG_APP_RX = 1;
+ 404   4                          ML7345_GPIO0TxDoneInt_Enable();
+ 405   4                          ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
+ 406   4                          Time_Tx_Out = 100;
+ 407   4                                              APP_TX_freq=1; //1
+ 408   4                                      }
+ 409   3                                      else if((APP_TX_freq < DEF_APP_TX_freq) && (Flag_TxDone == 1) && (Time_APP_blank_TX == 0))
+ 410   3                                      {
+ 411   4                          Flag_TxDone = 0;
+ 412   4                          ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
+ 413   4                          Time_Tx_Out = 100;
+ 414   4                                              APP_TX_freq++;
+ 415   4                                      }
+ 416   3                                      else if((APP_TX_freq == DEF_APP_TX_freq) && (Flag_TxDone == 1) && (Time_APP_blank_TX == 0))
+ 417   3                                      {
+ 418   4                          Flag_TxDone = 0;
+ 419   4                          APP_TX_freq++;
+ 420   4                          FLAG_APP_RXstart=1;
+ 421   4                          FLAG_APP_TX=0;
+ 422   4                          Time_APP_RXstart=1;
+ 423   4                          Receiver_LED_TX = 0;
+ 424   4                          FLAG_APP_TX_once=0;
+ 425   4                          Flag_tx_en = 0;
+ 426   4                                      }
+ 427   3                         }
+ 428   2          }
+ 429   1          if((FLAG_APP_RXstart==1)&&(Time_APP_RXstart==0)&&(FLAG_APP_TX_fromUART_err_read==0))
+ 430   1          {
+ 431   2              FLAG_APP_RXstart = 0;
+ 432   2              FLAG_APP_RX = 1;
+ 433   2          }
+ 434   1          else if(Flag_tx_en == 1 && Time_Tx_Out == 0 && Flag_TxDone == 0 && FLAG_APP_RXstart == 0)
+ 435   1          {
+ 436   2              if(PROFILE_CH_FREQ_32bit_200002EC == 429350000) RF_ML7345_Init(Fre_429_350,0x15,28);
+ 437   2              else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000) RF_ML7345_Init(Fre_429_550,0x15,28);
+ 438   2              ML7345_GPIO0TxDoneInt_Enable();
+ 439   2              ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
+ 440   2              Time_Tx_Out = 100;
+ 441   2              retx_cnt++;
+ 442   2              if(retx_cnt >= 3)
+ 443   2              {
+ 444   3                  retx_cnt = 0;
+ 445   3                  Flag_tx_en = 0;
+ 446   3                  FLAG_APP_RX = 1;
+ 447   3                  Receiver_LED_TX = 0;
  448   3              }
  449   2          }
  450   1      }
@@ -510,7 +510,7 @@ line level    source
  463   3                  Receiver_LED_OUT = 0;
  464   3                  BEEP_Module(500,1);
  465   3              }
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 9   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 9   
 
  466   2              Flag_test_mode = 1;
  467   2              ClearWDT();   // Service the WDT
@@ -574,7 +574,7 @@ line level    source
  525   3                  {
  526   4                      CG2214M6_USE_R;
  527   4                      FG_test_rx = 1;
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 10  
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 10  
 
  528   4                      Receiver_LED_TX = 0;
  529   4                      FG_test_mode = 0;
@@ -616,8 +616,8 @@ line level    source
  565   1      
  566   1          Flag_test_mode = 0;
  567   1          Flag_test_pc = 0;
- 568   1          ML7345_GPIO0RxDoneInt_Enable(); /* 开启接收完成中断,ML7345D GPIO1中断输出 */
- 569   1          ML7345_GPIO0TxDoneInt_Enable(); /* 开启发送完成中断,ML7345D GPIO1中断输出 */
+ 568   1          ML7345_GPIO0RxDoneInt_Enable(); /* 开启接收完成中断,ML7345D GPIO0中断输出 */
+ 569   1          ML7345_GPIO0TxDoneInt_Enable(); /* 开启发送完成中断,ML7345D GPIO0中断输出 */
  570   1          FG_test_rx = 0;
  571   1          TIMER1s = 0;
  572   1          Receiver_LED_TX = 0;
@@ -638,7 +638,7 @@ line level    source
  587   2              ML7345_Frequency_Set(Fre_426_075,Radio_Date_Type);
  588   2          }
  589   1          else
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 11  
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 11  
 
  590   1          {
  591   2              switch(Channels)
@@ -702,7 +702,7 @@ line level    source
  648   2                  TIMER18ms = 18;
  649   2              Flag_rx_pream = 0;
  650   2              Flag_tx_en = 0;
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 12  
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 12  
 
  651   2              RSSI_Read_Counter = 0;
  652   2              RAM_RSSI_SUM = 0;
@@ -766,7 +766,7 @@ line level    source
  708   1          {
  709   2              SPI_Receive_DataForC[i] = (u32)SPI_RECEIVE_BUFF[i * 4 + 3] |
  710   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 2] << 8 |
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 13  
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 13  
 
  711   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 1] << 16 |
  712   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 0] << 24;
@@ -830,7 +830,7 @@ line level    source
  770          {
  771              xdata u8 i;
  772              xdata u16 CRCTemp = 0;
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 14  
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 14  
 
  773              CRCTemp = (IDCache & 0xffff) + (((IDCache >> 16) & 0xff) + ((u16)CtrCmd << 8));
  774              for (i = 0; i < 24; i++)
@@ -894,7 +894,7 @@ line level    source
  832   2          }
  833   1          ClearWDT();
  834   1          for (i = 96; i < 112; i++)
-C51 COMPILER V9.60.0.0   ML7345                                                            02/25/2022 17:15:44 PAGE 15  
+C51 COMPILER V9.60.0.0   ML7345                                                            03/01/2022 16:31:55 PAGE 15  
 
  835   1          {
  836   2              *(Packet + (i / 4)) <<= 2;
@@ -904,9 +904,9 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   7021    ----
+   CODE SIZE        =   7023    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =    134    ----
+   XDATA SIZE       =    133    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =     25    ----
    IDATA SIZE       =      1    ----

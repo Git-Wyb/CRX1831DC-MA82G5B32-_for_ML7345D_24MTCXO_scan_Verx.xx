@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 1   
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE ID_DECODE
@@ -62,7 +62,7 @@ line level    source
   49   5      
   50   5                                      if ((SPI_Receive_DataForC[1] & 0x0000FFFF) == 0x5556)
   51   5                                      {
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 2   
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 2   
 
   52   6                                                              Flag_TX_ID_load=1;
   53   6                                          Signal_DATA_Decode(1);
@@ -126,7 +126,7 @@ line level    source
  111   8                                                  FG_First_auto = 1;
  112   8                                                  TIMER1s = 3000; //2500
  113   8                                              }
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 3   
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 3   
 
  114   7                                          }
  115   6                                          else if (DATA_Packet_Control == 0x40)
@@ -190,7 +190,7 @@ line level    source
  171   2              if ((NUM_Type == 0)||(NUM_Type == 2))
  172   2                  data_in = SPI_Receive_DataForC[i];
  173   2              else
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 4   
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 4   
 
  174   2                  data_in = SPI_Receive_DataForC[i + 3];
  175   2              data_out = 0;
@@ -254,7 +254,7 @@ line level    source
  230   3      #if RAM_LARGE == 1
  231   3                          if(Return_ID_DATA(i) == DATA_Packet_ID)
  232   3      #else
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 5   
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 5   
 
                                                       if (ID_Receiver_DATA[i] == DATA_Packet_ID)
               #endif
@@ -318,7 +318,7 @@ line level    source
  288          void BEEP_Module(u16 time_beepON, u16 time_beepOFF)
  289          {
  290   1              idata u16 i;
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 6   
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 6   
 
  291   1          
  292   1              for (i = 0; i < time_beepON; i++)
@@ -327,7 +327,7 @@ line level    source
  295   2                      {
  296   3                              FG_beep_on = 1;
  297   3                              FG_beep_off = 0;
- 298   3                              Beep_On();
+ 298   3                              Beep_On();  //BEEP_CSR2_BEEPEN = 1;
  299   3                      }
  300   2                      DelayXus(80); //80us
  301   2                      DelayXus(80); //80us
@@ -340,7 +340,7 @@ line level    source
  308   2                      {
  309   3                              FG_beep_off = 1;
  310   3                              FG_beep_on = 0;
- 311   3                              Beep_Off();
+ 311   3                              Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
  312   3                      }
  313   2                      DelayXus(80); //80us
  314   2                      DelayXus(80); //80us
@@ -355,375 +355,372 @@ line level    source
  323   1          Receiver_LED_OUT = 1;
  324   1          BEEP_Module(2300,0);
  325   1          FG_beep_on = 0;
- 326   1      //    BEEP_CSR2_BEEPEN = 0;
- 327   1          Beep_Off();
- 328   1          TIME_Receiver_LED_OUT = 185;
- 329   1      }
- 330          
- 331          void Receiver_BEEP(void)
- 332          {
- 333   1          idata u16 j;
- 334   1          if (FLAG_Receiver_BEEP == 0)
- 335   1          {
- 336   2              FLAG_Receiver_BEEP = 1;
- 337   2              for (j = 0; j < 3; j++)
- 338   2                BEEP_Module(1050,1050);
- 339   2          }
- 340   1      }
- 341          
- 342          void TEST_beep(void)
- 343          {
- 344   1              if(FLAG_testBEEP==1)
- 345   1                      BEEP_Module(300,1);
- 346   1              else if(FLAG_testBEEP==2)
- 347   1                      {
- 348   2                      BEEP_Module(300,900);
- 349   2                      BEEP_Module(300,1);
- 350   2                      }
- 351   1              else if(FLAG_testBEEP==3) //BEEP_CSR2_BEEPEN = 1;
- 352   1              FLAG_testBEEP=0;
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 7   
+ 326   1          Beep_Off(); //BEEP_CSR2_BEEPEN = 0;
+ 327   1          TIME_Receiver_LED_OUT = 185;
+ 328   1      }
+ 329          
+ 330          void Receiver_BEEP(void)
+ 331          {
+ 332   1          idata u16 j;
+ 333   1          if (FLAG_Receiver_BEEP == 0)
+ 334   1          {
+ 335   2              FLAG_Receiver_BEEP = 1;
+ 336   2              for (j = 0; j < 3; j++)
+ 337   2                BEEP_Module(1050,1050);
+ 338   2          }
+ 339   1      }
+ 340          
+ 341          void TEST_beep(void)
+ 342          {
+ 343   1              if(FLAG_testBEEP==1)
+ 344   1                      BEEP_Module(300,1);
+ 345   1              else if(FLAG_testBEEP==2)
+ 346   1          {
+ 347   2              BEEP_Module(300,900);
+ 348   2              BEEP_Module(300,1);
+ 349   2          }
+ 350   1              else if(FLAG_testBEEP==3) Beep_On();    //BEEP_CSR2_BEEPEN = 1;      
+ 351   1          FLAG_testBEEP=0;
+ 352   1      }
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 7   
 
- 353   1      }
- 354          
- 355          void ID_Decode_OUT(void)
- 356          {
- 357   1          xdata u8 Control_i;
- 358   1      
- 359   1          Control_i = DATA_Packet_Control &  0xFF;
- 360   1          if (TIMER1s)
- 361   1          {
- 362   2            if((FLAG_testNo91==1)||(FLAG_testNo91==2))
- 363   2            {
- 364   3                              if((FLAG_testNo91SendUart==0)&&(FLAG_testNo91==1))
- 365   3                                      {
- 366   4                                             switch (Control_i)
- 367   4                             {
- 368   5                                              case 0x08: //open
- 369   5      //                                          if(FLAG_testNo91_step==1)
- 370   5      //                                              {
- 371   5                                                          Receiver_LED_OUT = 1;
- 372   5                                                                      ACKBack[2]=0xA1;
- 373   5                                                                      Send_Data(ACKBack, 3);
- 374   5                                                                      FLAG_testNo91SendUart=1;
- 375   5      //                                              }
- 376   5                                                  break;
- 377   5                                              case 0x04: //stop
- 378   5      //                                          if(FLAG_testNo91_step==2)
- 379   5      //                                              {
- 380   5                                                          Receiver_LED_OUT = 1;
- 381   5                                                                      ACKBack[2]=0xA2;
- 382   5                                                                      Send_Data(ACKBack, 3);
- 383   5                                                                      FLAG_testNo91SendUart=1;
- 384   5      //                                              }
- 385   5                                                  break;
- 386   5                                              case 0x02: //close
- 387   5      //                                          if(FLAG_testNo91_step==3)
- 388   5      //                                              {
- 389   5                                                          Receiver_LED_OUT = 1;
- 390   5                                                                      ACKBack[2]=0xA4;
- 391   5                                                                      Send_Data(ACKBack, 3);
- 392   5                                                                      FLAG_testNo91SendUart=1;
- 393   5      //                                              }
- 394   5                                                  break;
- 395   5                                                      default:
- 396   5                                  break;
- 397   5                             }
- 398   4      
- 399   4                                      }
- 400   3            }
- 401   2                else
- 402   2                {
- 403   3              switch (Control_i)
- 404   3              {
- 405   4              case 0x14: //stop+login
- 406   4                  Receiver_LED_OUT = 1;
- 407   4                  TIMER250ms_STOP = 250;
- 408   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
- 409   4                  Receiver_OUT_STOP = FG_allow_out;
- 410   4                  if (TIMER1s < 3550)
- 411   4                  {
- 412   5                      Receiver_OUT_OPEN = FG_allow_out;
- 413   5                      Receiver_OUT_CLOSE = FG_allow_out;
- 414   5                      Receiver_BEEP();
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 8   
+ 353          
+ 354          void ID_Decode_OUT(void)
+ 355          {
+ 356   1          xdata u8 Control_i;
+ 357   1      
+ 358   1          Control_i = DATA_Packet_Control &  0xFF;
+ 359   1          if (TIMER1s)
+ 360   1          {
+ 361   2            if((FLAG_testNo91==1)||(FLAG_testNo91==2))
+ 362   2            {
+ 363   3                              if((FLAG_testNo91SendUart==0)&&(FLAG_testNo91==1))
+ 364   3                                      {
+ 365   4                                             switch (Control_i)
+ 366   4                             {
+ 367   5                                              case 0x08: //open
+ 368   5      //                                          if(FLAG_testNo91_step==1)
+ 369   5      //                                              {
+ 370   5                                                          Receiver_LED_OUT = 1;
+ 371   5                                                                      ACKBack[2]=0xA1;
+ 372   5                                                                      Send_Data(ACKBack, 3);
+ 373   5                                                                      FLAG_testNo91SendUart=1;
+ 374   5      //                                              }
+ 375   5                                                  break;
+ 376   5                                              case 0x04: //stop
+ 377   5      //                                          if(FLAG_testNo91_step==2)
+ 378   5      //                                              {
+ 379   5                                                          Receiver_LED_OUT = 1;
+ 380   5                                                                      ACKBack[2]=0xA2;
+ 381   5                                                                      Send_Data(ACKBack, 3);
+ 382   5                                                                      FLAG_testNo91SendUart=1;
+ 383   5      //                                              }
+ 384   5                                                  break;
+ 385   5                                              case 0x02: //close
+ 386   5      //                                          if(FLAG_testNo91_step==3)
+ 387   5      //                                              {
+ 388   5                                                          Receiver_LED_OUT = 1;
+ 389   5                                                                      ACKBack[2]=0xA4;
+ 390   5                                                                      Send_Data(ACKBack, 3);
+ 391   5                                                                      FLAG_testNo91SendUart=1;
+ 392   5      //                                              }
+ 393   5                                                  break;
+ 394   5                                                      default:
+ 395   5                                  break;
+ 396   5                             }
+ 397   4      
+ 398   4                                      }
+ 399   3            }
+ 400   2                else
+ 401   2                {
+ 402   3              switch (Control_i)
+ 403   3              {
+ 404   4              case 0x14: //stop+login
+ 405   4                  Receiver_LED_OUT = 1;
+ 406   4                  TIMER250ms_STOP = 250;
+ 407   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 408   4                  Receiver_OUT_STOP = FG_allow_out;
+ 409   4                  if (TIMER1s < 3550)
+ 410   4                  {
+ 411   5                      Receiver_OUT_OPEN = FG_allow_out;
+ 412   5                      Receiver_OUT_CLOSE = FG_allow_out;
+ 413   5                      Receiver_BEEP();
+ 414   5                  }
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 8   
 
- 415   5                  }
- 416   4                  break;
- 417   4              case 0x40: //自动送信
- 418   4                  if ((FG_auto_out == 0) && (Manual_override_TIMER == 0)&&(Radio_Date_Type_bak==1))
- 419   4                  {
- 420   5                      Receiver_LED_OUT = 1;
- 421   5                      TIMER250ms_STOP = 0;
- 422   5                      //Receiver_OUT_VENT = FG_NOT_allow_out;
- 423   5                      Receiver_OUT_CLOSE = FG_NOT_allow_out;
- 424   5                      if (TIMER1s > 2000)
- 425   5                      {
- 426   6                          Receiver_OUT_STOP = FG_allow_out;
- 427   6                          Receiver_OUT_OPEN = FG_NOT_allow_out;
- 428   6                      } //1830
- 429   5                      else if (TIMER1s > 1000)
- 430   5                      {
- 431   6                          Receiver_OUT_STOP = FG_NOT_allow_out;
- 432   6                          Receiver_OUT_OPEN = FG_NOT_allow_out;
- 433   6                      } //810
- 434   5                      else
- 435   5                      {
- 436   6                          FG_auto_open_time = 1;
- 437   6                          Receiver_OUT_STOP = FG_NOT_allow_out;
- 438   6                          Receiver_OUT_OPEN = FG_allow_out;
- 439   6                      }
- 440   5                  }
- 441   4                  break;
- 442   4              case 0x01: //VENT
- 443   4                  Receiver_LED_OUT = 1;
- 444   4                  if (Receiver_vent == 0)
- 445   4                  { //受信机换气联动OFF
- 446   5                      Receiver_OUT_STOP = FG_NOT_allow_out;
- 447   5                      //Receiver_OUT_VENT = FG_NOT_allow_out;
- 448   5                      Receiver_OUT_OPEN = FG_allow_out;
- 449   5                      Receiver_OUT_CLOSE = FG_allow_out;
- 450   5                  }
- 451   4                  else
- 452   4                  { //受信机换气联动ON
- 453   5                      Receiver_OUT_STOP = FG_NOT_allow_out;
- 454   5                      Receiver_OUT_OPEN = FG_NOT_allow_out;
- 455   5                      Receiver_OUT_CLOSE = FG_NOT_allow_out;
- 456   5                      //Receiver_OUT_VENT = FG_allow_out;
- 457   5                  }
- 458   4                  break;
- 459   4              case 0x02: //close
- 460   4                  Receiver_LED_OUT = 1;
- 461   4                  Receiver_OUT_OPEN = FG_NOT_allow_out;
- 462   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
- 463   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
- 464   4                  Receiver_OUT_CLOSE = FG_allow_out;
- 465   4                  break;
- 466   4              case 0x04: //stop
- 467   4                  Receiver_LED_OUT = 1;
- 468   4                  Receiver_OUT_OPEN = FG_NOT_allow_out;
- 469   4                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
- 470   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
- 471   4                  Receiver_OUT_STOP = FG_allow_out;
- 472   4                  break;
- 473   4              case 0x08: //open
- 474   4                  Receiver_LED_OUT = 1;
- 475   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
- 476   4                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 9   
+ 415   4                  break;
+ 416   4              case 0x40: //�Զ�����
+ 417   4                  if ((FG_auto_out == 0) && (Manual_override_TIMER == 0)&&(Radio_Date_Type_bak==1))
+ 418   4                  {
+ 419   5                      Receiver_LED_OUT = 1;
+ 420   5                      TIMER250ms_STOP = 0;
+ 421   5                      //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 422   5                      Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 423   5                      if (TIMER1s > 2000)
+ 424   5                      {
+ 425   6                          Receiver_OUT_STOP = FG_allow_out;
+ 426   6                          Receiver_OUT_OPEN = FG_NOT_allow_out;
+ 427   6                      } //1830
+ 428   5                      else if (TIMER1s > 1000)
+ 429   5                      {
+ 430   6                          Receiver_OUT_STOP = FG_NOT_allow_out;
+ 431   6                          Receiver_OUT_OPEN = FG_NOT_allow_out;
+ 432   6                      } //810
+ 433   5                      else
+ 434   5                      {
+ 435   6                          FG_auto_open_time = 1;
+ 436   6                          Receiver_OUT_STOP = FG_NOT_allow_out;
+ 437   6                          Receiver_OUT_OPEN = FG_allow_out;
+ 438   6                      }
+ 439   5                  }
+ 440   4                  break;
+ 441   4              case 0x01: //VENT
+ 442   4                  Receiver_LED_OUT = 1;
+ 443   4                  if (Receiver_vent == 0)
+ 444   4                  { //���Ż�����OFF
+ 445   5                      Receiver_OUT_STOP = FG_NOT_allow_out;
+ 446   5                      //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 447   5                      Receiver_OUT_OPEN = FG_allow_out;
+ 448   5                      Receiver_OUT_CLOSE = FG_allow_out;
+ 449   5                  }
+ 450   4                  else
+ 451   4                  { //���Ż�����ON
+ 452   5                      Receiver_OUT_STOP = FG_NOT_allow_out;
+ 453   5                      Receiver_OUT_OPEN = FG_NOT_allow_out;
+ 454   5                      Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 455   5                      //Receiver_OUT_VENT = FG_allow_out;
+ 456   5                  }
+ 457   4                  break;
+ 458   4              case 0x02: //close
+ 459   4                  Receiver_LED_OUT = 1;
+ 460   4                  Receiver_OUT_OPEN = FG_NOT_allow_out;
+ 461   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
+ 462   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 463   4                  Receiver_OUT_CLOSE = FG_allow_out;
+ 464   4                  break;
+ 465   4              case 0x04: //stop
+ 466   4                  Receiver_LED_OUT = 1;
+ 467   4                  Receiver_OUT_OPEN = FG_NOT_allow_out;
+ 468   4                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 469   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 470   4                  Receiver_OUT_STOP = FG_allow_out;
+ 471   4                  break;
+ 472   4              case 0x08: //open
+ 473   4                  Receiver_LED_OUT = 1;
+ 474   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
+ 475   4                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 476   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 9   
 
- 477   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
- 478   4                  Receiver_OUT_OPEN = FG_allow_out;
- 479   4                  break;
- 480   4              case 0x0C: //open+stop
- 481   4                  Receiver_LED_OUT = 1;
- 482   4                  TIMER250ms_STOP = 250;
- 483   4                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
- 484   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
- 485   4                  Receiver_OUT_STOP = FG_allow_out;
- 486   4                  if (FG_OUT_OPEN_CLOSE == 0)
- 487   4                  {
- 488   5                      FG_OUT_OPEN_CLOSE = 1;
- 489   5                      TIME_OUT_OPEN_CLOSE = 25;
- 490   5                  }
- 491   4                  if (TIME_OUT_OPEN_CLOSE == 0)
- 492   4                      Receiver_OUT_OPEN = FG_allow_out;
- 493   4                  break;
- 494   4              case 0x06: //close+stop
- 495   4                  Receiver_LED_OUT = 1;
- 496   4                  TIMER250ms_STOP = 250;
- 497   4                  Receiver_OUT_OPEN = FG_NOT_allow_out;
- 498   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
- 499   4                  Receiver_OUT_STOP = FG_allow_out;
- 500   4                  if (FG_OUT_OPEN_CLOSE == 0)
- 501   4                  {
- 502   5                      FG_OUT_OPEN_CLOSE = 1;
- 503   5                      TIME_OUT_OPEN_CLOSE = 25;
- 504   5                  }
- 505   4                  if (TIME_OUT_OPEN_CLOSE == 0)
- 506   4                      Receiver_OUT_CLOSE = FG_allow_out;
- 507   4                  break;
- 508   4              case 0x0A: //close+OPEN
- 509   4                  Receiver_LED_OUT = 1;
- 510   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
- 511   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
- 512   4                  Receiver_OUT_OPEN = FG_allow_out;
- 513   4                  Receiver_OUT_CLOSE = FG_allow_out;
- 514   4                  break;
- 515   4              case 0x09: //vent+OPEN
- 516   4                  Receiver_LED_OUT = 1;
- 517   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
- 518   4                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
- 519   4                  Receiver_OUT_OPEN = FG_allow_out;
- 520   4                  //Receiver_OUT_VENT = FG_allow_out;
- 521   4                  break;
- 522   4              case 0x03: //vent+close
- 523   4                  Receiver_LED_OUT = 1;
- 524   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
- 525   4                  Receiver_OUT_OPEN = FG_NOT_allow_out;
- 526   4                  Receiver_OUT_CLOSE = FG_allow_out;
- 527   4                  //Receiver_OUT_VENT = FG_allow_out;
- 528   4                  break;
- 529   4              default:
- 530   4                  break;
- 531   4              }
- 532   3              if(Radio_Date_Type_bak==2)
- 533   3                      {             //429M   半开信号/半闭
- 534   4                          if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00))
- 535   4                                                      {
- 536   5                                      if((DATA_Packet_Control&0xDF)<0xC0){
- 537   6                                          FLAG__Semi_open_T=1;
- 538   6                                          FLAG__Semi_close_T=0;
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 10  
+ 477   4                  Receiver_OUT_OPEN = FG_allow_out;
+ 478   4                  break;
+ 479   4              case 0x0C: //open+stop
+ 480   4                  Receiver_LED_OUT = 1;
+ 481   4                  TIMER250ms_STOP = 250;
+ 482   4                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 483   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 484   4                  Receiver_OUT_STOP = FG_allow_out;
+ 485   4                  if (FG_OUT_OPEN_CLOSE == 0)
+ 486   4                  {
+ 487   5                      FG_OUT_OPEN_CLOSE = 1;
+ 488   5                      TIME_OUT_OPEN_CLOSE = 25;
+ 489   5                  }
+ 490   4                  if (TIME_OUT_OPEN_CLOSE == 0)
+ 491   4                      Receiver_OUT_OPEN = FG_allow_out;
+ 492   4                  break;
+ 493   4              case 0x06: //close+stop
+ 494   4                  Receiver_LED_OUT = 1;
+ 495   4                  TIMER250ms_STOP = 250;
+ 496   4                  Receiver_OUT_OPEN = FG_NOT_allow_out;
+ 497   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 498   4                  Receiver_OUT_STOP = FG_allow_out;
+ 499   4                  if (FG_OUT_OPEN_CLOSE == 0)
+ 500   4                  {
+ 501   5                      FG_OUT_OPEN_CLOSE = 1;
+ 502   5                      TIME_OUT_OPEN_CLOSE = 25;
+ 503   5                  }
+ 504   4                  if (TIME_OUT_OPEN_CLOSE == 0)
+ 505   4                      Receiver_OUT_CLOSE = FG_allow_out;
+ 506   4                  break;
+ 507   4              case 0x0A: //close+OPEN
+ 508   4                  Receiver_LED_OUT = 1;
+ 509   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
+ 510   4                  //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 511   4                  Receiver_OUT_OPEN = FG_allow_out;
+ 512   4                  Receiver_OUT_CLOSE = FG_allow_out;
+ 513   4                  break;
+ 514   4              case 0x09: //vent+OPEN
+ 515   4                  Receiver_LED_OUT = 1;
+ 516   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
+ 517   4                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 518   4                  Receiver_OUT_OPEN = FG_allow_out;
+ 519   4                  //Receiver_OUT_VENT = FG_allow_out;
+ 520   4                  break;
+ 521   4              case 0x03: //vent+close
+ 522   4                  Receiver_LED_OUT = 1;
+ 523   4                  Receiver_OUT_STOP = FG_NOT_allow_out;
+ 524   4                  Receiver_OUT_OPEN = FG_NOT_allow_out;
+ 525   4                  Receiver_OUT_CLOSE = FG_allow_out;
+ 526   4                  //Receiver_OUT_VENT = FG_allow_out;
+ 527   4                  break;
+ 528   4              default:
+ 529   4                  break;
+ 530   4              }
+ 531   3              if(Radio_Date_Type_bak==2)
+ 532   3                      {             //429M   �뿪�ź�/���
+ 533   4                          if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00))
+ 534   4                                                      {
+ 535   5                                      if((DATA_Packet_Control&0xDF)<0xC0){
+ 536   6                                          FLAG__Semi_open_T=1;
+ 537   6                                          FLAG__Semi_close_T=0;
+ 538   6                                          Receiver_LED_OUT=1;
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 10  
 
- 539   6                                          Receiver_LED_OUT=1;
- 540   6                                          Receiver_OUT_STOP=FG_NOT_allow_out;
- 541   6                                          Receiver_OUT_CLOSE=FG_NOT_allow_out;
- 542   6                                          Receiver_OUT_OPEN=FG_allow_out;
- 543   6                                          TIMER250ms_STOP=((TIMER_Semi_open+1)*1000/107)*100;
- 544   6                                      }
- 545   5                                      else {
- 546   6                                          FLAG__Semi_open_T=0;
- 547   6                                          FLAG__Semi_close_T=1;
- 548   6                                          Receiver_LED_OUT=1;
- 549   6                                          Receiver_OUT_STOP=FG_NOT_allow_out;
- 550   6                                          Receiver_OUT_CLOSE=FG_allow_out;
- 551   6                                          Receiver_OUT_OPEN=FG_NOT_allow_out;
- 552   6                                          TIMER250ms_STOP=((TIMER_Semi_close+1)*1000/107)*100;
- 553   6                                      }
- 554   5                            }
- 555   4                                              if((DATA_Packet_Control==0x7F)&&(Flag_ERROR_Read==0)&&(Flag_shutter_stopping==0))
- 556   4                                              {
- 557   5                                                 Flag_ERROR_Read=1;
- 558   5                                                 FLAG_APP_TX_fromUART_err_read=0;
- 559   5                                                Send_Data(Send_err_com, 7);
- 560   5                                                Flag_ERROR_Read_once_again=1;
- 561   5                                                TIME_ERROR_Read_once_again=17;
- 562   5                                                Time_error_read_timeout=100;
- 563   5                                              }
- 564   4               }
- 565   3                      if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
- 566   4                                               if((DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Pack
+ 539   6                                          Receiver_OUT_STOP=FG_NOT_allow_out;
+ 540   6                                          Receiver_OUT_CLOSE=FG_NOT_allow_out;
+ 541   6                                          Receiver_OUT_OPEN=FG_allow_out;
+ 542   6                                          TIMER250ms_STOP=((TIMER_Semi_open+1)*1000/107)*100;
+ 543   6                                      }
+ 544   5                                      else {
+ 545   6                                          FLAG__Semi_open_T=0;
+ 546   6                                          FLAG__Semi_close_T=1;
+ 547   6                                          Receiver_LED_OUT=1;
+ 548   6                                          Receiver_OUT_STOP=FG_NOT_allow_out;
+ 549   6                                          Receiver_OUT_CLOSE=FG_allow_out;
+ 550   6                                          Receiver_OUT_OPEN=FG_NOT_allow_out;
+ 551   6                                          TIMER250ms_STOP=((TIMER_Semi_close+1)*1000/107)*100;
+ 552   6                                      }
+ 553   5                            }
+ 554   4                                              if((DATA_Packet_Control==0x7F)&&(Flag_ERROR_Read==0)&&(Flag_shutter_stopping==0))
+ 555   4                                              {
+ 556   5                                                 Flag_ERROR_Read=1;
+ 557   5                                                 FLAG_APP_TX_fromUART_err_read=0;
+ 558   5                                                Send_Data(Send_err_com, 7);
+ 559   5                                                Flag_ERROR_Read_once_again=1;
+ 560   5                                                TIME_ERROR_Read_once_again=17;
+ 561   5                                                Time_error_read_timeout=100;
+ 562   5                                              }
+ 563   4               }
+ 564   3                      if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
+ 565   4                                               if((DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Pack
              -et_Control==0x01)||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)
- 567   4                                                ||(DATA_Packet_Control==0x9)||(DATA_Packet_Control==0x03)||(DATA_Packet_Control==0x0C)||(DATA_Packe
+ 566   4                                                ||(DATA_Packet_Control==0x9)||(DATA_Packet_Control==0x03)||(DATA_Packet_Control==0x0C)||(DATA_Packe
              -t_Control==0x06)||(DATA_Packet_Control==0x0A)){
- 568   5                                                       //2015.12.29追加，在半开、半闭动作中，�?�信机（�?+闭）信号，让停止继电�
+ 567   5                                                       //2015.12.29追加，在半开、半闭动作中，�?�信机（�?+闭）信号，让停止继电�
              -�不动作
- 569   5                                                       FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;TIMER250ms_STOP=0;
- 570   5                                               }
- 571   4                       }
- 572   3      
- 573   3               if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_
+ 568   5                                                       FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;TIMER250ms_STOP=0;
+ 569   5                                               }
+ 570   4                       }
+ 571   3      
+ 572   3               if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_
              -Packet_Control==0x08)||(DATA_Packet_Control==0x01)
- 574   3                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((FLAG__Semi_open_T==1)||(FLAG_
+ 573   3                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((FLAG__Semi_open_T==1)||(FLAG_
              -_Semi_close_T==1)))&&(FLAG_APP_TX_fromOUT==0)&&(Radio_Date_Type_bak==2)&&(FLAG_APP_TX==0)&&(FLAG_APP_TX_once==1))
- 575   3               {
- 576   4                   FLAG_APP_TX_fromOUT=1;
- 577   4                               if(DATA_Packet_Control==0x00)TIME_APP_TX_fromOUT=35;//15+DEF_APP_TX_freq*8;  //350ms
- 578   4                               else TIME_APP_TX_fromOUT=35;//15+DEF_APP_TX_freq*8;  //350ms
- 579   4               }
+ 574   3               {
+ 575   4                   FLAG_APP_TX_fromOUT=1;
+ 576   4                               if(DATA_Packet_Control==0x00)TIME_APP_TX_fromOUT=35;//15+DEF_APP_TX_freq*8;  //350ms
+ 577   4                               else TIME_APP_TX_fromOUT=35;//15+DEF_APP_TX_freq*8;  //350ms
+ 578   4               }
+ 579   3      
  580   3      
- 581   3      
- 582   3               }
- 583   2      
- 584   2          }
- 585   1          else
- 586   1          {
- 587   2              //           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Sta
+ 581   3               }
+ 582   2      
+ 583   2          }
+ 584   1          else
+ 585   1          {
+ 586   2              //           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Sta
              -tus;FLAG_HA_START=1;}
- 588   2              //           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=
+ 587   2              //           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=
              -HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状�?�码为实际HA�?4
- 589   2              if ((FG_auto_out == 1) && (TIME_auto_out == 0))
- 590   2              {
- 591   3                  FG_auto_out = 0;
- 592   3                  TIME_auto_close = 270;
- 593   3                  Receiver_LED_OUT = 1;
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 11  
+ 588   2              if ((FG_auto_out == 1) && (TIME_auto_out == 0))
+ 589   2              {
+ 590   3                  FG_auto_out = 0;
+ 591   3                  TIME_auto_close = 270;
+ 592   3                  Receiver_LED_OUT = 1;
+ 593   3              } //300
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 11  
 
- 594   3              } //300
- 595   2              if (TIME_auto_close)
- 596   2              {
- 597   3                  if (TIME_auto_close > 180)
- 598   3                  {
- 599   4                      Receiver_OUT_STOP = FG_allow_out;
- 600   4                      Receiver_OUT_CLOSE = FG_NOT_allow_out;
- 601   4                  } //200
- 602   3                  else if (TIME_auto_close > 90)
- 603   3                  {
- 604   4                      Receiver_OUT_STOP = FG_NOT_allow_out;
- 605   4                      Receiver_OUT_CLOSE = FG_NOT_allow_out;
- 606   4                  } //100
- 607   3                  else
- 608   3                  {
- 609   4                      Receiver_OUT_STOP = FG_NOT_allow_out;
- 610   4                      Receiver_OUT_CLOSE = FG_allow_out;
- 611   4                  }
- 612   3              }
- 613   2              else
- 614   2              {
- 615   3                  FG_auto_manual_mode = 0;
- 616   3                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
- 617   3              }
- 618   2              FG_First_auto = 0;
- 619   2              FLAG_Receiver_BEEP = 0;
- 620   2                      Receiver_OUT_OPEN = FG_NOT_allow_out;
- 621   2                      //Receiver_OUT_VENT = FG_NOT_allow_out;
- 622   2              if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) || (TIME_auto_close)||(FLAG_ID_SCX1801_Logi
+ 594   2              if (TIME_auto_close)
+ 595   2              {
+ 596   3                  if (TIME_auto_close > 180)
+ 597   3                  {
+ 598   4                      Receiver_OUT_STOP = FG_allow_out;
+ 599   4                      Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 600   4                  } //200
+ 601   3                  else if (TIME_auto_close > 90)
+ 602   3                  {
+ 603   4                      Receiver_OUT_STOP = FG_NOT_allow_out;
+ 604   4                      Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 605   4                  } //100
+ 606   3                  else
+ 607   3                  {
+ 608   4                      Receiver_OUT_STOP = FG_NOT_allow_out;
+ 609   4                      Receiver_OUT_CLOSE = FG_allow_out;
+ 610   4                  }
+ 611   3              }
+ 612   2              else
+ 613   2              {
+ 614   3                  FG_auto_manual_mode = 0;
+ 615   3                  Receiver_OUT_CLOSE = FG_NOT_allow_out;
+ 616   3              }
+ 617   2              FG_First_auto = 0;
+ 618   2              FLAG_Receiver_BEEP = 0;
+ 619   2                      Receiver_OUT_OPEN = FG_NOT_allow_out;
+ 620   2                      //Receiver_OUT_VENT = FG_NOT_allow_out;
+ 621   2              if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) || (TIME_auto_close)||(FLAG_ID_SCX1801_Logi
              -n==1))
- 623   2                  ;
- 624   2              else if (TIME_Receiver_LED_OUT > 0)
- 625   2                  Receiver_LED_OUT = 1;
- 626   2              else if(TIME_power_led==0)
- 627   2                  Receiver_LED_OUT = 0;
- 628   2      
- 629   2                     if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
- 630   3      //                   if(HA_Status==0x83)TIMER250ms_STOP=0;     //2015.12.29追加，在半开、半闭动�
+ 622   2                  ;
+ 623   2              else if (TIME_Receiver_LED_OUT > 0)
+ 624   2                  Receiver_LED_OUT = 1;
+ 625   2              else if(TIME_power_led==0)
+ 626   2                  Receiver_LED_OUT = 0;
+ 627   2      
+ 628   2                     if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
+ 629   3      //                   if(HA_Status==0x83)TIMER250ms_STOP=0;     //2015.12.29追加，在半开、半闭动�
              -��中，受信机的状态变成异�?1的时候，让停止继电器不动�?
- 631   3                         if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=FG_allow_out;Receiver
+ 630   3                         if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=FG_allow_out;Receiver
              -_LED_OUT=1;}
- 632   3                         else if(TIMER250ms_STOP==0){Receiver_OUT_STOP=FG_NOT_allow_out;FLAG__Semi_open_T=0;FLAG
+ 631   3                         else if(TIMER250ms_STOP==0){Receiver_OUT_STOP=FG_NOT_allow_out;FLAG__Semi_open_T=0;FLAG
              -__Semi_close_T=0;}
- 633   3                     }
- 634   2                     else if((TIMER250ms_STOP==0)&&(TIME_auto_close==0)){Receiver_OUT_STOP=FG_NOT_allow_out;FG_O
+ 632   3                     }
+ 633   2                     else if((TIMER250ms_STOP==0)&&(TIME_auto_close==0)){Receiver_OUT_STOP=FG_NOT_allow_out;FG_O
              -UT_OPEN_CLOSE=0;}    //2015.3.23修改
- 635   2      
- 636   2              if (FG_auto_open_time == 1)
- 637   2              {
- 638   3                  FG_First_auto = 0;
- 639   3                  FG_auto_out = 1;
- 640   3                  FG_auto_open_time = 0;
- 641   3              }
- 642   2              if ((TIMER250ms_STOP == 0) && (TIME_auto_close == 0))
- 643   2              {
- 644   3                  Receiver_OUT_STOP = FG_NOT_allow_out;
- 645   3                  FG_OUT_OPEN_CLOSE = 0;
- 646   3              }
- 647   2                      FLAG_testNo91SendUart=0;
- 648   2          } 
- 649   1          if (TIMER300ms == 0)
- 650   1              FG_Receiver_LED_RX = 0; //Receiver_LED_RX=0;
-C51 COMPILER V9.60.0.0   ID_DECODE                                                         02/25/2022 17:15:44 PAGE 12  
+ 634   2      
+ 635   2              if (FG_auto_open_time == 1)
+ 636   2              {
+ 637   3                  FG_First_auto = 0;
+ 638   3                  FG_auto_out = 1;
+ 639   3                  FG_auto_open_time = 0;
+ 640   3              }
+ 641   2              if ((TIMER250ms_STOP == 0) && (TIME_auto_close == 0))
+ 642   2              {
+ 643   3                  Receiver_OUT_STOP = FG_NOT_allow_out;
+ 644   3                  FG_OUT_OPEN_CLOSE = 0;
+ 645   3              }
+ 646   2                      FLAG_testNo91SendUart=0;
+ 647   2          } 
+ 648   1          if (TIMER300ms == 0)
+ 649   1              FG_Receiver_LED_RX = 0; //Receiver_LED_RX=0;
+ 650   1      }
+C51 COMPILER V9.60.0.0   ID_DECODE                                                         03/01/2022 16:31:55 PAGE 12  
 
- 651   1      }
+ 651          
  652          
- 653          
- 654          u32 Return_ID_DATA(u8 i)
- 655          {
- 656   1          idata u32 ID_dat = 0;
- 657   1          idata uni_rom_id xn;
- 658   1          xn.IDB[0] = 0x00;
- 659   1          xn.IDB[1] = ID_Receiver_DATA[i*3];
- 660   1          xn.IDB[2] = ID_Receiver_DATA[i*3+1];
- 661   1          xn.IDB[3] = ID_Receiver_DATA[i*3+2];
- 662   1          //ID_dat = (((ID_Receiver_DATA[i*3]<<16) | (ID_Receiver_DATA[i*3+1]<<8) | (ID_Receiver_DATA[i*3+2])) &
-             - 0x00FFFFFF);
- 663   1          ID_dat = xn.IDC;
- 664   1          return ID_dat;
- 665   1      }
+ 653          u32 Return_ID_DATA(u8 i)
+ 654          {
+ 655   1          idata u32 ID_dat = 0;
+ 656   1          idata uni_rom_id xn;
+ 657   1          xn.IDB[0] = 0x00;
+ 658   1          xn.IDB[1] = ID_Receiver_DATA[i*3];
+ 659   1          xn.IDB[2] = ID_Receiver_DATA[i*3+1];
+ 660   1          xn.IDB[3] = ID_Receiver_DATA[i*3+2];
+ 661   1          ID_dat = xn.IDC;
+ 662   1          return ID_dat;
+ 663   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   6159    ----
+   CODE SIZE        =   6164    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =     26    ----
    PDATA SIZE       =   ----    ----
