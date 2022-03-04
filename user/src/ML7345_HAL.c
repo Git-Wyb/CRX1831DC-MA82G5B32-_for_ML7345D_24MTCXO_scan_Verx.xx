@@ -283,7 +283,7 @@ Return: Null
 void ML7345_RESETN_SET(void)
 {
     ML7345_RESETN = 0;
-    delay_ms(2);
+    delay_ms(2); //约2.8ms
     ML7345_RESETN = 1;
 }
 

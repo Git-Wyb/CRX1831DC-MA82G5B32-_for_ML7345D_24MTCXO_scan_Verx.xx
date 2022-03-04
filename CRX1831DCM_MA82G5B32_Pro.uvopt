@@ -133,12 +133,12 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>read</ItemText>
+          <ItemText>RAM_RSSI_SUM</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ID_DATA_PCS</ItemText>
+          <ItemText>RAM_RSSI_AVG</ItemText>
         </Ww>
         <Ww>
           <count>2</count>

@@ -604,23 +604,23 @@ void PC_PRG(void) // ´®¿ÚÃüÁî
                     }
                     break;
                 case 'P':
-                    if(SIO_DATA[2]=='H' && SIO_DATA[6]==')')
+                    if(SIO_DATA[2]=='H' && SIO_DATA[5]==')')
                     {
-                        if(SIO_DATA[3]=='B' && SIO_DATA[4]=='0' && SIO_DATA[5]=='1')         {Receiver_LED_OUT = 1;  Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='B' && SIO_DATA[4]=='0' && SIO_DATA[5]=='2')    {Receiver_LED_TX = 1;   Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='B' && SIO_DATA[4]=='0' && SIO_DATA[5]=='3')    {Receiver_LED_RX = 1;   Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='D' && SIO_DATA[4]=='0' && SIO_DATA[5]=='1')    {Receiver_OUT_STOP = 1; Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='D' && SIO_DATA[4]=='0' && SIO_DATA[5]=='2')    {Receiver_OUT_CLOSE = 1;Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='D' && SIO_DATA[4]=='0' && SIO_DATA[5]=='3')    {Receiver_OUT_OPEN = 1; Send_Data(send_ok,4);}
+                        if(SIO_DATA[3]=='2' && SIO_DATA[4]=='5')         {Receiver_LED_OUT = 1;  Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='2' && SIO_DATA[4]=='7')    {Receiver_LED_TX = 1;   Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='3' && SIO_DATA[4]=='5')    {Receiver_LED_RX = 1;   Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='1')    {Receiver_OUT_STOP = 1; Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='0')    {Receiver_OUT_CLOSE = 1;Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='2')    {Receiver_OUT_OPEN = 1; Send_Data(send_ok,4);}
                     }
-                    else if(SIO_DATA[2]=='L' && SIO_DATA[6]==')')
+                    else if(SIO_DATA[2]=='L' && SIO_DATA[5]==')')
                     {
-                        if(SIO_DATA[3]=='B' && SIO_DATA[4]=='0' && SIO_DATA[5]=='1')         {Receiver_LED_OUT = 0;  Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='B' && SIO_DATA[4]=='0' && SIO_DATA[5]=='2')    {Receiver_LED_TX = 0;   Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='B' && SIO_DATA[4]=='0' && SIO_DATA[5]=='3')    {Receiver_LED_RX = 0;   Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='D' && SIO_DATA[4]=='0' && SIO_DATA[5]=='1')    {Receiver_OUT_STOP = 0; Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='D' && SIO_DATA[4]=='0' && SIO_DATA[5]=='2')    {Receiver_OUT_CLOSE = 0;Send_Data(send_ok,4);}
-                        else if(SIO_DATA[3]=='D' && SIO_DATA[4]=='0' && SIO_DATA[5]=='3')    {Receiver_OUT_OPEN = 0; Send_Data(send_ok,4);}
+                        if(SIO_DATA[3]=='2' && SIO_DATA[4]=='5')         {Receiver_LED_OUT = 0;  Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='2' && SIO_DATA[4]=='7')    {Receiver_LED_TX = 0;   Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='3' && SIO_DATA[4]=='5')    {Receiver_LED_RX = 0;   Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='1')    {Receiver_OUT_STOP = 0; Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='0')    {Receiver_OUT_CLOSE = 0;Send_Data(send_ok,4);}
+                        else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='2')    {Receiver_OUT_OPEN = 0; Send_Data(send_ok,4);}
                     }
                     break;
                 case 'W':

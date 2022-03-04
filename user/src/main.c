@@ -33,7 +33,7 @@ void main()
     Init_Spi();  
     ClearWDT();
     PROFILE_CH_FREQ_32bit_200002EC = 426075000;
-    RF_ML7345_Init(Fre_426_075,0x15,12);    //Լ10ms
+    RF_ML7345_Init(Fre_426_075,0x15,12);    //Լ11ms
     TIME_power_led = 500;
     ClearWDT();
     Init_Interrupt();
@@ -45,7 +45,7 @@ void main()
 	FLAG_testBEEP=0;  
     ML7345_SetAndGet_State(RX_ON);
     CG2214M6_USE_R;
-   
+    
     while(1) 
     {
         ClearWDT(); // Service the WDT

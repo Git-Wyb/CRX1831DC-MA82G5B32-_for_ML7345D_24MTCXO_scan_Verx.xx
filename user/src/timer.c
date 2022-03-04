@@ -130,30 +130,14 @@ void DelayXus(u8 xUs)
 {
 	while(xUs!=0)
 	{
-#if (MCU_SYSCLK == 16000000)
 		_nop_();
 		_nop_();
 		_nop_();
 		_nop_();
 		_nop_();
 		_nop_();
-#endif   
-#if (MCU_SYSCLK == 24000000)
         _nop_();
 		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-		_nop_();
-#endif
 		xUs--;
 	}
 }
