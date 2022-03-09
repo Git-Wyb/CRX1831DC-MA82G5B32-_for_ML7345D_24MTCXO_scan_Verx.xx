@@ -323,6 +323,7 @@ Function: Frequency Set
 Parameter: Frequency
 Return: Null
 */
+xdata u16 timeout_cnt = 0;
 void ML7345_Frequency_Set(u8 *freq,u8 radio_type)
 {
     Flag_set_freq = 1;
@@ -352,11 +353,12 @@ void ML7345_Frequency_Set(u8 *freq,u8 radio_type)
 
     ML7345_Write_Reg(0x6f, 0x01);     /* VCO_CAL_START(CAL start) */
     while(1){
+        if(timeout_cnt++ >= 5000) break;
         if(ML7345_Read_Reg(0x0Du)&0x02u){   /* Wait VCO calibration completion */
             break;
         }
     }
-
+    timeout_cnt = 0;
     ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL); /* Bank0 Set */
     Flag_set_freq = 0;
 }

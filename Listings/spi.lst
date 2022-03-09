@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   SPI                                                               03/04/2022 11:07:58 PAGE 1   
+C51 COMPILER V9.60.0.0   SPI                                                               03/09/2022 17:26:49 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE SPI
@@ -10,131 +10,135 @@ line level    source
 
    1          #include "spi.h"
    2          
-   3          
-   4          void Init_Spi(void)
-   5          {
-   6   1          // 使能SPI
-   7   1          SPI_Enable();
-   8   1              // 设置MASTER
-   9   1              SPI_SelectMASTERByMSTRbit();
-  10   1              // 设置SPI时钟 SYSCLK/8
-  11   1              SPI_SetClock(SPI_CLK_SYSCLK_8);
-  12   1              // 设置SPICLK初始电平 CPOL=0 低电平
-  13   1              SPI_SetCPOL_0();        
-  14   1              // 设置数据传送位序 MSB 高位在前
-  15   1              SPI_SetDataMSB();
-  16   1              // 设置采样和改变数据模式 CPHA=0 前沿采样,后沿改变数据
-  17   1              SPI_SetCPHA_0();
-  18   1              // 设置IO nSS/P14,MOSI/P15,MISO/P16,SPICLK/P17
-  19   1              SPI_SetUseP14P15P16P17();
-  20   1          
-  21   1          SPI1_CS_H;
-  22   1      }
-  23          
-  24          
-  25          /***********************************************************************************
-  26          函数名称:   u8 SPI1_SendRecv_Data(u8 ToSend)
-  27          功能描述:   SPI主机模式收发数据
-  28          输入参数:   u8 SPI_DATA: 待发送的数据
-  29          返回参数:   u8 :收到的数据  
-  30          *************************************************************************************/
-  31          u8 SPI1_SendRecv_Data(u8 SPI_DATA)
-  32          {
-  33   1          while(SPSTAT & THRF);
-  34   1              SPI_SendData(SPI_DATA);                                                 // SPI 发送数据
-  35   1              while(SPI_ChkCompleteFlag()==0);                                // 等待SPI传送完成
-  36   1              SPI_ClearCompleteFlag();                                                // SPI 清完成标志
-  37   1              return SPI_GetData();                                                   // 返回接收到的数据
-  38   1      }
-  39          
-  40          
-  41          void ML7345_Write_Reg(u8 addr,u8 dat)
-  42          {
-  43   1          DelayXus(1);
-  44   1          SPI1_CS_L;
-  45   1          DelayXus(1);
-  46   1      
-  47   1          addr = (addr << 1) | 0x01;
-  48   1          SPI1_SendRecv_Data(addr);
-  49   1          SPI1_SendRecv_Data(dat);
+   3          void spi_delay(u16 n) //1: 1.69us; 2: 2.24us; 4: 3.19us; 10: 6.2us
+   4          {
+   5   1           while(n--);
+   6   1      }
+   7          
+   8          void Init_Spi(void)
+   9          {
+  10   1          // 使能SPI
+  11   1          SPI_Enable();
+  12   1              // 设置MASTER
+  13   1              SPI_SelectMASTERByMSTRbit();
+  14   1              // 设置SPI时钟 SYSCLK/8
+  15   1              SPI_SetClock(SPI_CLK_SYSCLK_8);
+  16   1              // 设置SPICLK初始电平 CPOL=0 低电平
+  17   1              SPI_SetCPOL_0();        
+  18   1              // 设置数据传送位序 MSB 高位在前
+  19   1              SPI_SetDataMSB();
+  20   1              // 设置采样和改变数据模式 CPHA=0 前沿采样,后沿改变数据
+  21   1              SPI_SetCPHA_0();
+  22   1              // 设置IO nSS/P14,MOSI/P15,MISO/P16,SPICLK/P17
+  23   1              SPI_SetUseP14P15P16P17();
+  24   1          
+  25   1          SPI1_CS_H;
+  26   1      }
+  27          
+  28          
+  29          /***********************************************************************************
+  30          函数名称:   u8 SPI1_SendRecv_Data(u8 ToSend)
+  31          功能描述:   SPI主机模式收发数据
+  32          输入参数:   u8 SPI_DATA: 待发送的数据
+  33          返回参数:   u8 :收到的数据  
+  34          *************************************************************************************/
+  35          u8 SPI1_SendRecv_Data(u8 SPI_DATA)
+  36          {
+  37   1          while(SPSTAT & THRF);
+  38   1              SPI_SendData(SPI_DATA);                                                 // SPI 发送数据
+  39   1              while(SPI_ChkCompleteFlag() == 0);                              // 等待SPI传送完成
+  40   1              SPI_ClearCompleteFlag();                                                // SPI 清完成标志
+  41   1              return SPI_GetData();                                                   // 返回接收到的数据
+  42   1      }
+  43          
+  44          
+  45          void ML7345_Write_Reg(u8 addr,u8 dat)
+  46          {
+  47   1          spi_delay(1);
+  48   1          SPI1_CS_L;
+  49   1          spi_delay(1);
   50   1      
-  51   1          DelayXus(1);
-  52   1          SPI1_CS_H;
-  53   1          DelayXus(1);
-  54   1      }
-C51 COMPILER V9.60.0.0   SPI                                                               03/04/2022 11:07:58 PAGE 2   
+  51   1          addr = (addr << 1) | 0x01;
+  52   1          SPI1_SendRecv_Data(addr);
+  53   1          SPI1_SendRecv_Data(dat);
+  54   1      
+C51 COMPILER V9.60.0.0   SPI                                                               03/09/2022 17:26:49 PAGE 2   
 
-  55          
-  56          u8 ML7345_Read_Reg(u8 addr)
-  57          {
-  58   1          xdata u8 read = 0;
-  59   1          DelayXus(1);
-  60   1          SPI1_CS_L;
-  61   1          DelayXus(1);
-  62   1      
-  63   1          addr = addr << 1;
-  64   1          SPI1_SendRecv_Data(addr);       /* 写地址 */
-  65   1          read = SPI1_SendRecv_Data(0xFF);/* 读数据 */
+  55   1          spi_delay(1);
+  56   1          SPI1_CS_H;
+  57   1          spi_delay(1);
+  58   1      }
+  59          
+  60          u8 ML7345_Read_Reg(u8 addr)
+  61          {
+  62   1          xdata u8 read = 0;
+  63   1          spi_delay(1);
+  64   1          SPI1_CS_L;
+  65   1          spi_delay(1);
   66   1      
-  67   1          DelayXus(1);
-  68   1          SPI1_CS_H;
-  69   1          DelayXus(1);
+  67   1          addr = addr << 1;
+  68   1          SPI1_SendRecv_Data(addr);       /* 写地址 */
+  69   1          read = SPI1_SendRecv_Data(0xFF);/* 读数据 */
   70   1      
-  71   1          return read;
-  72   1      }
-  73          
-  74          void ML7345_Write_Fifo(u8 addr,u8 *pbuf,u8 len)
-  75          {
-  76   1          xdata u8 i = 0;
-  77   1          DelayXus(1);
-  78   1          SPI1_CS_L;
-  79   1          DelayXus(1);
-  80   1      
-  81   1          addr = (addr << 1) | 0x01;
-  82   1          SPI1_SendRecv_Data(addr);
-  83   1          SPI1_SendRecv_Data(pbuf[0]);
-  84   1          for(i=1; i<len; i++)
-  85   1          {
-  86   2              DelayXus(2);
-  87   2              SPI1_SendRecv_Data(pbuf[i]);
-  88   2          }
-  89   1      
-  90   1          DelayXus(1);
-  91   1          SPI1_CS_H;
-  92   1          DelayXus(1);
-  93   1      }
-  94          
-  95          void ML7345_Read_Fifo(u8 addr,u8 *pbuf,u8 len)
-  96          {
-  97   1          xdata u8 i = 0;
-  98   1          DelayXus(1);
-  99   1          SPI1_CS_L;
- 100   1          DelayXus(1);
- 101   1      
- 102   1          addr = addr << 1;
- 103   1          SPI1_SendRecv_Data(addr);
- 104   1      
- 105   1          for(i=0; i<len; i++)
- 106   1          {
- 107   2              pbuf[i] = SPI1_SendRecv_Data(0xFF);
- 108   2          }
- 109   1      
- 110   1          DelayXus(1);
- 111   1          SPI1_CS_H;
- 112   1          DelayXus(1);
- 113   1      }
- 114          //////////////////////////////////////////////////////////////////////////////////////////////
- 115          
+  71   1          spi_delay(1);
+  72   1          SPI1_CS_H;
+  73   1          spi_delay(1);
+  74   1      
+  75   1          return read;
+  76   1      }
+  77          
+  78          void ML7345_Write_Fifo(u8 addr,u8 *pbuf,u8 len)
+  79          {
+  80   1          xdata u8 i = 0;
+  81   1          spi_delay(1);
+  82   1          SPI1_CS_L;
+  83   1          spi_delay(1);
+  84   1      
+  85   1          addr = (addr << 1) | 0x01;
+  86   1          SPI1_SendRecv_Data(addr);
+  87   1          SPI1_SendRecv_Data(pbuf[0]);
+  88   1          for(i=1; i<len; i++)
+  89   1          {
+  90   2              spi_delay(2);
+  91   2              SPI1_SendRecv_Data(pbuf[i]);
+  92   2          }
+  93   1      
+  94   1          spi_delay(1);
+  95   1          SPI1_CS_H;
+  96   1          spi_delay(1);
+  97   1      }
+  98          
+  99          void ML7345_Read_Fifo(u8 addr,u8 *pbuf,u8 len)
+ 100          {
+ 101   1          xdata u8 i = 0;
+ 102   1          spi_delay(1);
+ 103   1          SPI1_CS_L;
+ 104   1          spi_delay(1);
+ 105   1      
+ 106   1          addr = addr << 1;
+ 107   1          SPI1_SendRecv_Data(addr);
+ 108   1      
+ 109   1          for(i=0; i<len; i++)
+ 110   1          {
+ 111   2              pbuf[i] = SPI1_SendRecv_Data(0xFF);
+ 112   2          }
+ 113   1      
+ 114   1          spi_delay(1);
+ 115   1          SPI1_CS_H;
+ 116   1          spi_delay(1);
+C51 COMPILER V9.60.0.0   SPI                                                               03/09/2022 17:26:49 PAGE 3   
 
-C51 COMPILER V9.60.0.0   SPI                                                               03/04/2022 11:07:58 PAGE 3   
+ 117   1      }
+ 118          //////////////////////////////////////////////////////////////////////////////////////////////
+ 119          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    385    ----
+   CODE SIZE        =    439    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =      3    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     14    ----
+   DATA SIZE        =     16    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

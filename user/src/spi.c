@@ -1,5 +1,9 @@
 #include "spi.h"
 
+void spi_delay(u16 n) //1: 1.69us; 2: 2.24us; 4: 3.19us; 10: 6.2us
+{
+     while(n--);
+}
 
 void Init_Spi(void)
 {
@@ -32,7 +36,7 @@ u8 SPI1_SendRecv_Data(u8 SPI_DATA)
 {
     while(SPSTAT & THRF);
 	SPI_SendData(SPI_DATA);							// SPI 发送数据
-	while(SPI_ChkCompleteFlag()==0);				// 等待SPI传送完成
+	while(SPI_ChkCompleteFlag() == 0);				// 等待SPI传送完成
 	SPI_ClearCompleteFlag();						// SPI 清完成标志
 	return SPI_GetData();							// 返回接收到的数据
 }
@@ -40,33 +44,33 @@ u8 SPI1_SendRecv_Data(u8 SPI_DATA)
 
 void ML7345_Write_Reg(u8 addr,u8 dat)
 {
-    DelayXus(1);
+    spi_delay(1);
     SPI1_CS_L;
-    DelayXus(1);
+    spi_delay(1);
 
     addr = (addr << 1) | 0x01;
     SPI1_SendRecv_Data(addr);
     SPI1_SendRecv_Data(dat);
 
-    DelayXus(1);
+    spi_delay(1);
     SPI1_CS_H;
-    DelayXus(1);
+    spi_delay(1);
 }
 
 u8 ML7345_Read_Reg(u8 addr)
 {
     xdata u8 read = 0;
-    DelayXus(1);
+    spi_delay(1);
     SPI1_CS_L;
-    DelayXus(1);
+    spi_delay(1);
 
     addr = addr << 1;
     SPI1_SendRecv_Data(addr);       /* 写地址 */
     read = SPI1_SendRecv_Data(0xFF);/* 读数据 */
 
-    DelayXus(1);
+    spi_delay(1);
     SPI1_CS_H;
-    DelayXus(1);
+    spi_delay(1);
 
     return read;
 }
@@ -74,30 +78,30 @@ u8 ML7345_Read_Reg(u8 addr)
 void ML7345_Write_Fifo(u8 addr,u8 *pbuf,u8 len)
 {
     xdata u8 i = 0;
-    DelayXus(1);
+    spi_delay(1);
     SPI1_CS_L;
-    DelayXus(1);
+    spi_delay(1);
 
     addr = (addr << 1) | 0x01;
     SPI1_SendRecv_Data(addr);
     SPI1_SendRecv_Data(pbuf[0]);
     for(i=1; i<len; i++)
     {
-        DelayXus(2);
+        spi_delay(2);
         SPI1_SendRecv_Data(pbuf[i]);
     }
 
-    DelayXus(1);
+    spi_delay(1);
     SPI1_CS_H;
-    DelayXus(1);
+    spi_delay(1);
 }
 
 void ML7345_Read_Fifo(u8 addr,u8 *pbuf,u8 len)
 {
     xdata u8 i = 0;
-    DelayXus(1);
+    spi_delay(1);
     SPI1_CS_L;
-    DelayXus(1);
+    spi_delay(1);
 
     addr = addr << 1;
     SPI1_SendRecv_Data(addr);
@@ -107,9 +111,9 @@ void ML7345_Read_Fifo(u8 addr,u8 *pbuf,u8 len)
         pbuf[i] = SPI1_SendRecv_Data(0xFF);
     }
 
-    DelayXus(1);
+    spi_delay(1);
     SPI1_CS_H;
-    DelayXus(1);
+    spi_delay(1);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 

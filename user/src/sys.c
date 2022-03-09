@@ -5,7 +5,9 @@ void Init_Clock(void)
 {
 #if (MCU_SYSCLK == 16000000)
     CLK_SetCKCON0(IHRCO_12MHz|ENABLE_CKM|CKM_OSCIN_DIV_2|CPUCLK_SYSCLK_DIV_1|SYSCLK_MCKDO_DIV_1);
-    CLK_SetCKCON2(ENABLE_IHRCO|MCK_CKMI_X533|OSCIn_IHRCO);  
+    DelayXus(100);
+    CLK_SetCKCON2(ENABLE_IHRCO|MCK_CKMI_X533|OSCIn_IHRCO); 
+    DelayXus(100);    
     CLK_SetCKCON3(0x06);                                    //12MHz/2*5.33/2 = 16MHz 
 #endif
  

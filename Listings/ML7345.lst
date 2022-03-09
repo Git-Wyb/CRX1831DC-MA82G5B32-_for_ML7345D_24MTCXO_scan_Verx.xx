@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 1   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE ML7345
@@ -62,7 +62,7 @@ line level    source
   52   1          ML7345_Write_Reg(0x00,0x11);    /* Bank0 Set */
   53   1          ML7345_Write_Reg(0x01,0xff);    /* Software Reset */
   54   1          ML7345_Write_Reg(0x02,0x9f);    /* Clk Enable */
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 2   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 2   
 
   55   1          ML7345_Write_Reg(0x03,0xc3);    /* TCXO_EN */
   56   1          ML7345_Write_Reg(0x04,0x03);    /* MSB first,Format D (non Wireless M-Bus, general purpose format) */
@@ -126,7 +126,7 @@ line level    source
  107   1      
  108   1          ML7345_Write_Reg(0x7a,0x00);    //发送包长度高八位
  109   1          ML7345_Write_Reg(0x7b,0x0c);    //发送包长度低八位
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 3   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 3   
 
  110   1      
  111   1          ML7345_Write_Reg(0x7d,0x00);    //接收包长度高八位
@@ -190,7 +190,7 @@ line level    source
  164   1          ML7345_Write_Reg(0x5f,0x67);    /* 0x67 Demodulator configulation 9 */
  165   1          ML7345_Write_Reg(0x60,0x0c);    /* Demodulator configulation 10 */
  166   1      
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 4   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 4   
 
  167   1          SetReg_Rssi();  //2021.11.17 ROHM提出必要设置,否则读取RSSI偏差大。
  168   1      
@@ -254,7 +254,7 @@ line level    source
  224   2              {
  225   3                  Cache <<= 1;
  226   3                  if (ML7345_DATA)
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 5   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 5   
 
  227   3                      Cache++;
  228   3                  if (Cache == 0x55)
@@ -318,7 +318,7 @@ line level    source
  286   1          {
  287   2              if (X_ERR >= 50) Receiver_LED_RX = 0;
  288   2              else             Receiver_LED_RX = 1;
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 6   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 6   
 
  289   2              X_ERR = 0;
  290   2              X_COUNT = 0;
@@ -382,7 +382,7 @@ line level    source
  346   3                              Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[1]= Last_Uart_Struct_DATA_Packet_Contro.Data[0].uc[1] |
              -0x80;
  347   3                              FLAG_APP_TX_fromUART_err_read=0;
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 7   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 7   
 
  348   3                              Flag_ERROR_Read=0;
  349   3                       }
@@ -446,7 +446,7 @@ line level    source
  401   4                          ML7345_Write_Reg(0x00,0x22);    // Bank1 Set
  402   4                          ML7345_Write_Reg(0x2a,0x15);    //sync
  403   4                          ML7345_Write_Reg(ADDR_BANK_SEL,BANK0_SEL);
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 8   
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 8   
 
  404   4                          ML7345_GPIO0TxDoneInt_Enable();
  405   4                          ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
@@ -470,441 +470,442 @@ line level    source
  423   4                          Receiver_LED_TX = 0;
  424   4                          FLAG_APP_TX_once=0;
  425   4                          Flag_tx_en = 0;
- 426   4                                      }
- 427   3                         }
- 428   2          }
- 429   1          if((FLAG_APP_RXstart==1)&&(Time_APP_RXstart==0)&&(FLAG_APP_TX_fromUART_err_read==0))
- 430   1          {
- 431   2              FLAG_APP_RXstart = 0;
- 432   2              FLAG_APP_RX = 1;
- 433   2          }
- 434   1          else if(Flag_tx_en == 1 && Time_Tx_Out == 0 && Flag_TxDone == 0 && FLAG_APP_RXstart == 0)
- 435   1          {
- 436   2              if(PROFILE_CH_FREQ_32bit_200002EC == 429350000) RF_ML7345_Init(Fre_429_350,0x15,28);
- 437   2              else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000) RF_ML7345_Init(Fre_429_550,0x15,28);
- 438   2              ML7345_GPIO0TxDoneInt_Enable();
- 439   2              ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
- 440   2              Time_Tx_Out = 100;
- 441   2              retx_cnt++;
- 442   2              if(retx_cnt >= 3)
- 443   2              {
- 444   3                  retx_cnt = 0;
- 445   3                  Flag_tx_en = 0;
- 446   3                  FLAG_APP_RX = 1;
- 447   3                  Receiver_LED_TX = 0;
- 448   3              }
- 449   2          }
- 450   1      }
- 451          
- 452          //--------------------------------------------------------------------------------------------------
- 453          void ML7345D_RF_test_mode(void)
- 454          {
- 455   1          Receiver_LED_OUT = 1;
- 456   1          Flag_test_mode = 0;
- 457   1          Flag_test_pc = 0;
- 458   1          while (Receiver_test == 0)
- 459   1          {
- 460   2              if(Flag_test_mode == 0)
- 461   2              {
- 462   3                  //UART1_INIT_TestMode();
- 463   3                  Receiver_LED_OUT = 0;
- 464   3                  BEEP_Module(500,1);
- 465   3              }
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 9   
+ 426   4                          retx_cnt = 0;
+ 427   4                                      }
+ 428   3                         }
+ 429   2          }
+ 430   1          if((FLAG_APP_RXstart==1)&&(Time_APP_RXstart==0)&&(FLAG_APP_TX_fromUART_err_read==0))
+ 431   1          {
+ 432   2              FLAG_APP_RXstart = 0;
+ 433   2              FLAG_APP_RX = 1;
+ 434   2          }
+ 435   1          else if(Flag_tx_en == 1 && Time_Tx_Out == 0 && Flag_TxDone == 0 && FLAG_APP_RXstart == 0)
+ 436   1          {
+ 437   2              if(PROFILE_CH_FREQ_32bit_200002EC == 429350000) RF_ML7345_Init(Fre_429_350,0x15,28);
+ 438   2              else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000) RF_ML7345_Init(Fre_429_550,0x15,28);
+ 439   2              ML7345_GPIO0TxDoneInt_Enable();
+ 440   2              ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
+ 441   2              Time_Tx_Out = 100;
+ 442   2              retx_cnt++;
+ 443   2              if(retx_cnt >= 3)
+ 444   2              {
+ 445   3                  retx_cnt = 0;
+ 446   3                  Flag_tx_en = 0;
+ 447   3                  FLAG_APP_RX = 1;
+ 448   3                  Receiver_LED_TX = 0;
+ 449   3              }
+ 450   2          }
+ 451   1      }
+ 452          
+ 453          //--------------------------------------------------------------------------------------------------
+ 454          void ML7345D_RF_test_mode(void)
+ 455          {
+ 456   1          Receiver_LED_OUT = 1;
+ 457   1          Flag_test_mode = 0;
+ 458   1          Flag_test_pc = 0;
+ 459   1          while (Receiver_test == 0)
+ 460   1          {
+ 461   2              if(Flag_test_mode == 0)
+ 462   2              {
+ 463   3                  //UART1_INIT_TestMode();
+ 464   3                  Receiver_LED_OUT = 0;
+ 465   3                  BEEP_Module(500,1);
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 9   
 
- 466   2              Flag_test_mode = 1;
- 467   2              ClearWDT();   // Service the WDT
- 468   2              if(Flag_test_pc == 0)
- 469   2              {
- 470   3                  if (TP4 == 0) //test  TX
- 471   3                  {
- 472   4                      if (TP3 == 0)
- 473   4                          Tx_Rx_mode = 0;
- 474   4                      else
- 475   4                          Tx_Rx_mode = 1;
- 476   4                  }
- 477   3                  else //test  RX
- 478   3                  {
- 479   4                      if (TP3 == 0)
- 480   4                          Tx_Rx_mode = 2;
- 481   4                      else
- 482   4                          Tx_Rx_mode = 3;
- 483   4                  }
- 484   3                  if ((Tx_Rx_mode == 0) || (Tx_Rx_mode == 1))
- 485   3                  {
- 486   4                      CG2214M6_USE_T;
- 487   4                      FG_test_rx = 0;
- 488   4                      Receiver_LED_RX = 0;
- 489   4                      FG_test_tx_off = 0;
- 490   4                      Flag_test_rssi = 0;
- 491   4                      PROFILE_CH_FREQ_32bit_200002EC = 429175000;
- 492   4                      if (Tx_Rx_mode == 0) //发载波，无调制信叿
- 493   4                      {
- 494   5                          Receiver_LED_TX = 1;
- 495   5                          FG_test_mode = 0;
- 496   5                          FG_test_tx_1010 = 0;
- 497   5                          if (FG_test_tx_on == 0)
- 498   5                          {
- 499   6                              FG_test_tx_on = 1;
- 500   6                              ML7345_SetAndGet_State(Force_TRX_OFF);
- 501   6                              ML7345_Frequency_Set(Fre_429_175,1);
- 502   6                              Tx_Data_Test(0);
- 503   6                          }
- 504   5                      }
- 505   4                      else //发载波，有调制信叿
- 506   4                      {
- 507   5                          if (TIMER1s == 0)
- 508   5                          {
- 509   6                              TIMER1s = 500;
- 510   6                              Receiver_LED_TX = !Receiver_LED_TX;
- 511   6                          }
- 512   5                          FG_test_mode = 1;
- 513   5                          FG_test_tx_on = 0;
- 514   5                          if (FG_test_tx_1010 == 0)
- 515   5                          {
- 516   6                              FG_test_tx_1010 = 1;
- 517   6                              ML7345_SetAndGet_State(Force_TRX_OFF);
- 518   6                              ML7345_Frequency_Set(Fre_429_175,1);
- 519   6                              Tx_Data_Test(1);
- 520   6                          }
- 521   5                      }
- 522   4                  }
- 523   3                  //else  {           //test  RX
- 524   3                  if ((Tx_Rx_mode == 2) || (Tx_Rx_mode == 3))
- 525   3                  {
- 526   4                      CG2214M6_USE_R;
- 527   4                      FG_test_rx = 1;
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 10  
+ 466   3              }
+ 467   2              Flag_test_mode = 1;
+ 468   2              ClearWDT();   // Service the WDT
+ 469   2              if(Flag_test_pc == 0)
+ 470   2              {
+ 471   3                  if (TP4 == 0) //test  TX
+ 472   3                  {
+ 473   4                      if (TP3 == 0)
+ 474   4                          Tx_Rx_mode = 0;
+ 475   4                      else
+ 476   4                          Tx_Rx_mode = 1;
+ 477   4                  }
+ 478   3                  else //test  RX
+ 479   3                  {
+ 480   4                      if (TP3 == 0)
+ 481   4                          Tx_Rx_mode = 2;
+ 482   4                      else
+ 483   4                          Tx_Rx_mode = 3;
+ 484   4                  }
+ 485   3                  if ((Tx_Rx_mode == 0) || (Tx_Rx_mode == 1))
+ 486   3                  {
+ 487   4                      CG2214M6_USE_T;
+ 488   4                      FG_test_rx = 0;
+ 489   4                      Receiver_LED_RX = 0;
+ 490   4                      FG_test_tx_off = 0;
+ 491   4                      Flag_test_rssi = 0;
+ 492   4                      PROFILE_CH_FREQ_32bit_200002EC = 429175000;
+ 493   4                      if (Tx_Rx_mode == 0) //发载波，无调制信叿
+ 494   4                      {
+ 495   5                          Receiver_LED_TX = 1;
+ 496   5                          FG_test_mode = 0;
+ 497   5                          FG_test_tx_1010 = 0;
+ 498   5                          if (FG_test_tx_on == 0)
+ 499   5                          {
+ 500   6                              FG_test_tx_on = 1;
+ 501   6                              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 502   6                              ML7345_Frequency_Set(Fre_429_175,1);
+ 503   6                              Tx_Data_Test(0);
+ 504   6                          }
+ 505   5                      }
+ 506   4                      else //发载波，有调制信叿
+ 507   4                      {
+ 508   5                          if (TIMER1s == 0)
+ 509   5                          {
+ 510   6                              TIMER1s = 500;
+ 511   6                              Receiver_LED_TX = !Receiver_LED_TX;
+ 512   6                          }
+ 513   5                          FG_test_mode = 1;
+ 514   5                          FG_test_tx_on = 0;
+ 515   5                          if (FG_test_tx_1010 == 0)
+ 516   5                          {
+ 517   6                              FG_test_tx_1010 = 1;
+ 518   6                              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 519   6                              ML7345_Frequency_Set(Fre_429_175,1);
+ 520   6                              Tx_Data_Test(1);
+ 521   6                          }
+ 522   5                      }
+ 523   4                  }
+ 524   3                  //else  {           //test  RX
+ 525   3                  if ((Tx_Rx_mode == 2) || (Tx_Rx_mode == 3))
+ 526   3                  {
+ 527   4                      CG2214M6_USE_R;
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 10  
 
- 528   4                      Receiver_LED_TX = 0;
- 529   4                      FG_test_mode = 0;
- 530   4                      FG_test_tx_on = 0;
- 531   4                      FG_test_tx_1010 = 0;
- 532   4                      if (FG_test_tx_off == 0)
- 533   4                      {
- 534   5                          FG_test_tx_off = 1;
- 535   5                          ML7345_SetAndGet_State(Force_TRX_OFF);
- 536   5                          PROFILE_CH_FREQ_32bit_200002EC = 426750000;
- 537   5                          ML7345_Frequency_Set(Fre_426_750,1);
- 538   5                          ML7345_MeasurBER_Init();
- 539   5                          ML7345_SetAndGet_State(RX_ON);
- 540   5                      }
- 541   4                      if (Tx_Rx_mode == 2) //packet usart out put RSSI
- 542   4                      {
- 543   5                          if (TIMER1s == 0)
- 544   5                          {
- 545   6                              TIMER1s = 500;
- 546   6                              Receiver_LED_RX = !Receiver_LED_RX;
- 547   6                          }
- 548   5                          //SCAN_RECEIVE_PACKET(); //扫描接收数据
- 549   5                      }
- 550   4                      if (Tx_Rx_mode == 3) //packet usart out put BER
- 551   4                      {
- 552   5                          RF_Ber_Test();
- 553   5                      }
- 554   4                  }
- 555   3              }
- 556   2              PC_PRG();
- 557   2          }
- 558   1          if(Flag_test_mode == 1)
- 559   1          {
- 560   2              //UART1_INIT();
- 561   2              ML7345_SetAndGet_State(Force_TRX_OFF);
- 562   2              RF_ML7345_Init(Fre_426_075,0x55,12);
- 563   2          }
- 564   1          PROFILE_CH_FREQ_32bit_200002EC = 426075000;
- 565   1      
- 566   1          Flag_test_mode = 0;
- 567   1          Flag_test_pc = 0;
- 568   1          ML7345_GPIO0RxDoneInt_Enable(); /* 开启接收完成中断,ML7345D GPIO0中断输出 */
- 569   1          ML7345_GPIO0TxDoneInt_Enable(); /* 开启发送完成中断,ML7345D GPIO0中断输出 */
- 570   1          FG_test_rx = 0;
- 571   1          TIMER1s = 0;
- 572   1          Receiver_LED_TX = 0;
- 573   1          Receiver_LED_RX = 0;
- 574   1          FG_Receiver_LED_RX = 0;
- 575   1          //Receiver_LED_OUT = 0;
- 576   1          Time_rf_init = 1000;
- 577   1          FLAG_APP_RX = 1;
- 578   1      }
- 579          
- 580          void ML7345d_Change_Channel(void)
- 581          {
- 582   1          if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login==1))
- 583   1          {
- 584   2              PROFILE_CH_FREQ_32bit_200002EC = 426075000;
- 585   2              Radio_Date_Type=1;
- 586   2              Channels=1;
- 587   2              ML7345_Frequency_Set(Fre_426_075,Radio_Date_Type);
- 588   2          }
- 589   1          else
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 11  
+ 528   4                      FG_test_rx = 1;
+ 529   4                      Receiver_LED_TX = 0;
+ 530   4                      FG_test_mode = 0;
+ 531   4                      FG_test_tx_on = 0;
+ 532   4                      FG_test_tx_1010 = 0;
+ 533   4                      if (FG_test_tx_off == 0)
+ 534   4                      {
+ 535   5                          FG_test_tx_off = 1;
+ 536   5                          ML7345_SetAndGet_State(Force_TRX_OFF);
+ 537   5                          PROFILE_CH_FREQ_32bit_200002EC = 426750000;
+ 538   5                          ML7345_Frequency_Set(Fre_426_750,1);
+ 539   5                          ML7345_MeasurBER_Init();
+ 540   5                          ML7345_SetAndGet_State(RX_ON);
+ 541   5                      }
+ 542   4                      if (Tx_Rx_mode == 2) //packet usart out put RSSI
+ 543   4                      {
+ 544   5                          if (TIMER1s == 0)
+ 545   5                          {
+ 546   6                              TIMER1s = 500;
+ 547   6                              Receiver_LED_RX = !Receiver_LED_RX;
+ 548   6                          }
+ 549   5                          //SCAN_RECEIVE_PACKET(); //扫描接收数据
+ 550   5                      }
+ 551   4                      if (Tx_Rx_mode == 3) //packet usart out put BER
+ 552   4                      {
+ 553   5                          RF_Ber_Test();
+ 554   5                      }
+ 555   4                  }
+ 556   3              }
+ 557   2              PC_PRG();
+ 558   2          }
+ 559   1          if(Flag_test_mode == 1)
+ 560   1          {
+ 561   2              //UART1_INIT();
+ 562   2              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 563   2              RF_ML7345_Init(Fre_426_075,0x55,12);
+ 564   2          }
+ 565   1          PROFILE_CH_FREQ_32bit_200002EC = 426075000;
+ 566   1      
+ 567   1          Flag_test_mode = 0;
+ 568   1          Flag_test_pc = 0;
+ 569   1          ML7345_GPIO0RxDoneInt_Enable(); /* 开启接收完成中断,ML7345D GPIO0中断输出 */
+ 570   1          ML7345_GPIO0TxDoneInt_Enable(); /* 开启发送完成中断,ML7345D GPIO0中断输出 */
+ 571   1          FG_test_rx = 0;
+ 572   1          TIMER1s = 0;
+ 573   1          Receiver_LED_TX = 0;
+ 574   1          Receiver_LED_RX = 0;
+ 575   1          FG_Receiver_LED_RX = 0;
+ 576   1          //Receiver_LED_OUT = 0;
+ 577   1          Time_rf_init = 1000;
+ 578   1          FLAG_APP_RX = 1;
+ 579   1      }
+ 580          
+ 581          void ML7345d_Change_Channel(void)
+ 582          {
+ 583   1          if ((FLAG_ID_Erase_Login == 1) || (FLAG_ID_Login == 1) ||(FLAG_ID_SCX1801_Login==1))
+ 584   1          {
+ 585   2              PROFILE_CH_FREQ_32bit_200002EC = 426075000;
+ 586   2              Radio_Date_Type=1;
+ 587   2              Channels=1;
+ 588   2              ML7345_Frequency_Set(Fre_426_075,Radio_Date_Type);
+ 589   2          }
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 11  
 
- 590   1          {
- 591   2              switch(Channels)
- 592   2              {
- 593   3                  case 1:
- 594   3                          Radio_Date_Type = 1;
- 595   3                          PROFILE_CH_FREQ_32bit_200002EC = 426075000;
- 596   3                          ML7345_Frequency_Set(Fre_426_075,Radio_Date_Type);       //加上VCO校准后用时5ms
+ 590   1          else
+ 591   1          {
+ 592   2              switch(Channels)
+ 593   2              {
+ 594   3                  case 1:
+ 595   3                          Radio_Date_Type = 1;
+ 596   3                          PROFILE_CH_FREQ_32bit_200002EC = 426075000;
+ 597   3                          ML7345_Frequency_Set(Fre_426_075,Radio_Date_Type);       //加上VCO校准后用时5ms
              -，不加1.2ms
- 597   3                          if(ID_SCX1801_DATA == 0) Channels = 1;
- 598   3                          else Channels = 2;
- 599   3                          break;
- 600   3      
- 601   3                  case 2:
- 602   3                          Radio_Date_Type = 2;
- 603   3                          PROFILE_CH_FREQ_32bit_200002EC = 429350000;
- 604   3                          ML7345_Frequency_Set(Fre_429_350,Radio_Date_Type);
- 605   3                          Channels = 3;
- 606   3                          break;
- 607   3      
- 608   3                  case 3:
- 609   3                          Radio_Date_Type = 2;
- 610   3                          PROFILE_CH_FREQ_32bit_200002EC = 429550000;
- 611   3                          ML7345_Frequency_Set(Fre_429_550,Radio_Date_Type);
- 612   3                          Channels = 4;
- 613   3                          break;
- 614   3      
- 615   3                   case 4:
- 616   3                          Radio_Date_Type = 1;
- 617   3                          PROFILE_CH_FREQ_32bit_200002EC = 426075000;
- 618   3                          ML7345_Frequency_Set(Fre_426_075,Radio_Date_Type);
- 619   3                          Channels = 1;
- 620   3                          break;
- 621   3      
- 622   3                   default:
- 623   3                      break;
- 624   3              }
- 625   2          }
- 626   1      }
- 627          
- 628          void ML7345D_Freq_Scanning(void)
- 629          {
- 630   1          if(TIMER18ms == 0)
- 631   1          {
- 632   2              if(Flag_FREQ_Scan)  return;
- 633   2              ML7345d_Change_Channel();
- 634   2              if(Time_rf_init == 0)
- 635   2              {
- 636   3                  Time_rf_init = 1000;
- 637   3                  if(PROFILE_CH_FREQ_32bit_200002EC == 426075000) RF_ML7345_Init(Fre_426_075,0x55,12);
- 638   3                  else if(PROFILE_CH_FREQ_32bit_200002EC == 429350000) RF_ML7345_Init(Fre_429_350,0x55,28);
- 639   3                  else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000) RF_ML7345_Init(Fre_429_550,0x55,28);
- 640   3                  ML7345_GPIO0RxDoneInt_Enable();
- 641   3              }
- 642   2              ML7345_SetAndGet_State(RX_ON);
- 643   2              CG2214M6_USE_R;
- 644   2      
- 645   2              if(Radio_Date_Type==1)
- 646   2                  TIMER18ms = 18;
- 647   2              else if(Radio_Date_Type > 1)
- 648   2                  TIMER18ms = 18;
- 649   2              Flag_rx_pream = 0;
- 650   2              Flag_tx_en = 0;
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 12  
+ 598   3                          if(ID_SCX1801_DATA == 0) Channels = 1;
+ 599   3                          else Channels = 2;
+ 600   3                          break;
+ 601   3      
+ 602   3                  case 2:
+ 603   3                          Radio_Date_Type = 2;
+ 604   3                          PROFILE_CH_FREQ_32bit_200002EC = 429350000;
+ 605   3                          ML7345_Frequency_Set(Fre_429_350,Radio_Date_Type);
+ 606   3                          Channels = 3;
+ 607   3                          break;
+ 608   3      
+ 609   3                  case 3:
+ 610   3                          Radio_Date_Type = 2;
+ 611   3                          PROFILE_CH_FREQ_32bit_200002EC = 429550000;
+ 612   3                          ML7345_Frequency_Set(Fre_429_550,Radio_Date_Type);
+ 613   3                          Channels = 4;
+ 614   3                          break;
+ 615   3      
+ 616   3                   case 4:
+ 617   3                          Radio_Date_Type = 1;
+ 618   3                          PROFILE_CH_FREQ_32bit_200002EC = 426075000;
+ 619   3                          ML7345_Frequency_Set(Fre_426_075,Radio_Date_Type);
+ 620   3                          Channels = 1;
+ 621   3                          break;
+ 622   3      
+ 623   3                   default:
+ 624   3                      break;
+ 625   3              }
+ 626   2          }
+ 627   1      }
+ 628          
+ 629          void ML7345D_Freq_Scanning(void)
+ 630          {
+ 631   1          if(TIMER18ms == 0)
+ 632   1          {
+ 633   2              if(Flag_FREQ_Scan)  return;
+ 634   2              ML7345d_Change_Channel();
+ 635   2              if(Time_rf_init == 0)
+ 636   2              {
+ 637   3                  Time_rf_init = 1000;
+ 638   3                  if(PROFILE_CH_FREQ_32bit_200002EC == 426075000) RF_ML7345_Init(Fre_426_075,0x55,12);
+ 639   3                  else if(PROFILE_CH_FREQ_32bit_200002EC == 429350000) RF_ML7345_Init(Fre_429_350,0x55,28);
+ 640   3                  else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000) RF_ML7345_Init(Fre_429_550,0x55,28);
+ 641   3                  ML7345_GPIO0RxDoneInt_Enable();
+ 642   3              }
+ 643   2              ML7345_SetAndGet_State(RX_ON);
+ 644   2              CG2214M6_USE_R;
+ 645   2      
+ 646   2              if(Radio_Date_Type==1)
+ 647   2                  TIMER18ms = 18;
+ 648   2              else if(Radio_Date_Type > 1)
+ 649   2                  TIMER18ms = 18;
+ 650   2              Flag_rx_pream = 0;
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 12  
 
- 651   2              RSSI_Read_Counter = 0;
- 652   2              RAM_RSSI_SUM = 0;
- 653   2      
- 654   2          }else Flag_FREQ_Scan = 0;
- 655   1      }
- 656          
- 657          //idata u8 red = 0;
- 658          void ML7345_TRX_Del(void)
- 659          {
- 660   1          idata u8 reg = 0;
- 661   1          if(Flag_tx_en == 0) reg = RF_SyncWord_DONE();
- 662   1      
- 663   1          if(reg == 0x20)
- 664   1          {
- 665   2              TIMER18ms = 550;
- 666   2              Flag_FREQ_Scan = 1;
- 667   2              if(Flag_rx_pream == 0 && Flag_set_freq == 0)
- 668   2              {
- 669   3                  FG_Receiver_LED_RX = 1;
- 670   3                  ML7345_SetAndGet_State(Force_TRX_OFF);
- 671   3                  if(PROFILE_CH_FREQ_32bit_200002EC == 426075000)
- 672   3                  {
- 673   4                      TIMER300ms = 600;
- 674   4                      if(Flag_TX_ID_load == 0)    RF_ML7345_Init(Fre_426_075,0x15,12);
- 675   4                      else                        RF_ML7345_Init(Fre_426_075,0x15,24);
- 676   4                  }
- 677   3                  else if(PROFILE_CH_FREQ_32bit_200002EC == 429350000)   {RF_ML7345_Init(Fre_429_350,0x15,28); T
+ 651   2              Flag_tx_en = 0;
+ 652   2              RSSI_Read_Counter = 0;
+ 653   2              RAM_RSSI_SUM = 0;
+ 654   2      
+ 655   2          }else Flag_FREQ_Scan = 0;
+ 656   1      }
+ 657          
+ 658          //idata u8 red = 0;
+ 659          void ML7345_TRX_Del(void)
+ 660          {
+ 661   1          idata u8 reg = 0;
+ 662   1          if(Flag_tx_en == 0) reg = RF_SyncWord_DONE();
+ 663   1      
+ 664   1          if(reg == 0x20)
+ 665   1          {
+ 666   2              TIMER18ms = 550;
+ 667   2              Flag_FREQ_Scan = 1;
+ 668   2              if(Flag_rx_pream == 0 && Flag_set_freq == 0)
+ 669   2              {
+ 670   3                  FG_Receiver_LED_RX = 1;
+ 671   3                  ML7345_SetAndGet_State(Force_TRX_OFF);
+ 672   3                  if(PROFILE_CH_FREQ_32bit_200002EC == 426075000)
+ 673   3                  {
+ 674   4                      TIMER300ms = 600;
+ 675   4                      if(Flag_TX_ID_load == 0)    RF_ML7345_Init(Fre_426_075,0x15,12);
+ 676   4                      else                        RF_ML7345_Init(Fre_426_075,0x15,24);
+ 677   4                  }
+ 678   3                  else if(PROFILE_CH_FREQ_32bit_200002EC == 429350000)   {RF_ML7345_Init(Fre_429_350,0x15,28); T
              -IMER300ms = 100;}
- 678   3                  else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000)   {RF_ML7345_Init(Fre_429_550,0x15,28); T
+ 679   3                  else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000)   {RF_ML7345_Init(Fre_429_550,0x15,28); T
              -IMER300ms = 100;}
- 679   3                  ML7345_GPIO0RxDoneInt_Enable();
- 680   3                  ML7345_SetAndGet_State(RX_ON);
- 681   3                  CG2214M6_USE_R;
- 682   3              }
- 683   2              Flag_rx_pream = 1;
- 684   2              ML7345_Write_Reg(ADDR_INT_SOURCE_GRP2,0x00); //清接收完成标志
- 685   2          }
- 686   1          
- 687   1          if(reg == 0x01)
- 688   1          {
- 689   2              if(TIMER18ms < 50) TIMER18ms = 50;
- 690   2              Flag_RxDone = 1;
- 691   2              ML7345_Write_Reg(ADDR_INT_SOURCE_GRP2,0x00); //清接收完成标志
- 692   2              //ML7345_StateFlag_Clear(RX_DONE_FLAG); //清除后接收的数据会被清0
- 693   2          }
- 694   1          
- 695   1          reg = ML7345_Read_Reg(ADDR_INT_SOURCE_GRP3);
- 696   1          if((reg & 0x01) && reg != 0xff)
- 697   1          {
- 698   2              Flag_TxDone = 1;
- 699   2              Time_APP_blank_TX = 6;
- 700   2              ML7345_StateFlag_Clear(TX_DONE_FLAG);
- 701   2          }
- 702   1      }
- 703          
- 704          void RX_ANALYSIS(void)
- 705          {
- 706   1          xdata u8 i;
- 707   1          for (i = 0; i < 7; i++)
- 708   1          {
- 709   2              SPI_Receive_DataForC[i] = (u32)SPI_RECEIVE_BUFF[i * 4 + 3] |
- 710   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 2] << 8 |
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 13  
+ 680   3                  ML7345_GPIO0RxDoneInt_Enable();
+ 681   3                  ML7345_SetAndGet_State(RX_ON);
+ 682   3                  CG2214M6_USE_R;
+ 683   3              }
+ 684   2              Flag_rx_pream = 1;
+ 685   2              ML7345_Write_Reg(ADDR_INT_SOURCE_GRP2,0x00); //清接收完成标志
+ 686   2          }
+ 687   1          
+ 688   1          if(reg == 0x01)
+ 689   1          {
+ 690   2              if(TIMER18ms < 50) TIMER18ms = 50;
+ 691   2              Flag_RxDone = 1;
+ 692   2              ML7345_Write_Reg(ADDR_INT_SOURCE_GRP2,0x00); //清接收完成标志
+ 693   2              //ML7345_StateFlag_Clear(RX_DONE_FLAG); //清除后接收的数据会被清0
+ 694   2          }
+ 695   1          
+ 696   1          reg = ML7345_Read_Reg(ADDR_INT_SOURCE_GRP3);
+ 697   1          if(((reg & 0x01) == 0x01) && (reg != 0xff))
+ 698   1          {
+ 699   2              Flag_TxDone = 1;
+ 700   2              Time_APP_blank_TX = 6;
+ 701   2              ML7345_StateFlag_Clear(TX_DONE_FLAG);
+ 702   2          }
+ 703   1      }
+ 704          
+ 705          void RX_ANALYSIS(void)
+ 706          {
+ 707   1          xdata u8 i;
+ 708   1          for (i = 0; i < 7; i++)
+ 709   1          {
+ 710   2              SPI_Receive_DataForC[i] = (u32)SPI_RECEIVE_BUFF[i * 4 + 3] |
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 13  
 
- 711   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 1] << 16 |
- 712   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 0] << 24;
- 713   2          }
- 714   1              if(Flag_ERROR_Read==0)
- 715   1              {
- 716   2             FLAG_Receiver_IDCheck = 1;
- 717   2             ID_Decode_IDCheck();
- 718   2              }
- 719   1      }
- 720          
- 721          void SCAN_RECEIVE_PACKET(void)
- 722          {
- 723   1          xdata short Cache;
- 724   1          if(Flag_RxDone)
- 725   1          {
- 726   2              Flag_RxDone = 0;
- 727   2              if(PROFILE_CH_FREQ_32bit_200002EC == 426075000)
- 728   2              {
- 729   3                  if(Flag_TX_ID_load == 1)    ML7345_ReadRx_Pack(SPI_RECEIVE_BUFF,24);
- 730   3                  else                        ML7345_ReadRx_Pack(SPI_RECEIVE_BUFF,12);
- 731   3              }
- 732   2              else    ML7345_ReadRx_Pack(SPI_RECEIVE_BUFF,28);
- 733   2              ML7345_StateFlag_Clear(RX_DONE_FLAG);
- 734   2              RX_ANALYSIS();
- 735   2              Flag_FREQ_Scan = 0;
- 736   2      
- 737   2              ML7345_SetAndGet_State(Force_TRX_OFF);
- 738   2              Cache = ML7345_Read_Reg(ADDR_ED_RSLT);
- 739   2              RAM_RSSI_SUM += Cache;
- 740   2              RSSI_Read_Counter++;
- 741   2              RAM_RSSI_AVG = RAM_RSSI_SUM / RSSI_Read_Counter;
- 742   2              ML7345_Write_Reg(0x00,0x22);    // Bank1 Set
- 743   2              ML7345_Write_Reg(0x2a,0x55);    //sync
- 744   2              ML7345_Write_Reg(0x00,0x11);    // Bank0 Set
- 745   2              ML7345_SetAndGet_State(RX_ON);
- 746   2              CG2214M6_USE_R;
- 747   2              Flag_rx_pream = 0;
- 748   2              TIMER18ms = 28;
- 749   2          }
- 750   1      }
- 751          /*
- 752          void ML7345D_Error_Detect(void)
- 753          {
- 754              if(ML7345_Read_Reg(ADDR_INT_SOURCE_GRP1) & 0x04)    //PLL unlock interrupt
- 755              {
- 756                  ML7345_Write_Reg(ADDR_INT_SOURCE_GRP1,0xFB);
- 757                  while(ML7345_SetAndGet_State(Get_Sta) != TRX_OFF);
- 758                  ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
- 759              }
- 760              else if(ML7345_Read_Reg(ADDR_INT_SOURCE_GRP3) & 0x10)    //TX FIFO access error interrupt
- 761              {
- 762                  ML7345_SetAndGet_State(Force_TRX_OFF);
- 763                  ML7345_StateFlag_Clear(TX_DONE_FLAG);
- 764                  ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
- 765              }
- 766          }*/
- 767          
- 768          /*
- 769          void TX_DataLoad(u32 IDCache, u8 CtrCmd, u8 *Packet)
- 770          {
- 771              xdata u8 i;
- 772              xdata u16 CRCTemp = 0;
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 14  
+ 711   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 2] << 8 |
+ 712   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 1] << 16 |
+ 713   2                                        (u32)SPI_RECEIVE_BUFF[i * 4 + 0] << 24;
+ 714   2          }
+ 715   1              if(Flag_ERROR_Read==0)
+ 716   1              {
+ 717   2             FLAG_Receiver_IDCheck = 1;
+ 718   2             ID_Decode_IDCheck();
+ 719   2              }
+ 720   1      }
+ 721          
+ 722          void SCAN_RECEIVE_PACKET(void)
+ 723          {
+ 724   1          xdata short Cache;
+ 725   1          if(Flag_RxDone)
+ 726   1          {
+ 727   2              Flag_RxDone = 0;
+ 728   2              if(PROFILE_CH_FREQ_32bit_200002EC == 426075000)
+ 729   2              {
+ 730   3                  if(Flag_TX_ID_load == 1)    ML7345_ReadRx_Pack(SPI_RECEIVE_BUFF,24);
+ 731   3                  else                        ML7345_ReadRx_Pack(SPI_RECEIVE_BUFF,12);
+ 732   3              }
+ 733   2              else    ML7345_ReadRx_Pack(SPI_RECEIVE_BUFF,28);
+ 734   2              ML7345_StateFlag_Clear(RX_DONE_FLAG);
+ 735   2              RX_ANALYSIS();
+ 736   2              Flag_FREQ_Scan = 0;
+ 737   2      
+ 738   2              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 739   2              Cache = ML7345_Read_Reg(ADDR_ED_RSLT);
+ 740   2              RAM_RSSI_SUM += Cache;
+ 741   2              RSSI_Read_Counter++;
+ 742   2              RAM_RSSI_AVG = RAM_RSSI_SUM / RSSI_Read_Counter;
+ 743   2              ML7345_Write_Reg(0x00,0x22);    // Bank1 Set
+ 744   2              ML7345_Write_Reg(0x2a,0x55);    //sync
+ 745   2              ML7345_Write_Reg(0x00,0x11);    // Bank0 Set
+ 746   2              ML7345_SetAndGet_State(RX_ON);
+ 747   2              CG2214M6_USE_R;
+ 748   2              Flag_rx_pream = 0;
+ 749   2              TIMER18ms = 28;
+ 750   2          }
+ 751   1      }
+ 752          /*
+ 753          void ML7345D_Error_Detect(void)
+ 754          {
+ 755              if(ML7345_Read_Reg(ADDR_INT_SOURCE_GRP1) & 0x04)    //PLL unlock interrupt
+ 756              {
+ 757                  ML7345_Write_Reg(ADDR_INT_SOURCE_GRP1,0xFB);
+ 758                  while(ML7345_SetAndGet_State(Get_Sta) != TRX_OFF);
+ 759                  ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
+ 760              }
+ 761              else if(ML7345_Read_Reg(ADDR_INT_SOURCE_GRP3) & 0x10)    //TX FIFO access error interrupt
+ 762              {
+ 763                  ML7345_SetAndGet_State(Force_TRX_OFF);
+ 764                  ML7345_StateFlag_Clear(TX_DONE_FLAG);
+ 765                  ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
+ 766              }
+ 767          }*/
+ 768          
+ 769          /*
+ 770          void TX_DataLoad(u32 IDCache, u8 CtrCmd, u8 *Packet)
+ 771          {
+ 772              xdata u8 i;
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 14  
 
- 773              CRCTemp = (IDCache & 0xffff) + (((IDCache >> 16) & 0xff) + ((u16)CtrCmd << 8));
- 774              for (i = 0; i < 24; i++)
- 775              {
- 776                  *(Packet + (i / 4)) <<= 2;
- 777                  *(Packet + (i / 4)) |= ((IDCache & ((u32)1 << i)) ? 2 : 1);
- 778              }
- 779              for (i = 24; i < 32; i++)
- 780              {
- 781                  *(Packet + (i / 4)) <<= 2;
- 782                  *(Packet + (i / 4)) |= ((CtrCmd & ((u8)1 << (i - 24))) ? 2 : 1);
- 783              }
- 784              for (i = 32; i < 48; i++)
- 785              {
- 786                  *(Packet + (i / 4)) <<= 2;
- 787                  *(Packet + (i / 4)) |= ((CRCTemp & ((u16)1 << (i - 32))) ? 2 : 1);
- 788              }
- 789              ClearWDT();
- 790          }*/
- 791          
- 792          void TX_DataLoad_HighSpeed(u32 IDCache, Wireless_Body CtrCmd, u8 *Packet)
- 793          {
- 794   1          xdata u8 i;
- 795   1          xdata u16 CRCTemp = 0;
- 796   1      
- 797   1          CRCTemp = (IDCache & 0xffff) + (((IDCache >> 16) & 0xff) + ((u16)CtrCmd.Fno_Type.byte << 8));
- 798   1              for(i=0;i<4;i++)
- 799   1                      CRCTemp+=CtrCmd.Data[i].ui;
- 800   1      
- 801   1          for (i = 0; i < 24; i++)
- 802   1          {
- 803   2              *(Packet + (i / 4)) <<= 2;
- 804   2              *(Packet + (i / 4)) |= ((IDCache & ((u32)1 << i)) ? 2 : 1);
- 805   2          }
- 806   1          for (i = 24; i < 32; i++)
- 807   1          {
- 808   2              *(Packet + (i / 4)) <<= 2;
- 809   2              *(Packet + (i / 4)) |= ((CtrCmd.Fno_Type.byte & ((u8)1 << (i - 24))) ? 2 : 1);
- 810   2          }
- 811   1              ClearWDT();
- 812   1          for (i = 32; i < 48; i++)
- 813   1          {
- 814   2              *(Packet + (i / 4)) <<= 2;
- 815   2              *(Packet + (i / 4)) |= ((CtrCmd.Data[0].ui & ((u16)1 << (i - 32))) ? 2 : 1);
- 816   2          }
- 817   1          for (i = 48; i < 64; i++)
- 818   1          {
- 819   2              *(Packet + (i / 4)) <<= 2;
- 820   2              *(Packet + (i / 4)) |= ((CtrCmd.Data[1].ui & ((u16)1 << (i - 48))) ? 2 : 1);
- 821   2          }
- 822   1              ClearWDT();
- 823   1          for (i = 64; i < 80; i++)
- 824   1          {
- 825   2              *(Packet + (i / 4)) <<= 2;
- 826   2              *(Packet + (i / 4)) |= ((CtrCmd.Data[2].ui & ((u16)1 << (i - 64))) ? 2 : 1);
- 827   2          }
- 828   1          for (i = 80; i < 96; i++)
- 829   1          {
- 830   2              *(Packet + (i / 4)) <<= 2;
- 831   2              *(Packet + (i / 4)) |= ((CtrCmd.Data[3].ui & ((u16)1 << (i - 80))) ? 2 : 1);
- 832   2          }
- 833   1          ClearWDT();
- 834   1          for (i = 96; i < 112; i++)
-C51 COMPILER V9.60.0.0   ML7345                                                            03/04/2022 11:08:00 PAGE 15  
+ 773              xdata u16 CRCTemp = 0;
+ 774              CRCTemp = (IDCache & 0xffff) + (((IDCache >> 16) & 0xff) + ((u16)CtrCmd << 8));
+ 775              for (i = 0; i < 24; i++)
+ 776              {
+ 777                  *(Packet + (i / 4)) <<= 2;
+ 778                  *(Packet + (i / 4)) |= ((IDCache & ((u32)1 << i)) ? 2 : 1);
+ 779              }
+ 780              for (i = 24; i < 32; i++)
+ 781              {
+ 782                  *(Packet + (i / 4)) <<= 2;
+ 783                  *(Packet + (i / 4)) |= ((CtrCmd & ((u8)1 << (i - 24))) ? 2 : 1);
+ 784              }
+ 785              for (i = 32; i < 48; i++)
+ 786              {
+ 787                  *(Packet + (i / 4)) <<= 2;
+ 788                  *(Packet + (i / 4)) |= ((CRCTemp & ((u16)1 << (i - 32))) ? 2 : 1);
+ 789              }
+ 790              ClearWDT();
+ 791          }*/
+ 792          
+ 793          void TX_DataLoad_HighSpeed(u32 IDCache, Wireless_Body CtrCmd, u8 *Packet)
+ 794          {
+ 795   1          xdata u8 i;
+ 796   1          xdata u16 CRCTemp = 0;
+ 797   1      
+ 798   1          CRCTemp = (IDCache & 0xffff) + (((IDCache >> 16) & 0xff) + ((u16)CtrCmd.Fno_Type.byte << 8));
+ 799   1              for(i=0;i<4;i++)
+ 800   1                      CRCTemp+=CtrCmd.Data[i].ui;
+ 801   1      
+ 802   1          for (i = 0; i < 24; i++)
+ 803   1          {
+ 804   2              *(Packet + (i / 4)) <<= 2;
+ 805   2              *(Packet + (i / 4)) |= ((IDCache & ((u32)1 << i)) ? 2 : 1);
+ 806   2          }
+ 807   1          for (i = 24; i < 32; i++)
+ 808   1          {
+ 809   2              *(Packet + (i / 4)) <<= 2;
+ 810   2              *(Packet + (i / 4)) |= ((CtrCmd.Fno_Type.byte & ((u8)1 << (i - 24))) ? 2 : 1);
+ 811   2          }
+ 812   1              ClearWDT();
+ 813   1          for (i = 32; i < 48; i++)
+ 814   1          {
+ 815   2              *(Packet + (i / 4)) <<= 2;
+ 816   2              *(Packet + (i / 4)) |= ((CtrCmd.Data[0].ui & ((u16)1 << (i - 32))) ? 2 : 1);
+ 817   2          }
+ 818   1          for (i = 48; i < 64; i++)
+ 819   1          {
+ 820   2              *(Packet + (i / 4)) <<= 2;
+ 821   2              *(Packet + (i / 4)) |= ((CtrCmd.Data[1].ui & ((u16)1 << (i - 48))) ? 2 : 1);
+ 822   2          }
+ 823   1              ClearWDT();
+ 824   1          for (i = 64; i < 80; i++)
+ 825   1          {
+ 826   2              *(Packet + (i / 4)) <<= 2;
+ 827   2              *(Packet + (i / 4)) |= ((CtrCmd.Data[2].ui & ((u16)1 << (i - 64))) ? 2 : 1);
+ 828   2          }
+ 829   1          for (i = 80; i < 96; i++)
+ 830   1          {
+ 831   2              *(Packet + (i / 4)) <<= 2;
+ 832   2              *(Packet + (i / 4)) |= ((CtrCmd.Data[3].ui & ((u16)1 << (i - 80))) ? 2 : 1);
+ 833   2          }
+ 834   1          ClearWDT();
+C51 COMPILER V9.60.0.0   ML7345                                                            03/09/2022 17:26:50 PAGE 15  
 
- 835   1          {
- 836   2              *(Packet + (i / 4)) <<= 2;
- 837   2              *(Packet + (i / 4)) |= ((CRCTemp & ((u16)1 << (i - 96))) ? 2 : 1);
- 838   2          }
- 839   1      }
+ 835   1          for (i = 96; i < 112; i++)
+ 836   1          {
+ 837   2              *(Packet + (i / 4)) <<= 2;
+ 838   2              *(Packet + (i / 4)) |= ((CRCTemp & ((u16)1 << (i - 96))) ? 2 : 1);
+ 839   2          }
+ 840   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   7023    ----
+   CODE SIZE        =   7036    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =    133    ----
    PDATA SIZE       =   ----    ----

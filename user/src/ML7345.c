@@ -423,6 +423,7 @@ void APP_TX_PACKET(void)
                     Receiver_LED_TX = 0;
                     FLAG_APP_TX_once=0;
                     Flag_tx_en = 0;
+                    retx_cnt = 0;
 				}
 		   }
     }
@@ -693,7 +694,7 @@ void ML7345_TRX_Del(void)
     }
     
     reg = ML7345_Read_Reg(ADDR_INT_SOURCE_GRP3);
-    if((reg & 0x01) && reg != 0xff)
+    if(((reg & 0x01) == 0x01) && (reg != 0xff))
     {
         Flag_TxDone = 1;
         Time_APP_blank_TX = 6;

@@ -40,7 +40,8 @@ void Init_Port(void)
 #if (NEW_PCB==0)  
     PORT_SetP3InputOnly(BIT5);
 #else
-    PORT_SetP3PushPull(BIT4|BIT5);
+    //PORT_SetP3PushPull(BIT4|BIT5);
+    PORT_SetP3QuasiBi(0xFF);                            //设置P3位准双向口模式
 #endif
  
     /* TP3/TP4: P40/P41 */
