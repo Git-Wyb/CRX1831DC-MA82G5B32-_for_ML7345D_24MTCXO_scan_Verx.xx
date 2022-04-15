@@ -48,7 +48,7 @@ void Init_Uart0_S1BRG(void)
 	UART1_EnS1BRG();					// 开启S1BRG时钟
 }
 */
-/*
+
 void Init_Uart0_T1(void)
 {
     UART0_SetMode8bitUARTVar();			// 8位 可变波特率
@@ -62,11 +62,11 @@ void Init_Uart0_T1(void)
 	TM_SetT1Gate_Disable(); 
 
     // 设置波特率
-	TM_SetT1HighByte(T1_BRGRL_9600_2X_24000000_1T);
-	TM_SetT1LowByte(T1_BRGRL_9600_2X_24000000_1T);
+	TM_SetT1HighByte(T1_BRGRL_9600_2X_16000000_1T);
+	TM_SetT1LowByte(T1_BRGRL_9600_2X_16000000_1T);
 
 	TM_EnableT1();
-}*/
+}
 
 
 //P119; 波特率baud: TH1 = 256 - (SYSCLK / (baud / ((2^SMOD1 * 2^(SMOD2*2))/32)))
@@ -119,7 +119,13 @@ void INT_UART0(void) interrupt INT_VECTOR_UART0
 	{
 		RI0 = 0;				//清除中断标志
         dat = S0BUF;
-        if(Flag_test_mode == 0) ReceiveFrame(dat);
+        
+        if(Flag_test_mode == 0) 
+        {
+            ACC = dat;              // 数据送入累加器计算和为奇数/偶数
+            if(RB80 == ~P)          // 奇校验位判断
+                ReceiveFrame(dat);    
+        }
         else
         {
             if(dat == '(') SIO_cnt = 0;
@@ -149,9 +155,10 @@ void Uart0SendByte(u8 tByte)
 {
 	bit bES;
 	bES = ES0;
-	ES0 = 0;
-	S0BUF = tByte;
-    //TB80 = P;   //校验位
+	ES0 = 0;                // 关闭串口中断
+    ACC = tByte;            // 数据送入累加器计算和为奇数/偶数            
+    TB80 = ~P;              // 奇校验,读取奇偶标志(8位数据和为奇数则P=1,否则P=0)
+	S0BUF = tByte;          // 发送数据
 	while(TI0 == 0);
 	TI0 = 0;
 	ES0 = bES;

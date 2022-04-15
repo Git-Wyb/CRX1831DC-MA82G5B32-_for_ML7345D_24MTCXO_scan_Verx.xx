@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 1   
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE UART
@@ -58,27 +58,27 @@ line level    source
   48                  UART1_EnS1BRG();                                        // 开启S1BRG时钟
   49          }
   50          */
-  51          /*
+  51          
   52          void Init_Uart0_T1(void)
   53          {
-  54              UART0_SetMode8bitUARTVar();                 // 8位 可变波特率
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 2   
+  54   1          UART0_SetMode8bitUARTVar();                 // 8位 可变波特率
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 2   
 
-  55                  UART0_EnReception();                            // 使能UART0接收数据
-  56                  
-  57                  UART0_SetBRGFromT1();                           // 设置波特率来源为 T1
-  58                  UART0_SetT1BaudRateX2();                        // 设置2x波特率
-  59          
-  60                  TM_SetT1Mode_2_8BIT_AUTORELOAD();
-  61                  TM_SetT1Clock_SYSCLK();
-  62                  TM_SetT1Gate_Disable(); 
-  63          
-  64              // 设置波特率
-  65                  TM_SetT1HighByte(T1_BRGRL_9600_2X_24000000_1T);
-  66                  TM_SetT1LowByte(T1_BRGRL_9600_2X_24000000_1T);
-  67          
-  68                  TM_EnableT1();
-  69          }*/
+  55   1              UART0_EnReception();                            // 使能UART0接收数据
+  56   1              
+  57   1              UART0_SetBRGFromT1();                           // 设置波特率来源为 T1
+  58   1              UART0_SetT1BaudRateX2();                        // 设置2x波特率
+  59   1      
+  60   1              TM_SetT1Mode_2_8BIT_AUTORELOAD();
+  61   1              TM_SetT1Clock_SYSCLK();
+  62   1              TM_SetT1Gate_Disable(); 
+  63   1      
+  64   1          // 设置波特率
+  65   1              TM_SetT1HighByte(T1_BRGRL_9600_2X_16000000_1T);
+  66   1              TM_SetT1LowByte(T1_BRGRL_9600_2X_16000000_1T);
+  67   1      
+  68   1              TM_EnableT1();
+  69   1      }
   70          
   71          
   72          //P119; 波特率baud: TH1 = 256 - (SYSCLK / (baud / ((2^SMOD1 * 2^(SMOD2*2))/32)))
@@ -126,575 +126,584 @@ line level    source
  114   1              if(TI0)                                 //发送中断内容
  115   1              { 
  116   2                 TI0 = 0;        
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 3   
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 3   
 
  117   2              }
  118   1              if(RI0)                                 //接收中断内容
  119   1              {
  120   2                      RI0 = 0;                                //清除中断标志
  121   2              dat = S0BUF;
- 122   2              if(Flag_test_mode == 0) ReceiveFrame(dat);
- 123   2              else
+ 122   2              
+ 123   2              if(Flag_test_mode == 0) 
  124   2              {
- 125   3                  if(dat == '(') SIO_cnt = 0;
- 126   3                  SIO_buff[SIO_cnt] = dat;
- 127   3                  SIO_cnt = (SIO_cnt + 1) & 0x1F;
- 128   3                  if (dat == ')')
- 129   3                  {
- 130   4                      for (dat = 0; dat < SIO_cnt; dat++)
- 131   4                      {
- 132   5                          SIO_DATA[dat] = SIO_buff[dat];
- 133   5                      }
- 134   4                      BIT_SIO = 1; // 标志
- 135   4                      //SIO_TOT = 20;
- 136   4                  }
- 137   3              }
- 138   2              }
- 139   1              _pop_(SFRPI);              //恢复SFRPI寄存器值
- 140   1      }
- 141          
- 142          /***********************************************************************************
- 143          函数名称:void Uart0SendByte(u8 tByte)
- 144          功能描述:Uart0发送数据
- 145          输入参数:u8 tByte: 待发送的数据
- 146          返回参数:     
- 147          *************************************************************************************/
- 148          void Uart0SendByte(u8 tByte)
- 149          {
- 150   1              bit bES;
- 151   1              bES = ES0;
- 152   1              ES0 = 0;
- 153   1              S0BUF = tByte;
- 154   1          //TB80 = P;   //校验位
- 155   1              while(TI0 == 0);
- 156   1              TI0 = 0;
- 157   1              ES0 = bES;
- 158   1      }
- 159          
- 160          /* 发送数据 */
- 161          void Send_Data(u8 *buff,u8 len)
- 162          {
- 163   1          xdata u8 i = 0;
- 164   1          for(i=0; i<len; i++)
- 165   1          {
- 166   2              Uart0SendByte(buff[i]);
- 167   2          }
- 168   1      }
- 169          
- 170          unsigned char asc_hex(unsigned char asc) // HEX
- 171          {
- 172   1              xdata u8 i;
- 173   1              if (asc < 0x3A)
- 174   1                      i = asc & 0x0F;
- 175   1              else
- 176   1                      i = asc - 0x37;
- 177   1              return i;
- 178   1      }
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 4   
+ 125   3                  ACC = dat;              // 数据送入累加器计算和为奇数/偶数
+ 126   3                  if(RB80 == ~P)          // 奇校验位判断
+ 127   3                      ReceiveFrame(dat);    
+ 128   3              }
+ 129   2              else
+ 130   2              {
+ 131   3                  if(dat == '(') SIO_cnt = 0;
+ 132   3                  SIO_buff[SIO_cnt] = dat;
+ 133   3                  SIO_cnt = (SIO_cnt + 1) & 0x1F;
+ 134   3                  if (dat == ')')
+ 135   3                  {
+ 136   4                      for (dat = 0; dat < SIO_cnt; dat++)
+ 137   4                      {
+ 138   5                          SIO_DATA[dat] = SIO_buff[dat];
+ 139   5                      }
+ 140   4                      BIT_SIO = 1; // 标志
+ 141   4                      //SIO_TOT = 20;
+ 142   4                  }
+ 143   3              }
+ 144   2              }
+ 145   1              _pop_(SFRPI);              //恢复SFRPI寄存器值
+ 146   1      }
+ 147          
+ 148          /***********************************************************************************
+ 149          函数名称:void Uart0SendByte(u8 tByte)
+ 150          功能描述:Uart0发送数据
+ 151          输入参数:u8 tByte: 待发送的数据
+ 152          返回参数:     
+ 153          *************************************************************************************/
+ 154          void Uart0SendByte(u8 tByte)
+ 155          {
+ 156   1              bit bES;
+ 157   1              bES = ES0;
+ 158   1              ES0 = 0;                // 关闭串口中断
+ 159   1          ACC = tByte;            // 数据送入累加器计算和为奇数/偶数            
+ 160   1          TB80 = ~P;              // 奇校验,读取奇偶标志(8位数据和为奇数则P=1,否则P=0)
+ 161   1              S0BUF = tByte;          // 发送数据
+ 162   1              while(TI0 == 0);
+ 163   1              TI0 = 0;
+ 164   1              ES0 = bES;
+ 165   1      }
+ 166          
+ 167          /* 发送数据 */
+ 168          void Send_Data(u8 *buff,u8 len)
+ 169          {
+ 170   1          xdata u8 i = 0;
+ 171   1          for(i=0; i<len; i++)
+ 172   1          {
+ 173   2              Uart0SendByte(buff[i]);
+ 174   2          }
+ 175   1      }
+ 176          
+ 177          unsigned char asc_hex(unsigned char asc) // HEX
+ 178          {
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 4   
 
- 179          
- 180          unsigned char hex_asc(unsigned char hex)
- 181          {
- 182   1              xdata u8 i;
- 183   1              hex = hex & 0x0F;
- 184   1              if (hex < 0x0A)
- 185   1                      i = hex | 0x30;
- 186   1              else
- 187   1                      i = hex + 0x37;
- 188   1              return i;
- 189   1      }
- 190          
- 191          unsigned char asc_hex_2(unsigned char asc1, unsigned char asc0)
- 192          {
- 193   1              unsigned char i;
- 194   1              i = (asc_hex(asc1) << 4) + (asc_hex(asc0) & 0x0F);
+ 179   1              xdata u8 i;
+ 180   1              if (asc < 0x3A)
+ 181   1                      i = asc & 0x0F;
+ 182   1              else
+ 183   1                      i = asc - 0x37;
+ 184   1              return i;
+ 185   1      }
+ 186          
+ 187          unsigned char hex_asc(unsigned char hex)
+ 188          {
+ 189   1              xdata u8 i;
+ 190   1              hex = hex & 0x0F;
+ 191   1              if (hex < 0x0A)
+ 192   1                      i = hex | 0x30;
+ 193   1              else
+ 194   1                      i = hex + 0x37;
  195   1              return i;
  196   1      }
  197          
- 198          
- 199          void ReceiveFrame(u8 Cache)
- 200          {
- 201   1              switch (UartStatus)
- 202   1              {
- 203   2              case FrameHeadSataus:
- 204   2              {
- 205   3                      UART_DATA_buffer[0] = UART_DATA_buffer[1];
- 206   3                      UART_DATA_buffer[1] = UART_DATA_buffer[2];
- 207   3                      UART_DATA_buffer[2] = Cache;
- 208   3                      if ((UART_DATA_buffer[0] == FrameHead) &&
- 209   3                              (UART_DATA_buffer[2] == FrameSingnalID))
- 210   3                      {
- 211   4                              U1Statues = ReceivingStatues;
- 212   4                              UartStatus++;
- 213   4                              UartLen = UART_DATA_buffer[1];
- 214   4                  if(UartLen >= UartBuff_MaxLength)    UartStatus = FrameHeadSataus;  //overflow
- 215   4                      }
- 216   3              }
- 217   2              break;
- 218   2              case DataStatus:
- 219   2              {
- 220   3                      UART_DATA_buffer[UartCount + 3] = Cache;
- 221   3                      UartCount++;
- 222   3                      if (UartCount >= (UartLen - 3))
- 223   3                              UartStatus++;
- 224   3              }
- 225   2              break;
- 226   2              default:
- 227   2                      UartStatus = 0;
- 228   2                      U1Statues = IdelStatues;
- 229   2                      break;
- 230   2              }
- 231   1              if (UartStatus == FrameEndStatus) //接收完一帧处理数捿
- 232   1              {
- 233   2                      //add Opration function
- 234   2                      OprationFrame();
- 235   2                      UartStatus = 0;
- 236   2                      UartCount = 0;
- 237   2                      //        Receiver_LED_OUT_INV = !Receiver_LED_OUT_INV;
- 238   2                      if((Databits_t.No.ID_No == 147)||(Databits_t.No.ID_No == 152)) U1Statues = IdelStatues;
- 239   2                      else
- 240   2                      { 
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 5   
+ 198          unsigned char asc_hex_2(unsigned char asc1, unsigned char asc0)
+ 199          {
+ 200   1              unsigned char i;
+ 201   1              i = (asc_hex(asc1) << 4) + (asc_hex(asc0) & 0x0F);
+ 202   1              return i;
+ 203   1      }
+ 204          
+ 205          
+ 206          void ReceiveFrame(u8 Cache)
+ 207          {
+ 208   1              switch (UartStatus)
+ 209   1              {
+ 210   2              case FrameHeadSataus:
+ 211   2              {
+ 212   3                      UART_DATA_buffer[0] = UART_DATA_buffer[1];
+ 213   3                      UART_DATA_buffer[1] = UART_DATA_buffer[2];
+ 214   3                      UART_DATA_buffer[2] = Cache;
+ 215   3                      if ((UART_DATA_buffer[0] == FrameHead) &&
+ 216   3                              (UART_DATA_buffer[2] == FrameSingnalID))
+ 217   3                      {
+ 218   4                              U1Statues = ReceivingStatues;
+ 219   4                              UartStatus++;
+ 220   4                              UartLen = UART_DATA_buffer[1];
+ 221   4                  if(UartLen >= UartBuff_MaxLength)    UartStatus = FrameHeadSataus;  //overflow
+ 222   4                      }
+ 223   3              }
+ 224   2              break;
+ 225   2              case DataStatus:
+ 226   2              {
+ 227   3                      UART_DATA_buffer[UartCount + 3] = Cache;
+ 228   3                      UartCount++;
+ 229   3                      if (UartCount >= (UartLen - 3))
+ 230   3                              UartStatus++;
+ 231   3              }
+ 232   2              break;
+ 233   2              default:
+ 234   2                      UartStatus = 0;
+ 235   2                      U1Statues = IdelStatues;
+ 236   2                      break;
+ 237   2              }
+ 238   1              if (UartStatus == FrameEndStatus) //接收完一帧处理数捿
+ 239   1              {
+ 240   2                      //add Opration function
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 5   
 
- 241   3                              U1Statues = ReceiveDoneStatues;
- 242   3                          U1AckTimer = U1AckDelayTime;
- 243   3                      }
- 244   2              }
- 245   1      }
- 246          
- 247          void OprationFrame(void)
- 248          {
- 249   1              idata u8 i = 0;;
- 250   1              for (i = 0; i < 4; i++)
- 251   1                      Databits_t.Data[i] = UART_DATA_buffer[3 + i];
- 252   1              if (Databits_t.No.ID_No == 146)  //0x92
- 253   1              {
- 254   2                  FLAG_APP_TX_fromUART=1;
- 255   2                      if(TIMER1s);
- 256   2                      else Uart_Struct_DATA_Packet_Contro.Fno_Type.UN.fno=0;
- 257   2                      //for(i=0;i<3;i++)Uart_Struct_DATA_Packet_Contro.data[i/2].uc[i%2]=Databits_t.Data[i+1];
- 258   2                      //for(i=3;i<8;i++)Uart_Struct_DATA_Packet_Contro.data[i/2].uc[i%2]=0x00;
- 259   2      
- 260   2                      for(i=0;i<2;i++)Uart_Struct_DATA_Packet_Contro.Data[i/2].uc[i%2] = Databits_t.Data[i+1];
- 261   2                      if((Databits_t.No.Statues==3)||(Databits_t.No.Statues==4))  Flag_shutter_stopping=1;
- 262   2                      else Flag_shutter_stopping=0;
- 263   2                      ACKBack[2] = 0;
- 264   2                      switch (Databits_t.No.Mode)
- 265   2                      {
- 266   3                      case 3:
- 267   3                      case 4:
- 268   3                      case 5:
- 269   3                      case 6:
- 270   3                      case 7:
- 271   3                      case 8:
- 272   3                              break;
- 273   3                      default:
- 274   3                              ACKBack[2] = 1;
- 275   3                              return;
- 276   3                              break;
- 277   3                      }
- 278   2                      switch (Databits_t.No.Statues)
- 279   2                      {
- 280   3                      case 1:
- 281   3                      case 2:
- 282   3                      case 3:
- 283   3                      case 4:
- 284   3                      case 5:
- 285   3                      case 6:
- 286   3                              break;
- 287   3                      default:
- 288   3                              ACKBack[2] = 1;
- 289   3                              return;
- 290   3                              break;
- 291   3                      }
- 292   2                      switch (Databits_t.No.Abnormal)
- 293   2                      {
- 294   3                      case 0x00:
- 295   3                      case 0x04:
- 296   3                      case 0x06:
- 297   3                      case 0x45:
- 298   3                      case 0x46:
- 299   3                      case 0x47:
- 300   3                      case 0x48:
- 301   3                      case 0x49:
- 302   3                      case 0x4A:
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 6   
+ 241   2                      OprationFrame();
+ 242   2                      UartStatus = 0;
+ 243   2                      UartCount = 0;
+ 244   2                      //        Receiver_LED_OUT_INV = !Receiver_LED_OUT_INV;
+ 245   2                      if((Databits_t.No.ID_No == 147)||(Databits_t.No.ID_No == 152)) U1Statues = IdelStatues;
+ 246   2                      else
+ 247   2                      { 
+ 248   3                              U1Statues = ReceiveDoneStatues;
+ 249   3                          U1AckTimer = U1AckDelayTime;
+ 250   3                      }
+ 251   2              }
+ 252   1      }
+ 253          
+ 254          void OprationFrame(void)
+ 255          {
+ 256   1              idata u8 i = 0;;
+ 257   1              for (i = 0; i < 4; i++)
+ 258   1                      Databits_t.Data[i] = UART_DATA_buffer[3 + i];
+ 259   1              if (Databits_t.No.ID_No == 146)  //0x92
+ 260   1              {
+ 261   2                  FLAG_APP_TX_fromUART=1;
+ 262   2                      if(TIMER1s);
+ 263   2                      else Uart_Struct_DATA_Packet_Contro.Fno_Type.UN.fno=0;
+ 264   2                      //for(i=0;i<3;i++)Uart_Struct_DATA_Packet_Contro.data[i/2].uc[i%2]=Databits_t.Data[i+1];
+ 265   2                      //for(i=3;i<8;i++)Uart_Struct_DATA_Packet_Contro.data[i/2].uc[i%2]=0x00;
+ 266   2      
+ 267   2                      for(i=0;i<2;i++)Uart_Struct_DATA_Packet_Contro.Data[i/2].uc[i%2] = Databits_t.Data[i+1];
+ 268   2                      if((Databits_t.No.Statues==3)||(Databits_t.No.Statues==4))  Flag_shutter_stopping=1;
+ 269   2                      else Flag_shutter_stopping=0;
+ 270   2                      ACKBack[2] = 0;
+ 271   2                      switch (Databits_t.No.Mode)
+ 272   2                      {
+ 273   3                      case 3:
+ 274   3                      case 4:
+ 275   3                      case 5:
+ 276   3                      case 6:
+ 277   3                      case 7:
+ 278   3                      case 8:
+ 279   3                              break;
+ 280   3                      default:
+ 281   3                              ACKBack[2] = 1;
+ 282   3                              return;
+ 283   3                              break;
+ 284   3                      }
+ 285   2                      switch (Databits_t.No.Statues)
+ 286   2                      {
+ 287   3                      case 1:
+ 288   3                      case 2:
+ 289   3                      case 3:
+ 290   3                      case 4:
+ 291   3                      case 5:
+ 292   3                      case 6:
+ 293   3                              break;
+ 294   3                      default:
+ 295   3                              ACKBack[2] = 1;
+ 296   3                              return;
+ 297   3                              break;
+ 298   3                      }
+ 299   2                      switch (Databits_t.No.Abnormal)
+ 300   2                      {
+ 301   3                      case 0x00:
+ 302   3                      case 0x04:
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 6   
 
- 303   3                      case 0x4B:
- 304   3                      case 0x4C:
- 305   3                      case 0x4D:
- 306   3                              break;
- 307   3                      default:
- 308   3                              ACKBack[2] = 1;
- 309   3                              return;
- 310   3                              break;
- 311   3                      }
- 312   2              }
- 313   1              else if (Databits_t.No.ID_No == 152)  //0x98
- 314   1              {
- 315   2                      Flag_ERROR_Read_once_again=0;
- 316   2                      TIME_ERROR_Read_once_again=0;
- 317   2                      for (i = 0; i < 41; i++)UART_DATA_ID98[i]=UART_DATA_buffer[i];
- 318   2                      FLAG_APP_TX_fromUART_err_read=1;
- 319   2                      Time_error_read_timeout=(UART_DATA_ID98[1]+1)*7;
- 320   2                      ERROR_Read_sendTX_count=0;
- 321   2                      ERROR_Read_sendTX_packet=0;
- 322   2                      Time_error_read_gap=38;
- 323   2              }
- 324   1              else if (Databits_t.No91.ID_test_No91or93 == 145)  //0x91
- 325   1              {
- 326   2                  if((ID_DATA_PCS==0)&&(ID_SCX1801_DATA==0))
- 327   2                      {
- 328   3                              ACKBack[2] = 0;
- 329   3                              FLAG_testNo91=1;
- 330   3                                      if(FLAG_testNo91_step<3)
- 331   3                                     FLAG_testNo91_step++;
- 332   3                              FLAG_testNo91SendUart=0;
- 333   3                              TIME_TestNo91=1000;
- 334   3                      }
- 335   2                      else
- 336   2                              {
- 337   3                              ACKBack[2] = 1;
- 338   3                              FLAG_testNo91=2;
- 339   3                              TIME_TestNo91=1000;
- 340   3                              FLAG_testBEEP=1;
- 341   3                              }
- 342   2              }
- 343   1              else if (Databits_t.No91.ID_test_No91or93 == 147)  //0x93
- 344   1              {
- 345   2                      switch (Databits_t.No91.SWorOUT)
- 346   2                      {
- 347   3                      case 0x01:
- 348   3                              DATA_Packet_Control=0x08;
- 349   3                              TIMER1s = 1000;
- 350   3                              break;
- 351   3                      case 0x02:
- 352   3                              DATA_Packet_Control=0x04;
- 353   3                              TIMER1s = 1000;
- 354   3                              break;
- 355   3                      case 0x04:
- 356   3                              DATA_Packet_Control=0x02;
- 357   3                              TIMER1s = 1000;
- 358   3                              break;
- 359   3                      case 0xFA:
- 360   3                              FLAG_testBEEP=1;
+ 303   3                      case 0x06:
+ 304   3                      case 0x45:
+ 305   3                      case 0x46:
+ 306   3                      case 0x47:
+ 307   3                      case 0x48:
+ 308   3                      case 0x49:
+ 309   3                      case 0x4A:
+ 310   3                      case 0x4B:
+ 311   3                      case 0x4C:
+ 312   3                      case 0x4D:
+ 313   3                              break;
+ 314   3                      default:
+ 315   3                              ACKBack[2] = 1;
+ 316   3                              return;
+ 317   3                              break;
+ 318   3                      }
+ 319   2              }
+ 320   1              else if (Databits_t.No.ID_No == 152)  //0x98
+ 321   1              {
+ 322   2                      Flag_ERROR_Read_once_again=0;
+ 323   2                      TIME_ERROR_Read_once_again=0;
+ 324   2                      for (i = 0; i < 41; i++)UART_DATA_ID98[i]=UART_DATA_buffer[i];
+ 325   2                      FLAG_APP_TX_fromUART_err_read=1;
+ 326   2                      Time_error_read_timeout=(UART_DATA_ID98[1]+1)*7;
+ 327   2                      ERROR_Read_sendTX_count=0;
+ 328   2                      ERROR_Read_sendTX_packet=0;
+ 329   2                      Time_error_read_gap=38;
+ 330   2              }
+ 331   1              else if (Databits_t.No91.ID_test_No91or93 == 145)  //0x91
+ 332   1              {
+ 333   2                  if((ID_DATA_PCS==0)&&(ID_SCX1801_DATA==0))
+ 334   2                      {
+ 335   3                              ACKBack[2] = 0;
+ 336   3                              FLAG_testNo91=1;
+ 337   3                                      if(FLAG_testNo91_step<3)
+ 338   3                                     FLAG_testNo91_step++;
+ 339   3                              FLAG_testNo91SendUart=0;
+ 340   3                              TIME_TestNo91=1000;
+ 341   3                      }
+ 342   2                      else
+ 343   2                              {
+ 344   3                              ACKBack[2] = 1;
+ 345   3                              FLAG_testNo91=2;
+ 346   3                              TIME_TestNo91=1000;
+ 347   3                              FLAG_testBEEP=1;
+ 348   3                              }
+ 349   2              }
+ 350   1              else if (Databits_t.No91.ID_test_No91or93 == 147)  //0x93
+ 351   1              {
+ 352   2                      switch (Databits_t.No91.SWorOUT)
+ 353   2                      {
+ 354   3                      case 0x01:
+ 355   3                              DATA_Packet_Control=0x08;
+ 356   3                              TIMER1s = 1000;
+ 357   3                              break;
+ 358   3                      case 0x02:
+ 359   3                              DATA_Packet_Control=0x04;
+ 360   3                              TIMER1s = 1000;
  361   3                              break;
- 362   3                      case 0xFB:
- 363   3                              FLAG_testBEEP=2;
- 364   3                              break;
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 7   
+ 362   3                      case 0x04:
+ 363   3                              DATA_Packet_Control=0x02;
+ 364   3                              TIMER1s = 1000;
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 7   
 
- 365   3                      case 0xFC:
- 366   3                              FLAG_testBEEP=3;
- 367   3                              break;
- 368   3                      default:
- 369   3                              break;
- 370   3                      }
- 371   2      
- 372   2              }
- 373   1              else
- 374   1              {
- 375   2                      ACKBack[2] = 1;
- 376   2                      return;
- 377   2              }
- 378   1      }
- 379          
- 380          
- 381          void TranmissionACK(void)
- 382          {
- 383   1          if ((U1Statues == ReceiveDoneStatues) && (U1AckTimer == 0))
- 384   1          {
- 385   2              U1Statues = ACKingStatues;
- 386   2              Send_Data(ACKBack, 3);
- 387   2              U1Statues = IdelStatues;
- 388   2          }
- 389   1      
- 390   1              if((Flag_ERROR_Read_once_again==1)&&(TIME_ERROR_Read_once_again==0))
- 391   1              {
- 392   2                      Send_Data(Send_err_com, 7);
- 393   2                      Flag_ERROR_Read_once_again=0;
- 394   2                      TIME_ERROR_Read_once_again=0;
- 395   2              }
- 396   1      }
- 397          
- 398          xdata u32 PROFILE_CH_FREQ_32bit_200002EC_uart = 0;
- 399          void PC_PRG(void) // 串口命令
- 400          {
- 401   1              xdata u8 send_dat[10] = {0};
- 402   1          xdata u8 send_ok[4] = {'(','O','K',')'};
- 403   1          xdata uni_rom_id UART_ID_data;
- 404   1          xdata u8 re_byte = 0;
- 405   1      
- 406   1          if (BIT_SIO)
- 407   1              {
- 408   2                      BIT_SIO = 0;
- 409   2                      //SIO_TOT = 20;
- 410   2              if(SIO_DATA[1] == 'T' && SIO_DATA[2] == 'E' && SIO_DATA[3] == 'S' && SIO_DATA[4] == 'T' && SIO_DAT
+ 365   3                              break;
+ 366   3                      case 0xFA:
+ 367   3                              FLAG_testBEEP=1;
+ 368   3                              break;
+ 369   3                      case 0xFB:
+ 370   3                              FLAG_testBEEP=2;
+ 371   3                              break;
+ 372   3                      case 0xFC:
+ 373   3                              FLAG_testBEEP=3;
+ 374   3                              break;
+ 375   3                      default:
+ 376   3                              break;
+ 377   3                      }
+ 378   2      
+ 379   2              }
+ 380   1              else
+ 381   1              {
+ 382   2                      ACKBack[2] = 1;
+ 383   2                      return;
+ 384   2              }
+ 385   1      }
+ 386          
+ 387          
+ 388          void TranmissionACK(void)
+ 389          {
+ 390   1          if ((U1Statues == ReceiveDoneStatues) && (U1AckTimer == 0))
+ 391   1          {
+ 392   2              U1Statues = ACKingStatues;
+ 393   2              Send_Data(ACKBack, 3);
+ 394   2              U1Statues = IdelStatues;
+ 395   2          }
+ 396   1      
+ 397   1              if((Flag_ERROR_Read_once_again==1)&&(TIME_ERROR_Read_once_again==0))
+ 398   1              {
+ 399   2                      Send_Data(Send_err_com, 7);
+ 400   2                      Flag_ERROR_Read_once_again=0;
+ 401   2                      TIME_ERROR_Read_once_again=0;
+ 402   2              }
+ 403   1      }
+ 404          
+ 405          xdata u32 PROFILE_CH_FREQ_32bit_200002EC_uart = 0;
+ 406          void PC_PRG(void) // 串口命令
+ 407          {
+ 408   1              xdata u8 send_dat[10] = {0};
+ 409   1          xdata u8 send_ok[4] = {'(','O','K',')'};
+ 410   1          xdata uni_rom_id UART_ID_data;
+ 411   1          xdata u8 re_byte = 0;
+ 412   1      
+ 413   1          if (BIT_SIO)
+ 414   1              {
+ 415   2                      BIT_SIO = 0;
+ 416   2                      //SIO_TOT = 20;
+ 417   2              if(SIO_DATA[1] == 'T' && SIO_DATA[2] == 'E' && SIO_DATA[3] == 'S' && SIO_DATA[4] == 'T' && SIO_DAT
              -A[5]==')')
- 411   2              {
- 412   3                  Flag_test_pc = 1;
- 413   3                  Flag_test_rssi = 0;
- 414   3                  Flag_test_fm = 0;
- 415   3                  Receiver_LED_OUT = 0;
- 416   3                  Receiver_LED_TX = 0;
- 417   3                  Receiver_LED_RX = 0;
- 418   3                  Receiver_OUT_STOP = 0;
- 419   3                  Receiver_OUT_CLOSE = 0;
- 420   3                  Receiver_OUT_OPEN = 0;
- 421   3                  X_COUNT = 0;
- 422   3                  X_ERR = 0;
- 423   3                  X_ERR_CNT = 0;
- 424   3                  ML7345_SetAndGet_State(Force_TRX_OFF);
- 425   3                  Send_Data(send_ok,4);
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 8   
+ 418   2              {
+ 419   3                  Flag_test_pc = 1;
+ 420   3                  Flag_test_rssi = 0;
+ 421   3                  Flag_test_fm = 0;
+ 422   3                  Receiver_LED_OUT = 0;
+ 423   3                  Receiver_LED_TX = 0;
+ 424   3                  Receiver_LED_RX = 0;
+ 425   3                  Receiver_OUT_STOP = 0;
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 8   
 
- 426   3              }
- 427   2              if(Flag_test_pc == 1)
- 428   2              {
- 429   3                  switch(SIO_DATA[1])
- 430   3                  {
- 431   4                      case 'S':
- 432   4                          if(SIO_DATA[2] == ')')
- 433   4                          {
- 434   5                              if(Flag_test_rssi == 1) Receiver_LED_RX = 0;
- 435   5                              Flag_test_rssi = 0;
- 436   5                              Flag_test_fm = 0;
- 437   5                              CG2214M6_USE_T;
- 438   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
- 439   5                              ML7345_Frequency_Set(Fre_429_175,1);
- 440   5                              Tx_Data_Test(0);    //发载波
- 441   5                              Send_Data(send_ok,4);
- 442   5                          }
- 443   4                          break;
- 444   4                      case 'E':
- 445   4                          if(SIO_DATA[2]=='N' && SIO_DATA[3]=='D' && SIO_DATA[4]==')')
- 446   4                          {
- 447   5                              Flag_test_pc = 0;
- 448   5                              Flag_test_rssi = 0;
- 449   5                              Flag_test_fm = 0;
- 450   5                              Receiver_LED_OUT = 0;
- 451   5                              Receiver_LED_TX = 0;
- 452   5                              Receiver_LED_RX = 0;
- 453   5                              Receiver_OUT_STOP = 0;
- 454   5                              Receiver_OUT_CLOSE = 0;
- 455   5                              Receiver_OUT_OPEN = 0;
- 456   5                              X_COUNT = 0;
- 457   5                              X_ERR = 0;
- 458   5                              X_ERR_CNT = 0;
- 459   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
- 460   5                              Send_Data(send_ok,4);
- 461   5                          }
- 462   4                          else if(SIO_DATA[2]=='H' && SIO_DATA[3]==')')
- 463   4                          {
- 464   5                              ID_DATA_PCS = 0;
- 465   5                              ALL_ID_EEPROM_Erase();
- 466   5                              ID_SCX1801_DATA = 0;
- 467   5                              ID_SCX1801_EEPROM_write(0x00);
- 468   5                              Send_Data(send_ok,4);
- 469   5                          }
- 470   4                          break;
- 471   4                      case 'F':
- 472   4                          if(SIO_DATA[2]=='M' && SIO_DATA[3]==')')  //载波+调制
- 473   4                          {
- 474   5                              if(Flag_test_rssi == 1) Receiver_LED_RX = 0;
- 475   5                              Flag_test_rssi = 0;
- 476   5                              Flag_test_fm = 1;
- 477   5                              CG2214M6_USE_T;
- 478   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
- 479   5                              ML7345_Frequency_Set(Fre_429_175,1);
- 480   5                              Tx_Data_Test(1);
- 481   5                              Send_Data(send_ok,4);
- 482   5                          }
- 483   4                          else if(SIO_DATA[2]=='C' && SIO_DATA[3]=='?' && SIO_DATA[4]==')')
- 484   4                          {
- 485   5                              send_dat[0] = '(';
- 486   5                              send_dat[1] = 'F';
- 487   5                              send_dat[2] = 'C';
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 9   
+ 426   3                  Receiver_OUT_CLOSE = 0;
+ 427   3                  Receiver_OUT_OPEN = 0;
+ 428   3                  X_COUNT = 0;
+ 429   3                  X_ERR = 0;
+ 430   3                  X_ERR_CNT = 0;
+ 431   3                  ML7345_SetAndGet_State(Force_TRX_OFF);
+ 432   3                  Send_Data(send_ok,4);
+ 433   3              }
+ 434   2              if(Flag_test_pc == 1)
+ 435   2              {
+ 436   3                  switch(SIO_DATA[1])
+ 437   3                  {
+ 438   4                      case 'S':
+ 439   4                          if(SIO_DATA[2] == ')')
+ 440   4                          {
+ 441   5                              if(Flag_test_rssi == 1) Receiver_LED_RX = 0;
+ 442   5                              Flag_test_rssi = 0;
+ 443   5                              Flag_test_fm = 0;
+ 444   5                              CG2214M6_USE_T;
+ 445   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 446   5                              ML7345_Frequency_Set(Fre_429_175,1);
+ 447   5                              Tx_Data_Test(0);    //发载波
+ 448   5                              Send_Data(send_ok,4);
+ 449   5                          }
+ 450   4                          break;
+ 451   4                      case 'E':
+ 452   4                          if(SIO_DATA[2]=='N' && SIO_DATA[3]=='D' && SIO_DATA[4]==')')
+ 453   4                          {
+ 454   5                              Flag_test_pc = 0;
+ 455   5                              Flag_test_rssi = 0;
+ 456   5                              Flag_test_fm = 0;
+ 457   5                              Receiver_LED_OUT = 0;
+ 458   5                              Receiver_LED_TX = 0;
+ 459   5                              Receiver_LED_RX = 0;
+ 460   5                              Receiver_OUT_STOP = 0;
+ 461   5                              Receiver_OUT_CLOSE = 0;
+ 462   5                              Receiver_OUT_OPEN = 0;
+ 463   5                              X_COUNT = 0;
+ 464   5                              X_ERR = 0;
+ 465   5                              X_ERR_CNT = 0;
+ 466   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 467   5                              Send_Data(send_ok,4);
+ 468   5                          }
+ 469   4                          else if(SIO_DATA[2]=='H' && SIO_DATA[3]==')')
+ 470   4                          {
+ 471   5                              ID_DATA_PCS = 0;
+ 472   5                              ALL_ID_EEPROM_Erase();
+ 473   5                              ID_SCX1801_DATA = 0;
+ 474   5                              ID_SCX1801_EEPROM_write(0x00);
+ 475   5                              Send_Data(send_ok,4);
+ 476   5                          }
+ 477   4                          break;
+ 478   4                      case 'F':
+ 479   4                          if(SIO_DATA[2]=='M' && SIO_DATA[3]==')')  //载波+调制
+ 480   4                          {
+ 481   5                              if(Flag_test_rssi == 1) Receiver_LED_RX = 0;
+ 482   5                              Flag_test_rssi = 0;
+ 483   5                              Flag_test_fm = 1;
+ 484   5                              CG2214M6_USE_T;
+ 485   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 486   5                              ML7345_Frequency_Set(Fre_429_175,1);
+ 487   5                              Tx_Data_Test(1);
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 9   
 
- 488   5                              send_dat[3] = hex_asc(rf_offset / 16);
- 489   5                              send_dat[4] = hex_asc(rf_offset % 16);
- 490   5                              send_dat[5] = ')';
- 491   5                              Send_Data(send_dat,6);
- 492   5                          }
- 493   4                          else if (SIO_DATA[2]=='C' && SIO_DATA[5]==')' && Flag_test_fm == 1)
- 494   4                          {
- 495   5                              Flag_test_rssi = 0;
- 496   5                              re_byte = asc_hex_2(SIO_buff[3],SIO_buff[4]);
- 497   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
- 498   5                              CG2214M6_USE_T;
- 499   5                              if(re_byte <= 10) //frequency +
- 500   5                              {
- 501   6                                  rf_offset = re_byte;
- 502   6                                  IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys+Addr_rf_offset,&rf_offset,1);
- 503   6                                  PROFILE_CH_FREQ_32bit_200002EC_uart = 429175000 + 150 * re_byte;
- 504   6                                  ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC_uart,Fre_429_175);
- 505   6                                  ML7345_Frequency_Set(Fre_429_175,1);
- 506   6                                  PROFILE_CH_FREQ_32bit_200002EC_uart = 426750000 + 150 * re_byte;
- 507   6                                  ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC_uart,Fre_426_750);
- 508   6                                  Send_Data(send_ok,4);
- 509   6                              }
- 510   5                              else if(10 < re_byte && re_byte <= 20) //frequency -
- 511   5                              {
- 512   6                                  rf_offset = re_byte;
- 513   6                                  IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys+Addr_rf_offset,&rf_offset,1);
- 514   6                                  re_byte = re_byte - 10;
- 515   6                                  PROFILE_CH_FREQ_32bit_200002EC_uart = 429175000 - 150 * re_byte;
- 516   6                                  ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC_uart,Fre_429_175);
- 517   6                                  ML7345_Frequency_Set(Fre_429_175,1);
- 518   6                                  PROFILE_CH_FREQ_32bit_200002EC_uart = 426750000 - 150 * re_byte;
- 519   6                                  ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC_uart,Fre_426_750);
- 520   6                                  Send_Data(send_ok,4);
- 521   6                              }
- 522   5                              Tx_Data_Test(1);
- 523   5                          }
- 524   4                          break;
- 525   4      
- 526   4                      case 'R':
- 527   4                          if(SIO_DATA[2]=='S' && SIO_DATA[3]=='S' && SIO_DATA[4]=='I' && SIO_DATA[5]==')' && Fla
+ 488   5                              Send_Data(send_ok,4);
+ 489   5                          }
+ 490   4                          else if(SIO_DATA[2]=='C' && SIO_DATA[3]=='?' && SIO_DATA[4]==')')
+ 491   4                          {
+ 492   5                              send_dat[0] = '(';
+ 493   5                              send_dat[1] = 'F';
+ 494   5                              send_dat[2] = 'C';
+ 495   5                              send_dat[3] = hex_asc(rf_offset / 16);
+ 496   5                              send_dat[4] = hex_asc(rf_offset % 16);
+ 497   5                              send_dat[5] = ')';
+ 498   5                              Send_Data(send_dat,6);
+ 499   5                          }
+ 500   4                          else if (SIO_DATA[2]=='C' && SIO_DATA[5]==')' && Flag_test_fm == 1)
+ 501   4                          {
+ 502   5                              Flag_test_rssi = 0;
+ 503   5                              re_byte = asc_hex_2(SIO_buff[3],SIO_buff[4]);
+ 504   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 505   5                              CG2214M6_USE_T;
+ 506   5                              if(re_byte <= 10) //frequency +
+ 507   5                              {
+ 508   6                                  rf_offset = re_byte;
+ 509   6                                  IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys+Addr_rf_offset,&rf_offset,1);
+ 510   6                                  PROFILE_CH_FREQ_32bit_200002EC_uart = 429175000 + 150 * re_byte;
+ 511   6                                  ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC_uart,Fre_429_175);
+ 512   6                                  ML7345_Frequency_Set(Fre_429_175,1);
+ 513   6                                  PROFILE_CH_FREQ_32bit_200002EC_uart = 426750000 + 150 * re_byte;
+ 514   6                                  ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC_uart,Fre_426_750);
+ 515   6                                  Send_Data(send_ok,4);
+ 516   6                              }
+ 517   5                              else if(10 < re_byte && re_byte <= 20) //frequency -
+ 518   5                              {
+ 519   6                                  rf_offset = re_byte;
+ 520   6                                  IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys+Addr_rf_offset,&rf_offset,1);
+ 521   6                                  re_byte = re_byte - 10;
+ 522   6                                  PROFILE_CH_FREQ_32bit_200002EC_uart = 429175000 - 150 * re_byte;
+ 523   6                                  ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC_uart,Fre_429_175);
+ 524   6                                  ML7345_Frequency_Set(Fre_429_175,1);
+ 525   6                                  PROFILE_CH_FREQ_32bit_200002EC_uart = 426750000 - 150 * re_byte;
+ 526   6                                  ML7345_Frequency_Calcul(PROFILE_CH_FREQ_32bit_200002EC_uart,Fre_426_750);
+ 527   6                                  Send_Data(send_ok,4);
+ 528   6                              }
+ 529   5                              Tx_Data_Test(1);
+ 530   5                          }
+ 531   4                          break;
+ 532   4      
+ 533   4                      case 'R':
+ 534   4                          if(SIO_DATA[2]=='S' && SIO_DATA[3]=='S' && SIO_DATA[4]=='I' && SIO_DATA[5]==')' && Fla
              -g_test_rssi==1)
- 528   4                          {
- 529   5                              send_dat[0] = '(';
- 530   5                              send_dat[1] = 'R';
- 531   5                              send_dat[2] = 'S';
- 532   5                              send_dat[3] = 'S';
- 533   5                              send_dat[4] = 'I';
- 534   5                              send_dat[5] = hex_asc((X_ERR_CNT & 0xff) / 16);
- 535   5                              send_dat[6] = hex_asc((X_ERR_CNT & 0xff)% 16);
- 536   5                              send_dat[7] = ')';
- 537   5                              Send_Data(send_dat,8);
- 538   5                          }
- 539   4                          else if(SIO_DATA[2]=='S' && SIO_DATA[3]==')')
- 540   4                          {
- 541   5                              Receiver_LED_RX = 0;
- 542   5                              Flag_test_fm = 0;
- 543   5                              X_COUNT = 0;
- 544   5                              X_ERR = 0;
- 545   5                              X_ERR_CNT = 0;
- 546   5                              CG2214M6_USE_R;
- 547   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
- 548   5                              PROFILE_CH_FREQ_32bit_200002EC = 426750000;
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 10  
+ 535   4                          {
+ 536   5                              send_dat[0] = '(';
+ 537   5                              send_dat[1] = 'R';
+ 538   5                              send_dat[2] = 'S';
+ 539   5                              send_dat[3] = 'S';
+ 540   5                              send_dat[4] = 'I';
+ 541   5                              send_dat[5] = hex_asc((X_ERR_CNT & 0xff) / 16);
+ 542   5                              send_dat[6] = hex_asc((X_ERR_CNT & 0xff)% 16);
+ 543   5                              send_dat[7] = ')';
+ 544   5                              Send_Data(send_dat,8);
+ 545   5                          }
+ 546   4                          else if(SIO_DATA[2]=='S' && SIO_DATA[3]==')')
+ 547   4                          {
+ 548   5                              Receiver_LED_RX = 0;
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 10  
 
- 549   5                              ML7345_Frequency_Set(Fre_426_750,1);
- 550   5                              ML7345_MeasurBER_Init();
- 551   5                              ML7345_SetAndGet_State(RX_ON);
- 552   5                              Flag_test_rssi = 1;
- 553   5                              Send_Data(send_ok,4);
- 554   5                          }
- 555   4                          else if(SIO_DATA[2]=='N' && SIO_DATA[3]==')')
- 556   4                          {
- 557   5                              if(ID_SCX1801_DATA != 0) re_byte = ID_DATA_PCS + 1;
- 558   5                              else re_byte = ID_DATA_PCS;
- 559   5                              send_dat[0] = '(';
- 560   5                              send_dat[1] = 'R';
- 561   5                              send_dat[2] = 'N';
- 562   5                              send_dat[3] = hex_asc((re_byte & 0xff) / 16);
- 563   5                              send_dat[4] = hex_asc((re_byte & 0xff) % 16);
- 564   5                              send_dat[5] = ')';
- 565   5                              re_byte = 0;
- 566   5                              Send_Data(send_dat,6);
- 567   5                          }
- 568   4                          else if(SIO_DATA[2]=='G' && SIO_DATA[5]==')')
- 569   4                          {
- 570   5                              if(SIO_DATA[3]=='0' && SIO_DATA[4]=='0')
- 571   5                              {
- 572   6                                  UART_ID_data.IDB[0] = 0;
- 573   6                                  UART_ID_data.IDB[1] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FB);
- 574   6                                  UART_ID_data.IDB[2] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FC);
- 575   6                                  UART_ID_data.IDB[3] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FD);
- 576   6                                  if ((UART_ID_data.IDC == 0) || (UART_ID_data.IDC == 0xFFFFFF))  ID_SCX1801_DAT
+ 549   5                              Flag_test_fm = 0;
+ 550   5                              X_COUNT = 0;
+ 551   5                              X_ERR = 0;
+ 552   5                              X_ERR_CNT = 0;
+ 553   5                              CG2214M6_USE_R;
+ 554   5                              ML7345_SetAndGet_State(Force_TRX_OFF);
+ 555   5                              PROFILE_CH_FREQ_32bit_200002EC = 426750000;
+ 556   5                              ML7345_Frequency_Set(Fre_426_750,1);
+ 557   5                              ML7345_MeasurBER_Init();
+ 558   5                              ML7345_SetAndGet_State(RX_ON);
+ 559   5                              Flag_test_rssi = 1;
+ 560   5                              Send_Data(send_ok,4);
+ 561   5                          }
+ 562   4                          else if(SIO_DATA[2]=='N' && SIO_DATA[3]==')')
+ 563   4                          {
+ 564   5                              if(ID_SCX1801_DATA != 0) re_byte = ID_DATA_PCS + 1;
+ 565   5                              else re_byte = ID_DATA_PCS;
+ 566   5                              send_dat[0] = '(';
+ 567   5                              send_dat[1] = 'R';
+ 568   5                              send_dat[2] = 'N';
+ 569   5                              send_dat[3] = hex_asc((re_byte & 0xff) / 16);
+ 570   5                              send_dat[4] = hex_asc((re_byte & 0xff) % 16);
+ 571   5                              send_dat[5] = ')';
+ 572   5                              re_byte = 0;
+ 573   5                              Send_Data(send_dat,6);
+ 574   5                          }
+ 575   4                          else if(SIO_DATA[2]=='G' && SIO_DATA[5]==')')
+ 576   4                          {
+ 577   5                              if(SIO_DATA[3]=='0' && SIO_DATA[4]=='0')
+ 578   5                              {
+ 579   6                                  UART_ID_data.IDB[0] = 0;
+ 580   6                                  UART_ID_data.IDB[1] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FB);
+ 581   6                                  UART_ID_data.IDB[2] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FC);
+ 582   6                                  UART_ID_data.IDB[3] = IAP_ReadByteByMOVC(addr_eeprom_sys + 0x3FD);
+ 583   6                                  if ((UART_ID_data.IDC == 0) || (UART_ID_data.IDC == 0xFFFFFF))  ID_SCX1801_DAT
              -A=0;
- 577   6                                  else ID_SCX1801_DATA = UART_ID_data.IDC;
- 578   6                                  send_dat[0] = '(';
- 579   6                                  send_dat[1] = 'R';
- 580   6                                  send_dat[2] = 'G';
- 581   6                                  send_dat[3] = hex_asc(UART_ID_data.IDB[1] / 16);
- 582   6                                  send_dat[4] = hex_asc(UART_ID_data.IDB[1] % 16);
- 583   6                                  send_dat[5] = hex_asc(UART_ID_data.IDB[2] / 16);
- 584   6                                  send_dat[6] = hex_asc(UART_ID_data.IDB[2] % 16);
- 585   6                                  send_dat[7] = hex_asc(UART_ID_data.IDB[3] / 16);
- 586   6                                  send_dat[8] = hex_asc(UART_ID_data.IDB[3] % 16);
- 587   6                                  send_dat[9] = ')';
- 588   6                                  Send_Data(send_dat,10);
- 589   6                              }
- 590   5                          }
- 591   4                          break;
- 592   4                      case 'K':
- 593   4                          if(SIO_DATA[2]=='Y' && SIO_DATA[3]==')')
- 594   4                          {
- 595   5                              send_dat[0] = '(';
- 596   5                              send_dat[1] = 'K';
- 597   5                              send_dat[2] = 'Y';
- 598   5                              send_dat[7] = 0;
- 599   5                              send_dat[7] = send_dat[7] | Receiver_Login;
- 600   5                              send_dat[3] = hex_asc((send_dat[7] & 0xff) / 16);
- 601   5                              send_dat[4] = hex_asc((send_dat[7] & 0xff) % 16);
- 602   5                              send_dat[5] = ')';
- 603   5                              Send_Data(send_dat,6);
- 604   5                          }
- 605   4                          break;
- 606   4                      case 'P':
- 607   4                          if(SIO_DATA[2]=='H' && SIO_DATA[5]==')')
- 608   4                          {
- 609   5                              if(SIO_DATA[3]=='2' && SIO_DATA[4]=='5')         {Receiver_LED_OUT = 1;  Send_Data
-C51 COMPILER V9.60.0.0   UART                                                              03/09/2022 17:29:04 PAGE 11  
+ 584   6                                  else ID_SCX1801_DATA = UART_ID_data.IDC;
+ 585   6                                  send_dat[0] = '(';
+ 586   6                                  send_dat[1] = 'R';
+ 587   6                                  send_dat[2] = 'G';
+ 588   6                                  send_dat[3] = hex_asc(UART_ID_data.IDB[1] / 16);
+ 589   6                                  send_dat[4] = hex_asc(UART_ID_data.IDB[1] % 16);
+ 590   6                                  send_dat[5] = hex_asc(UART_ID_data.IDB[2] / 16);
+ 591   6                                  send_dat[6] = hex_asc(UART_ID_data.IDB[2] % 16);
+ 592   6                                  send_dat[7] = hex_asc(UART_ID_data.IDB[3] / 16);
+ 593   6                                  send_dat[8] = hex_asc(UART_ID_data.IDB[3] % 16);
+ 594   6                                  send_dat[9] = ')';
+ 595   6                                  Send_Data(send_dat,10);
+ 596   6                              }
+ 597   5                          }
+ 598   4                          break;
+ 599   4                      case 'K':
+ 600   4                          if(SIO_DATA[2]=='Y' && SIO_DATA[3]==')')
+ 601   4                          {
+ 602   5                              send_dat[0] = '(';
+ 603   5                              send_dat[1] = 'K';
+ 604   5                              send_dat[2] = 'Y';
+ 605   5                              send_dat[7] = 0;
+ 606   5                              send_dat[7] = send_dat[7] | Receiver_Login;
+ 607   5                              send_dat[3] = hex_asc((send_dat[7] & 0xff) / 16);
+ 608   5                              send_dat[4] = hex_asc((send_dat[7] & 0xff) % 16);
+ 609   5                              send_dat[5] = ')';
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 11  
 
+ 610   5                              Send_Data(send_dat,6);
+ 611   5                          }
+ 612   4                          break;
+ 613   4                      case 'P':
+ 614   4                          if(SIO_DATA[2]=='H' && SIO_DATA[5]==')')
+ 615   4                          {
+ 616   5                              if(SIO_DATA[3]=='2' && SIO_DATA[4]=='5')         {Receiver_LED_OUT = 1;  Send_Data
              -(send_ok,4);}
- 610   5                              else if(SIO_DATA[3]=='2' && SIO_DATA[4]=='7')    {Receiver_LED_TX = 1;   Send_Data
+ 617   5                              else if(SIO_DATA[3]=='2' && SIO_DATA[4]=='7')    {Receiver_LED_TX = 1;   Send_Data
              -(send_ok,4);}
- 611   5                              else if(SIO_DATA[3]=='3' && SIO_DATA[4]=='5')    {Receiver_LED_RX = 1;   Send_Data
+ 618   5                              else if(SIO_DATA[3]=='3' && SIO_DATA[4]=='5')    {Receiver_LED_RX = 1;   Send_Data
              -(send_ok,4);}
- 612   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='1')    {Receiver_OUT_STOP = 1; Send_Data
+ 619   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='1')    {Receiver_OUT_STOP = 1; Send_Data
              -(send_ok,4);}
- 613   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='0')    {Receiver_OUT_CLOSE = 1;Send_Data
+ 620   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='0')    {Receiver_OUT_CLOSE = 1;Send_Data
              -(send_ok,4);}
- 614   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='2')    {Receiver_OUT_OPEN = 1; Send_Data
+ 621   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='2')    {Receiver_OUT_OPEN = 1; Send_Data
              -(send_ok,4);}
- 615   5                          }
- 616   4                          else if(SIO_DATA[2]=='L' && SIO_DATA[5]==')')
- 617   4                          {
- 618   5                              if(SIO_DATA[3]=='2' && SIO_DATA[4]=='5')         {Receiver_LED_OUT = 0;  Send_Data
+ 622   5                          }
+ 623   4                          else if(SIO_DATA[2]=='L' && SIO_DATA[5]==')')
+ 624   4                          {
+ 625   5                              if(SIO_DATA[3]=='2' && SIO_DATA[4]=='5')         {Receiver_LED_OUT = 0;  Send_Data
              -(send_ok,4);}
- 619   5                              else if(SIO_DATA[3]=='2' && SIO_DATA[4]=='7')    {Receiver_LED_TX = 0;   Send_Data
+ 626   5                              else if(SIO_DATA[3]=='2' && SIO_DATA[4]=='7')    {Receiver_LED_TX = 0;   Send_Data
              -(send_ok,4);}
- 620   5                              else if(SIO_DATA[3]=='3' && SIO_DATA[4]=='5')    {Receiver_LED_RX = 0;   Send_Data
+ 627   5                              else if(SIO_DATA[3]=='3' && SIO_DATA[4]=='5')    {Receiver_LED_RX = 0;   Send_Data
              -(send_ok,4);}
- 621   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='1')    {Receiver_OUT_STOP = 0; Send_Data
+ 628   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='1')    {Receiver_OUT_STOP = 0; Send_Data
              -(send_ok,4);}
- 622   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='0')    {Receiver_OUT_CLOSE = 0;Send_Data
+ 629   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='0')    {Receiver_OUT_CLOSE = 0;Send_Data
              -(send_ok,4);}
- 623   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='2')    {Receiver_OUT_OPEN = 0; Send_Data
+ 630   5                              else if(SIO_DATA[3]=='1' && SIO_DATA[4]=='2')    {Receiver_OUT_OPEN = 0; Send_Data
              -(send_ok,4);}
- 624   5                          }
- 625   4                          break;
- 626   4                      case 'W':
- 627   4                          if(SIO_DATA[2]=='G' && SIO_DATA[9]==')')
- 628   4                          {
- 629   5                              UART_ID_data.IDB[0]=0;
- 630   5                              UART_ID_data.IDB[1] = asc_hex_2(SIO_buff[3],SIO_buff[4]);
- 631   5                              UART_ID_data.IDB[2] = asc_hex_2(SIO_buff[5],SIO_buff[6]);
- 632   5                              UART_ID_data.IDB[3] = asc_hex_2(SIO_buff[7],SIO_buff[8]);
- 633   5                              IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys+0x3FB,&UART_ID_data.IDB[1],3);
- 634   5                              
- 635   5                              ID_SCX1801_DATA = UART_ID_data.IDC;
- 636   5                              Send_Data(send_ok,4);
- 637   5                          }
- 638   4                          break;
- 639   4                      default:
- 640   4                          break;
- 641   4                  }
- 642   3              }
- 643   2          }
- 644   1          if(Flag_test_rssi == 1) Uart_RF_Ber_Test();
- 645   1      }
+ 631   5                          }
+ 632   4                          break;
+ 633   4                      case 'W':
+ 634   4                          if(SIO_DATA[2]=='G' && SIO_DATA[9]==')')
+ 635   4                          {
+ 636   5                              UART_ID_data.IDB[0]=0;
+ 637   5                              UART_ID_data.IDB[1] = asc_hex_2(SIO_buff[3],SIO_buff[4]);
+ 638   5                              UART_ID_data.IDB[2] = asc_hex_2(SIO_buff[5],SIO_buff[6]);
+ 639   5                              UART_ID_data.IDB[3] = asc_hex_2(SIO_buff[7],SIO_buff[8]);
+ 640   5                              IAP_WriteBuf_With_Protect_Verify(addr_eeprom_sys+0x3FB,&UART_ID_data.IDB[1],3);
+ 641   5                              
+ 642   5                              ID_SCX1801_DATA = UART_ID_data.IDC;
+ 643   5                              Send_Data(send_ok,4);
+ 644   5                          }
+ 645   4                          break;
+ 646   4                      default:
+ 647   4                          break;
+ 648   4                  }
+ 649   3              }
+ 650   2          }
+ 651   1          if(Flag_test_rssi == 1) Uart_RF_Ber_Test();
+ 652   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   4503    ----
+   CODE SIZE        =   4577    ----
    CONSTANT SIZE    =     14    ----
    XDATA SIZE       =    123    ----
    PDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.0.0   UART                                                              04/15/2022 17:34:28 PAGE 12  
+
    DATA SIZE        =     11    ----
    IDATA SIZE       =      5    ----
    BIT SIZE         =      2    ----

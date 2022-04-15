@@ -88,7 +88,7 @@ void RF_ML7345_Init(u8* freq,u8 sync,u8 rx_len)
     //-----------------------------------------------------------------------------------------------------
     ML7345_Write_Reg(0x45,0x08);    //接收前导码长度(bit) RX preamble setting and ED threshold check setting
     //-----------------------------------------------------------------------------------------------------
-    ML7345_Write_Reg(0x4e,0x00);    /* GPIO0 [output] “L” level */
+    ML7345_Write_Reg(0x4e,0x07);    /* GPIO0 [output] interrupt notification signal (SINTN) */
     ML7345_Write_Reg(0x4f,0x00);    /* GPIO1 [output] “L” level,Upon reset,disable GPIO1 pin is CLK_OUT function */
     ML7345_Write_Reg(0x50,0x00);    /* GPIO2 [output] “L” level */
     ML7345_Write_Reg(0x51,0x00);    /* GPIO3 [output] “L” level */
@@ -437,6 +437,7 @@ void APP_TX_PACKET(void)
         if(PROFILE_CH_FREQ_32bit_200002EC == 429350000) RF_ML7345_Init(Fre_429_350,0x15,28);
         else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000) RF_ML7345_Init(Fre_429_550,0x15,28);
         ML7345_GPIO0TxDoneInt_Enable();
+        ML7345_GPIO0RxDoneInt_Enable();
         ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
         Time_Tx_Out = 100;
         retx_cnt++;
@@ -460,7 +461,7 @@ void ML7345D_RF_test_mode(void)
     {
         if(Flag_test_mode == 0)
         {
-            //UART1_INIT_TestMode();
+            Init_Uart0_T1();
             Receiver_LED_OUT = 0;
             BEEP_Module(500,1);
         }
