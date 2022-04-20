@@ -39,10 +39,7 @@ void main()
     Init_Interrupt();
     INT_EnAll();  // 使能全局中断
     ML7345D_RF_test_mode();
-    FLAG_APP_RX = 1;
-    FG_Receiver_LED_RX = 0;
-    FLAG_testNo91=0;
-	FLAG_testBEEP=0;  
+    FLAG_APP_RX = 1; 
     ML7345_SetAndGet_State(RX_ON);
     CG2214M6_USE_R;
     

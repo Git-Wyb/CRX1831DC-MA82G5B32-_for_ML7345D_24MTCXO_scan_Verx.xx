@@ -84,7 +84,7 @@ void RF_ML7345_Init(u8* freq,u8 sync,u8 rx_len)
     ML7345_Write_Reg(0x41,0x8B);    /* Enable ED value calculation,bit3=0 ED value constantly updated,bit3=1 ED value acquired at SyncWord detection timing*/
 
     ML7345_Write_Reg(0x42,0x00);    //TX前导码长度高八位
-    ML7345_Write_Reg(0x43,0x34);    //TX前导码长度低八位,不等少于16个位,TX preamble length = (specified value x2) bits
+    ML7345_Write_Reg(0x43,0x50);    //TX前导码长度低八位,不等少于16个位,TX preamble length = (specified value x2) bits
     //-----------------------------------------------------------------------------------------------------
     ML7345_Write_Reg(0x45,0x08);    //接收前导码长度(bit) RX preamble setting and ED threshold check setting
     //-----------------------------------------------------------------------------------------------------
@@ -437,11 +437,9 @@ void APP_TX_PACKET(void)
         if(PROFILE_CH_FREQ_32bit_200002EC == 429350000) RF_ML7345_Init(Fre_429_350,0x15,28);
         else if(PROFILE_CH_FREQ_32bit_200002EC == 429550000) RF_ML7345_Init(Fre_429_550,0x15,28);
         ML7345_GPIO0TxDoneInt_Enable();
-        ML7345_GPIO0RxDoneInt_Enable();
         ML7345_AutoTx_Data(CONST_TXPACKET_DATA_20000AF0,28);
         Time_Tx_Out = 100;
-        retx_cnt++;
-        if(retx_cnt >= 3)
+        if(retx_cnt++ >= 2)
         {
             retx_cnt = 0;
             Flag_tx_en = 0;

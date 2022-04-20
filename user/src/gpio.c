@@ -77,6 +77,7 @@ void Init_Port(void)
 返回参数:  
 用于ML7345D 发送接收完成中断。
 *************************************************************************************/
+#if (NEW_PCB==0)
 void Init_INT0(void)
 {
 	INT_SetINT0P32();						//设置INT0引脚P32
@@ -84,7 +85,7 @@ void Init_INT0(void)
 	//INT_SetINT0_DetectRisingEdge();
     INT_SetINT0Filter_Sysclk_x3();			//设置INT0滤波为（sysclk）*3
 }
-
+#endif
 
 /***********************************************************************************
 函数名称:   void InitINT1(void)

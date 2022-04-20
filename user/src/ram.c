@@ -90,8 +90,8 @@ xdata u32 PROFILE_CH_FREQ_32bit_200002EC = 426075000ul;
 idata u8 Channels = 1;
 
 
-xdata Wireless_Body Struct_DATA_Packet_Contro,Struct_DATA_Packet_Contro_buf;
-xdata Wireless_Body Uart_Struct_DATA_Packet_Contro,Last_Uart_Struct_DATA_Packet_Contro;
+xdata Wireless_Body Struct_DATA_Packet_Contro = {0},Struct_DATA_Packet_Contro_buf = {0};
+xdata Wireless_Body Uart_Struct_DATA_Packet_Contro = {0},Last_Uart_Struct_DATA_Packet_Contro = {0};
 xdata u8 Struct_DATA_Packet_Contro_fno=0;
 xdata u16 TIMER_Semi_open = 0;
 xdata u16 TIMER_Semi_close = 0;

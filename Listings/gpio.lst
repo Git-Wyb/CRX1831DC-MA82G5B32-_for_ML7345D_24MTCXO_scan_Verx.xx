@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   GPIO                                                              04/15/2022 17:34:28 PAGE 1   
+C51 COMPILER V9.60.0.0   GPIO                                                              04/20/2022 17:16:49 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE GPIO
@@ -62,7 +62,7 @@ line level    source
   52   1          //////////////////////test/////////////////////////
   53   1          //PORT_SetP6PushPull(BIT0);   //CLK OUT
   54   1          //AUXR0 &= ~(P60OC0|P60OC1);
-C51 COMPILER V9.60.0.0   GPIO                                                              04/15/2022 17:34:28 PAGE 2   
+C51 COMPILER V9.60.0.0   GPIO                                                              04/20/2022 17:16:49 PAGE 2   
 
   55   1          //AUXR0 |= (0x80|P60FD);
   56   1          //////////////////////test/////////////////////////
@@ -89,117 +89,118 @@ line level    source
   77          返回参数:  
   78          用于ML7345D 发送接收完成中断。
   79          *************************************************************************************/
-  80          void Init_INT0(void)
-  81          {
-  82   1              INT_SetINT0P32();                                               //设置INT0引脚P32
-  83   1              INT_SetINT0_DetectFallingEdge();                //设置INT0外部中断检测方式为下降沿检测
-  84   1              //INT_SetINT0_DetectRisingEdge();
-  85   1          INT_SetINT0Filter_Sysclk_x3();                      //设置INT0滤波为（sysclk）*3
-  86   1      }
-  87          
-  88          
-  89          /***********************************************************************************
-  90          函数名称:   void InitINT1(void)
-  91          功能描述:   INT1初始化
-  92          输入参数:   
-  93          返回参数:   
-  94          ML7345D BER测试。
-  95          *************************************************************************************/
-  96          #if (NEW_PCB==1)
-  97          void Init_INT1(void)
-  98          {
-  99   1              INT_SetINT1P33();                                               //设置INT1引脚P33
- 100   1              //INT_SetINT1_DetectRisingEdge();               
- 101   1          INT_SetINT1_DetectFallingEdge();        //设置INT1外部中断检测方式为下降沿检测
- 102   1              INT_SetINT1Filter_Sysclk_x3();                  //设置INT1滤波为（sysclk）*3
- 103   1      }
- 104          #endif
- 105          
- 106          /***********************************************************************************
- 107          函数名称:   void INT_INT0(void) 
- 108          功能描述:INT0中断服务程序
- 109          输入参数:   
- 110          返回参数: 
- 111          
- 112          用于ML7345D发送接收完成中断。
- 113          
- 114          *************************************************************************************/
- 115          void INT_INT0(void)             interrupt INT_VECTOR_INT0
- 116          {
-C51 COMPILER V9.60.0.0   GPIO                                                              04/15/2022 17:34:28 PAGE 3   
+  80          #if (NEW_PCB==0)
+              void Init_INT0(void)
+              {
+                      INT_SetINT0P32();                                               //设置INT0引脚P32
+                      INT_SetINT0_DetectFallingEdge();                //设置INT0外部中断检测方式为下降沿检测
+                      //INT_SetINT0_DetectRisingEdge();
+                  INT_SetINT0Filter_Sysclk_x3();                      //设置INT0滤波为（sysclk）*3
+              }
+              #endif
+  89          
+  90          /***********************************************************************************
+  91          函数名称:   void InitINT1(void)
+  92          功能描述:   INT1初始化
+  93          输入参数:   
+  94          返回参数:   
+  95          ML7345D BER测试。
+  96          *************************************************************************************/
+  97          #if (NEW_PCB==1)
+  98          void Init_INT1(void)
+  99          {
+ 100   1              INT_SetINT1P33();                                               //设置INT1引脚P33
+ 101   1              //INT_SetINT1_DetectRisingEdge();               
+ 102   1          INT_SetINT1_DetectFallingEdge();        //设置INT1外部中断检测方式为下降沿检测
+ 103   1              INT_SetINT1Filter_Sysclk_x3();                  //设置INT1滤波为（sysclk）*3
+ 104   1      }
+ 105          #endif
+ 106          
+ 107          /***********************************************************************************
+ 108          函数名称:   void INT_INT0(void) 
+ 109          功能描述:INT0中断服务程序
+ 110          输入参数:   
+ 111          返回参数: 
+ 112          
+ 113          用于ML7345D发送接收完成中断。
+ 114          
+ 115          *************************************************************************************/
+ 116          void INT_INT0(void)             interrupt INT_VECTOR_INT0
+C51 COMPILER V9.60.0.0   GPIO                                                              04/20/2022 17:16:49 PAGE 3   
 
- 117   1              if(Flag_test_mode == 0) ML7345_TRX_Del();
- 118   1          else DataReceive();
- 119   1      }
- 120          
+ 117          {
+ 118   1              if(Flag_test_mode == 0) ML7345_TRX_Del();
+ 119   1          else DataReceive();
+ 120   1      }
  121          
- 122          /***********************************************************************************
- 123          函数名称:   void INT_INT1(void) 
- 124          功能描述:INT1中断服务程序
- 125          输入参数:   
- 126          返回参数:    
- 127          
- 128          ML7345D BER测试。
- 129          
- 130          *************************************************************************************/
- 131          void INT_INT1(void)             interrupt INT_VECTOR_INT1
- 132          {
- 133   1              if(Flag_test_mode == 0) ML7345_TRX_Del();
- 134   1          else DataReceive();
- 135   1      }
- 136          
+ 122          
+ 123          /***********************************************************************************
+ 124          函数名称:   void INT_INT1(void) 
+ 125          功能描述:INT1中断服务程序
+ 126          输入参数:   
+ 127          返回参数:    
+ 128          
+ 129          ML7345D BER测试。
+ 130          
+ 131          *************************************************************************************/
+ 132          void INT_INT1(void)             interrupt INT_VECTOR_INT1
+ 133          {
+ 134   1              if(Flag_test_mode == 0) ML7345_TRX_Del();
+ 135   1          else DataReceive();
+ 136   1      }
  137          
- 138          /***********************************************************************************
- 139          函数名称:   void InitInterrupt(void)
- 140          功能描述:   中断初始化
- 141          输入参数:    
- 142          返回参数:     
- 143          *************************************************************************************/
- 144          void Init_Interrupt(void)
- 145          {
- 146   1      #if (NEW_PCB==0)
+ 138          
+ 139          /***********************************************************************************
+ 140          函数名称:   void InitInterrupt(void)
+ 141          功能描述:   中断初始化
+ 142          输入参数:    
+ 143          返回参数:     
+ 144          *************************************************************************************/
+ 145          void Init_Interrupt(void)
+ 146          {
+ 147   1      #if (NEW_PCB==0)
                   Init_INT0();
                   INT_EnINT0();                       //      使能INT0中断
               #else
- 150   1          Init_INT1();
- 151   1              INT_EnINT1();                   //      使能INT1中断
- 152   1      #endif
- 153   1          INT_EnTIMER0();                     //      使能T0中断
- 154   1              INT_EnUART0();                  //      使能串口中断
- 155   1      }
- 156          
+ 151   1          Init_INT1();
+ 152   1              INT_EnINT1();                   //      使能INT1中断
+ 153   1      #endif
+ 154   1          INT_EnTIMER0();                     //      使能T0中断
+ 155   1              INT_EnUART0();                  //      使能串口中断
+ 156   1      }
  157          
- 158          /*
- 159          u8 key_scan(void)
- 160          {
- 161              if((Receiver_Login==0 | TP3==0 | TP4==0 | Receiver_test==0))
- 162              {
- 163                  delay_ms(50);
- 164                  if((Receiver_Login==0 | TP3==0 | TP4==0 | Receiver_test==0) && key_flag == 0)
- 165                  {
- 166                      key_flag = 1;
- 167                      if(Receiver_Login==0) return 2;
- 168                      else if (Receiver_test==0) return 3;
- 169                      else return 1;
- 170                  }
- 171                  else return 0;
- 172                      
- 173              }
- 174              else if(Receiver_Login==1 && TP3==1 && TP4==1 && Receiver_test==1)
- 175              {
- 176                  key_flag = 0;
- 177                  return 0;
- 178              }
-C51 COMPILER V9.60.0.0   GPIO                                                              04/15/2022 17:34:28 PAGE 4   
+ 158          
+ 159          /*
+ 160          u8 key_scan(void)
+ 161          {
+ 162              if((Receiver_Login==0 | TP3==0 | TP4==0 | Receiver_test==0))
+ 163              {
+ 164                  delay_ms(50);
+ 165                  if((Receiver_Login==0 | TP3==0 | TP4==0 | Receiver_test==0) && key_flag == 0)
+ 166                  {
+ 167                      key_flag = 1;
+ 168                      if(Receiver_Login==0) return 2;
+ 169                      else if (Receiver_test==0) return 3;
+ 170                      else return 1;
+ 171                  }
+ 172                  else return 0;
+ 173                      
+ 174              }
+ 175              else if(Receiver_Login==1 && TP3==1 && TP4==1 && Receiver_test==1)
+ 176              {
+ 177                  key_flag = 0;
+ 178                  return 0;
+C51 COMPILER V9.60.0.0   GPIO                                                              04/20/2022 17:16:49 PAGE 4   
 
- 179              return 0;    
- 180          }*/
- 181          
+ 179              }
+ 180              return 0;    
+ 181          }*/
  182          
+ 183          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    292    ----
+   CODE SIZE        =    280    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

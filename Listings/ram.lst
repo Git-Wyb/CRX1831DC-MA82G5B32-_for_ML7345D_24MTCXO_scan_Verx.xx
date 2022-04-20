@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   RAM                                                               04/15/2022 17:34:30 PAGE 1   
+C51 COMPILER V9.60.0.0   RAM                                                               04/20/2022 17:16:50 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE RAM
@@ -62,7 +62,7 @@ line level    source
   52          #else
               xdata u32 ID_Receiver_DATA[100] = {0};
               #endif
-C51 COMPILER V9.60.0.0   RAM                                                               04/15/2022 17:34:30 PAGE 2   
+C51 COMPILER V9.60.0.0   RAM                                                               04/20/2022 17:16:50 PAGE 2   
 
   55          
   56          xdata u32 ID_SCX1801_DATA = 0;
@@ -102,8 +102,8 @@ line level    source
   90          idata u8 Channels = 1;
   91          
   92          
-  93          xdata Wireless_Body Struct_DATA_Packet_Contro,Struct_DATA_Packet_Contro_buf;
-  94          xdata Wireless_Body Uart_Struct_DATA_Packet_Contro,Last_Uart_Struct_DATA_Packet_Contro;
+  93          xdata Wireless_Body Struct_DATA_Packet_Contro = {0},Struct_DATA_Packet_Contro_buf = {0};
+  94          xdata Wireless_Body Uart_Struct_DATA_Packet_Contro = {0},Last_Uart_Struct_DATA_Packet_Contro = {0};
   95          xdata u8 Struct_DATA_Packet_Contro_fno=0;
   96          xdata u16 TIMER_Semi_open = 0;
   97          xdata u16 TIMER_Semi_close = 0;
@@ -126,7 +126,7 @@ line level    source
  114          
 
 
-C51 COMPILER V9.60.0.0   RAM                                                               04/15/2022 17:34:30 PAGE 3   
+C51 COMPILER V9.60.0.0   RAM                                                               04/20/2022 17:16:50 PAGE 3   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   ----    ----
